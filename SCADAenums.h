@@ -48,6 +48,7 @@ enum UnitModes {
     UnMdColling,
     UnMdSmoke,
     UnMdFire,
+    UnMdFireStart,
     UnMdNeedLoad,
     UnMdNeedUnload,
     UnMdStorage,

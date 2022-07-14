@@ -301,8 +301,8 @@ public:
     int Reset(bool DoReconnect);
     void SetConnectionParams(const char *RemAddress, word LocalTSAP, word RemoteTsap);
     void SetConnectionType(word ConnType);
-	int ConnectTo(const char *RemAddress, int Rack, int Slot);
-    int Connect();
+        int ConnectTo(const char *RemAddress, int Rack, int Slot);
+        int Connect();
 	int Disconnect();
 	int GetParam(int ParamNumber, void *pValue);
 	int SetParam(int ParamNumber, void *pValue);

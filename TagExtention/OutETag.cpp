@@ -90,7 +90,7 @@ bool OutETag::setValue(QVariant Value, bool notImit)
         convVal = Value;
         break;
     case Prom::VCdiv2 :
-        convVal = Value;
+        convVal = Value.toDouble() * 2;
         break;
     case Prom::VCdiv10:
         convVal =  QVariant(Value.toDouble() * 10).toInt();

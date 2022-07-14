@@ -30,6 +30,8 @@ UnitPropItem {
     property bool adminView: false
     property bool fullView: true
 
+    property alias sbPrBottom: sbPrButt
+
     signal s_manTopOn(variant ManOn)
     backgroundColor: "#d3d3d3"
     allovAlarmBodyBlinck: false
@@ -165,9 +167,9 @@ UnitPropItem {
         mfuToProcess.valueReal: 3
         mfuToImpact.valueReal: 100
         mfuImpact.separCorrButtons: true
-        mfuKpOut.visible: false
-        mfuKiOut.visible:false
-        mfuKdOut.visible:false
+        mfuKpOut.visible: fullView
+        mfuKiOut.visible: fullView
+        mfuKdOut.visible: false
         mfuProcess.mantissa: 2
         mfuSetPt.mantissa: 2
         mfuFromProcess.mantissa: 2
@@ -192,8 +194,8 @@ UnitPropItem {
         mfuToProcess.valueReal: 3
         mfuToImpact.valueReal: 100
         mfuImpact.separCorrButtons: true
-        mfuKpOut.visible: false
-        mfuKiOut.visible: false
+        mfuKpOut.visible: fullView
+        mfuKiOut.visible: fullView
         mfuKdOut.visible: false
         mfuProcess.mantissa: 2
         mfuSetPt.mantissa: 2

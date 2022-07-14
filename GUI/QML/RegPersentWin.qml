@@ -26,11 +26,6 @@ Window {
     property alias downLimit: minValue.downLimit
     property string unitOfmeg: "%"
 
-    //signal minRangeChanged(int value)
-    //signal maxRangeChanged(int value)
-    //signal valueChanged   (int value)
-    //signal stepChanged    (int value)
-
     function setValueMinRange( MinRg ) { minValue.setValue( MinRg ) }
     function setValueMaxRange( MaxRg ) { maxValue.setValue( MaxRg ) }
     function setValue(Value) { mfuCurValue.setValue( Value ) }
@@ -115,7 +110,7 @@ Window {
         anchors.top: minValue.bottom
         Rectangle {
             id: min
-            width: valueMin / downLimit * parent.width
+            width: parent.width * valueMin / 100
             color: "#6e9ec8"
             anchors.left: parent.left
             anchors.top: parent.top
@@ -131,7 +126,7 @@ Window {
         }
         Rectangle {
             id: max
-            width: (1 - valueMax / upLimit) * parent.width
+            width: parent.width * (1 -valueMax / 100)
             color: "#c36b6b"
             anchors.right: parent.right
             anchors.top: parent.top
@@ -218,8 +213,4 @@ Window {
 
 
 
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:3}
-}
-##^##*/
+

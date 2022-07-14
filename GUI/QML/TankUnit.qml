@@ -5,6 +5,7 @@ UnitPropItem {
     width: 70
     height: 350
     property alias tank: tank
+    property alias mouseArea : msAr
     allovAlarmBodyBlinck: false
     allovAlarmBorderBlinck: true
 
@@ -20,6 +21,7 @@ UnitPropItem {
     //        }
     //    // ------ Test ------
     MouseArea {
+        id: msAr
         anchors.fill: parent
         acceptedButtons: Qt.RightButton | Qt.LeftButton
         onClicked: {

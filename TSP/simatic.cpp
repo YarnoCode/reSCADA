@@ -467,7 +467,7 @@ void SimaticDriver::writeTag(Tag *Tag, QVariant NewValue )
         //emit LoggingSystem(MessError, QDateTime::currentDateTime(), this->objectName(), "Simatic driver read error: driver is null");
         return;
     }
-    if (started) connect();
+    if(!started) connect();
     if(client->Connected()){
         SimAddress *tagAdr = static_cast<SimAddress*>(Tag->speshData);//Получение адреса тэга
         int amt = dataSizeByte(tagAdr->type);//Вычисление кол-ва единиц на считывание
@@ -570,7 +570,7 @@ void SimaticDriver::write(SimaticDriver::Task *task )
         //emit LoggingSystem(MessError, QDateTime::currentDateTime(), this->objectName(), "Simatic driver read error: driver is null");
         return;
     }
-    if (started) connect();
+    if(!started) connect();
     if(client->Connected()){
         SimAddress * lastTagAdr = static_cast<SimAddress*>(task->listOfTags.last()->speshData);//Получение адреса тэга
         int_fast8_t sizeKf = dataSizeByte( task->type );//Вычисление поправ-го коэф-та в зависимости от типа
