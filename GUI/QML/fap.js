@@ -1,4 +1,4 @@
-﻿const version = "3.6.0"
+﻿const version = "3.6.1"
 
 const headBackground = "gainsboro"
 const background = "fcfcfc"

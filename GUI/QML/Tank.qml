@@ -160,7 +160,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.rightMargin: -2
         anchors.bottomMargin: parent.height * levelRatio
-        visible: showLevel
+        visible: showLevel && levelRatio != 1
     }
     Text {
         id: nameText

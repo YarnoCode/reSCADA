@@ -14,36 +14,45 @@ UnitPropItem {
     property bool st: false
     property bool std: false
     property bool manual: false
+    backgroundColor: colorStopReady
 
     signal s_start()
     signal s_stop()
+
 
     function started() {
         //startComand()
         std = true
         manual = false
         backgroundColor = colorRun
+        //console.log("started +", Date.now().toString())
     }
     function stoped() {
         //stopComand()
         std = false
         manual = false
         backgroundColor = colorStopReady
+        //console.log("stoped -", Date.now().toString())
     }
     function startComand() {
         st = true
         manual = false
         backgroundColor = "Lime"
+        //console.log("startComand -+", Date.now().toString())
     }
     function stopComand() {
         st = false
         manual = false
         backgroundColor = "Lime"
+        //console.log("stopComand  +-", Date.now().toString())
     }
     function manualWork() {
+        st = false
         manual = true
         backgroundColor = colorManual
+        //console.log("manualWork 0", Date.now().toString())
     }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -57,10 +66,14 @@ UnitPropItem {
             }
         }
         onDoubleClicked: {
-            if(st || std)
+            if(st || std){
                 s_stop()
-            else
+                stoped()
+            }
+            else{
                 s_start()
+                started()
+            }
         }
     }
 }

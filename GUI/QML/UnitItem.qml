@@ -160,6 +160,7 @@ Item {
         }
     }
     onAlarmChanged: renewColors()
+
     function aNch(){
         renewColors()
         if (alarmNotify)//&& allovAlarmBodyBlinck)
@@ -191,6 +192,7 @@ Item {
         alarmNotify = alarmReact && alarm
         renewColors()
     }
+    onTextColorChanged: textCurrentColor = textColor
 }
 
 /*##^##

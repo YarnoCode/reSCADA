@@ -85,7 +85,9 @@ void EngRouteUnit::_updateStateAndMode()
     case Prom::EngStoped: {
         _setCurrentState(Prom::UnStStoped);
         if(_cleaned) _setCurrentMode(Prom::UnMdCleanStop);
-        else _setCurrentMode(Prom::UnMdStop);
+        else {
+            _setCurrentMode(Prom::UnMdStop);
+        }
         emit s_stoped();
         break;
     }

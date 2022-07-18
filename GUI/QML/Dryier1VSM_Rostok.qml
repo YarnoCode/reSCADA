@@ -156,32 +156,32 @@ Item {
 
 
     }
-    MFUnit {
-        id: targetTempBr
-        name: ""
-        x: 181
-        y: 307
-        width: 110
-        height: 40
-        z: 10
-        borderWidth: 2
-        fontSize: 18
-        backgroundColor: "#ff5d5d"
-        tooltip: "Необходимая t°C теплоносителя после горелки"
-        objectName: root.objectName + ".targetTempBr"
-        readOnly: false
-        visible: true
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "45"
-        blinkColor: "#ff0000"
-        correctingButtons: true
-        regexp: floatreg
-        onValueChanged: br.targetTempChanged(value)
-        checkLimit: true
-        downLimit: 20
-        upLimit: 150
-    }
+//    MFUnit {
+//        id: targetTempBr
+//        name: ""
+//        x: 181
+//        y: 307
+//        width: 110
+//        height: 40
+//        z: 10
+//        borderWidth: 2
+//        fontSize: 18
+//        backgroundColor: "#ff5d5d"
+//        tooltip: "Необходимая t°C теплоносителя после горелки"
+//        objectName: root.objectName + ".targetTempBr"
+//        readOnly: false
+//        visible: true
+//        valueFontSize.bold: true
+//        valueFontSize.pointSize: 20
+//        valueText: "45"
+//        blinkColor: "#ff0000"
+//        correctingButtons: true
+//        regexp: floatreg
+//        onValueChanged: br.targetTempChanged(value)
+//        checkLimit: true
+//        downLimit: 20
+//        upLimit: 150
+//    }
 
     Rectangle {
         id: rectangleFill
@@ -217,61 +217,6 @@ Item {
         opacity: (br.std||br.manual)? 1 : 0
     }
 
-    Fan {
-        id: br
-        name: "ГОРЕЛКА"
-        rotate: -90
-        mirror: true
-        objectName: root.objectName + ".br"
-        mount: false
-        function setTemp(value){ elTempIn.text = value + "°" }
-        function setAlarmTemp(value)
-        {
-            if(value) elTempIn.color = "red"
-            else elTempIn.color = "#23b4f6"
-        }
-        function setTargetTemp(value){ targetTempBr.setLableSilent(value) }
-        function setOverTemp(value){ overTempBr.setLableSilent(value) }
-        function setTempAlarm(){ elTempIn.color = alarmTemp  }
-        function resetTempAlarm(){ elTempIn.color = normalTemp }
-        function setStep(value){
-            if(value)
-                flame.font.pixelSize = flame.size
-            else
-                flame.font.pixelSize = flame.size / 2
-        }
-        signal targetTempChanged(variant value)
-        signal overTempChanged(variant value)
-        x: 22
-        y: 383
-        width: 112
-        height: 109
-        fontSize: 13
-        Button {
-            x: -5
-            y: 72
-            width: 48
-            height: 47
-            iconSource: ""
-            style: ButtonStyle {
-                background: Rectangle {
-
-                    color: "#cacaca"
-                    radius: 6
-                    border.width: 0
-                    border.color: "#6c6c6c"
-                }
-            }
-            Image {
-                id: image1
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectFit
-                source: "../clipart276790.png"
-            }
-            onClicked: parent.openSettings()
-        }
-
-    }
 
     RegExpValidator {
         id: floatreg
@@ -428,26 +373,6 @@ Item {
         }
     }
 
-    MFUnit{
-        id: utspeed
-        name: ""
-        x: 352
-        y: 465
-        width: 107
-        height: 44
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        fontSize: 25
-        backgroundColor: "#38829c"
-        tooltip: "Скорость выгрузного стола (%)"
-        correctingButtons: true
-        readOnly: false
-        checkLimit: true
-        objectName: root.objectName + ".ut.mf"
-        onValueChanged: ut.speedChanged(value)
-        borderWidth: 2
-        regexp: floatreg
-    }
 
 
 
@@ -532,157 +457,9 @@ Item {
             onClicked: parent.openSettings()
 
         }
-        MFUnit {
-            id: cf2speed
-            name: ""
-            x: -34
-            y: -51
-            width: 107
-            height: 44
-            borderWidth: 2
-            fontSize: 25
-            regexp: floatreg
-            blinkColor: "#ff0000"
-            readOnly: false
-            correctingButtons: true
-            visible: true
-            valueFontSize.bold: true
-            valueFontSize.pointSize: 20
-            downLimit: 0
-            upLimit: 100
-            checkLimit: true
-            objectName: root.objectName + ".cf2.mf"
-            backgroundColor: "#38829c"
-            tooltip: "Скорость вращения циклофена в процентах (от 0 до 100)"
-            onValueChanged: cf2.speedChanged(value)
-        }
+
     }
-    MFUnit {
-        id: overTempBr
-        name: ""
-        x: 366
-        y: 162
-        width: 93
-        height: 40
-        z: 10
-        borderWidth: 2
-        fontSize: 18
-        backgroundColor: "#8ca360"
-        tooltip: "t°C перегрева теплоносителя после горелки"
-        objectName: root.objectName + ".overTempBr"
-        readOnly: false
-        visible: true
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "45"
-        blinkColor: "#ff0000"
-        correctingButtons: true
-        regexp: floatreg
-        onValueChanged: br.overTempChanged(value)
-        checkLimit: true
-        downLimit: 20
-        upLimit: 150
-    }
-    MFUnit {
-        id: overTempHL
-        name: ""
-        x: 469
-        y: 162
-        width: 93
-        height: 40
-        z: 10
-        borderWidth: 2
-        fontSize: 18
-        blinkColor: "#ff0000"
-        downLimit: 20
-        backgroundColor: "#8ca360"
-        visible: true
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "45"
-        checkLimit: true
-        objectName: root.objectName + ".overTempHL"
-        tooltip: "t°C перегрева продукта в верхней зоне"
-        regexp: floatreg
-        readOnly: false
-        correctingButtons: true
-        onValueChanged: root.overTempHLChanged(value)
-    }
-    MFUnit {
-        id: overTempML
-        name: ""
-        x: 469
-        y: 277
-        width: 93
-        height: 40
-        z: 10
-        borderWidth: 2
-        fontSize: 18
-        backgroundColor: "#8ca360"
-        tooltip: "t°C перегрева продукта в середине"
-        objectName: root.objectName + ".overTempML"
-        readOnly: false
-        visible: true
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "45"
-        blinkColor: "#ff0000"
-        correctingButtons: true
-        regexp: floatreg
-        onValueChanged: root.overTempMLChanged(value)
-        checkLimit: true
-        downLimit: 20
-    }
-    MFUnit {
-        id: overTempLL
-        name: ""
-        x: 469
-        y: 393
-        width: 93
-        height: 40
-        z: 10
-        borderWidth: 2
-        fontSize: 18
-        backgroundColor: "#8ca360"
-        tooltip: "t°C перегрева продукта в зоне охлаждения"
-        objectName: root.objectName + ".overTempLL"
-        readOnly: false
-        visible: true
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "45"
-        blinkColor: "#ff0000"
-        correctingButtons: true
-        regexp: floatreg
-        onValueChanged: root.overTempLLChanged(value)
-        checkLimit: true
-        downLimit: 20
-    }
-    MFUnit {
-        id: overTempEX
-        name: ""
-        x: 574
-        y: 162
-        width: 93
-        height: 40
-        z: 10
-        borderWidth: 2
-        fontSize: 18
-        backgroundColor: "#8ca360"
-        tooltip: "t°C перегрева теплоносителя на выходе"
-        objectName: root.objectName + ".overTempEX"
-        readOnly: false
-        visible: true
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "45"
-        blinkColor: "#ff0000"
-        regexp: floatreg
-        correctingButtons: true
-        onValueChanged: root.overTempExChanged(value)
-        checkLimit: true
-        downLimit: 20
-    }
+
 
     Button {
         x: 596
@@ -824,32 +601,6 @@ Item {
         }
     }
 
-    MFUnit {
-        id: coolingTemp
-        name: "t°C ПРОДУВКИ"
-        x: 12
-        y: 212
-        width: 186
-        height: 70
-        text: ""
-        valueFontSize.bold: true
-        valueFontSize.pointSize: 20
-        valueText: "15"
-        borderWidth: 2
-        fontSize: 20
-        regexp: floatreg
-        backgroundColor: "#98d1eb"
-        downLimit: 0
-        upLimit: 100
-        correctingButtons: true
-        tooltip: "Целевая температура охлаждения"
-        objectName: root.objectName + ".coolingtemp"
-        readOnly: false
-        checkLimit: true
-        blinkColor: "#ff0000"
-        visible: true
-        onValueChanged: root.coolingTempChanged(value)
-    }
 
     Image {
         id: image
