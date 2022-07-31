@@ -45,15 +45,15 @@ MxMnInETag::MxMnInETag(Unit * Owner,
 void MxMnInETag::saveParam()
 {
     ETag::saveParam();
-    if(_maxLevelSave)_owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".maxLevel", _maxLevel);
-    if(_minLevelSave)_owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".minLevel", _minLevel);
+    if(_maxLevelSave)_owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "maxLevel", _maxLevel);
+    if(_minLevelSave)_owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "minLevel", _minLevel);
 }
 
 //------------------------------------------------------------------------------
 void MxMnInETag::loadParam()
 {
-    if(_maxLevelSave)_maxLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".maxLevel", 0).toDouble();
-    if(_minLevelSave)_minLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".minLevel", 0).toDouble();
+    if(_maxLevelSave)_maxLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "maxLevel", 0).toDouble();
+    if(_minLevelSave)_minLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "minLevel", 0).toDouble();
     ETag::loadParam();
 }
 

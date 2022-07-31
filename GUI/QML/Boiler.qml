@@ -3,12 +3,12 @@ import "fap.js" as Fap
 
 UnitPropItem {
     id: root
-    width: 390
-    height: 800
-    alarmNotify: true
-    connected: true
-    linked: true
-    alarm: true
+    width: 540
+    height: 622
+    alarmNotify: false
+    connected: false
+    linked: false
+    alarm: false
     description: "Котел №"
     borderWidth: 2
 
@@ -32,29 +32,32 @@ UnitPropItem {
     property int pipeBorderWidth: 1
     property color indicColor: "gray"
 
-
     property bool adminView: false
     property bool fullView: true
+
+    property bool mirrorVentSmoke: false
 
     backgroundColor: "#d3d3d3"
     allovAlarmBodyBlinck: false
     allovAlarmBorderBlinck: true
+    borderWidthNotify: 6
 
     Rectangle{
-        y: 94
-        width: 380
-        height: 310
-        color: "#d3d3d3"
+        y: 1
+        width: 540
+        height: 486
+        color: backgroundCurrentColor
         radius: 10
         //color: parent.backgroundCurrecntColor
         border.color: parent.borderCurrentColor
-        border.width: 2
+        border.width: parent.borderCurrentWidth
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
     MouseArea {
         id: mousAr
+        anchors.fill: parent
         acceptedButtons: Qt.RightButton | Qt.LeftButton
         onClicked: {
             if (mouse.button & Qt.RightButton) {
@@ -70,10 +73,11 @@ UnitPropItem {
     Tank {
         id: tankWater
         x: 330
-        y: 58
+        y: 31
         width: 140
         height: 140
         radius: width / 2
+        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         borderWidth: 2
         z: 10
@@ -90,36 +94,32 @@ UnitPropItem {
         function setLvlAlarmReseted(){
             levelText.color = levelTextColor
         }
-    }
-    SimpleButton{
-        id: sbPrBurner
-        y: 409
-        radius: height / 2
-        border.color: "#000000"
-        anchors.horizontalCenterOffset: -3
-        width: indicHeigth * 1.5
-        height: width
-        visible: true
-        checkable: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        nameText.text: "A"
-        nameText.verticalAlignment: Text.AlignVCenter
-        nameText.horizontalAlignment: Text.AlignHCenter
-        pressCheckColor: "gray"
-        unPressCheckColor: Fap.run
-        mouseArea.onClicked:{
-            if( mouse.button & Qt.RightButton ){
-                pidPBott.show()
-            }
+
+        SimpleButton {
+            id: sbPrSteam1
+            x: 48
+            y: 70
+            width: 45
+            height: width
+            visible: true
+            radius: height / 2
+            border.color: "#000000"
+
+            nameText.text: "A"
+            pressCheckColor: "#808080"
+            nameText.horizontalAlignment: Text.AlignHCenter
+            nameText.verticalAlignment: Text.AlignVCenter
+            unPressCheckColor: Fap.run
+            checkable: true
+            anchors.leftMargin: -4
         }
-        onS_checkedUserChanged: pidPBott.s_manOn(Checked)
     }
     RegulValveUnit {
         id: burner1_vGas
         objectName:  "burner1.vGas"
         name: "РК1"
         x: 232
-        y: 527
+        y: 410
         z: 50
         width: 40
         height: 40
@@ -138,7 +138,7 @@ UnitPropItem {
         objectName:  "burner2.vGas"
         name: "РК2"
         x: 523
-        y: 527
+        y: 410
         z: 50
         width: 40
         height: 40
@@ -156,11 +156,11 @@ UnitPropItem {
         id: ventAir
         name: "ВВ"
         x: 512
-        y: 655
+        y: 495
         z: 100
-        width: 78
-        height: 90
-        anchors.horizontalCenterOffset: 143
+        width: 114
+        height: 140
+        anchors.horizontalCenterOffset: 182
         anchors.horizontalCenter: parent.horizontalCenter
         alarmNotify: false
         rotatePict: 90
@@ -177,11 +177,11 @@ UnitPropItem {
         id: ventSmoke
         name: "ВД"
         x: 476
-        y: 33
+        y: 19
         z: 0
         width: 100
         height: 120
-        anchors.horizontalCenterOffset: -126
+        anchors.horizontalCenterOffset: (mirrorVentSmoke ? -1 : 1) * 190
         anchors.horizontalCenter: parent.horizontalCenter
         fanName.font.pointSize: 20
         rotatePict: 0
@@ -199,7 +199,7 @@ UnitPropItem {
         objectName:  "vGasCloser"
         name: "КЗГ"
         x: 222
-        y: 630
+        y: 513
         z: 1
         width: 60
         height: 54
@@ -244,7 +244,7 @@ UnitPropItem {
         objectName:  "burner1.vGasCloser"
         name: "КГ1"
         x: 225
-        y: 491
+        y: 374
         width: 50
         height: 30
         anchors.horizontalCenterOffset: -143
@@ -289,7 +289,7 @@ UnitPropItem {
         objectName:  "burner2.vGasCloser"
         name: "КГ2"
         x: 520
-        y: 491
+        y: 374
         z: 50
         width: 50
         height: 30
@@ -331,7 +331,7 @@ UnitPropItem {
         id: burner1_pGas
         objectName:  "burner1.vGas"
         x: 212
-        y: 424
+        y: 307
         z: 5
         width: 70
         height: indicHeigth
@@ -349,7 +349,7 @@ UnitPropItem {
         id: burner2_pGas
         objectName:  "burner2.vGas"
         x: 519
-        y: 424
+        y: 307
         z: 5
         width: 70
         height: indicHeigth
@@ -367,7 +367,7 @@ UnitPropItem {
         id: pAir
         objectName: "tWater"
         x: 368
-        y: 674
+        y: 557
         z: 2
         width:  indicWidth
         height: indicHeigth
@@ -407,9 +407,9 @@ UnitPropItem {
     Image {
         id: boilerIm
         x: 147
-        y: 104
-        width: 372
-        height: 292
+        y: 76
+        width: 522
+        height: 405
         visible: true
         source: "boiler.svg"
         anchors.horizontalCenter: parent.horizontalCenter
@@ -421,9 +421,9 @@ UnitPropItem {
     Image {
         id: flame1
         x: 341
-        y: 204
-        width: 120
-        height: 160
+        y: 152
+        width: 126
+        height: 156
         visible: true
         source: "burn-fire.svg"
         anchors.horizontalCenterOffset: -70
@@ -435,9 +435,9 @@ UnitPropItem {
     Image {
         id: flame2
         x: 410
-        y: 204
-        width: 120
-        height: 160
+        y: 152
+        width: 130
+        height: 156
         visible: true
         source: "burn-fire.svg"
         anchors.horizontalCenterOffset: 70
@@ -448,12 +448,12 @@ UnitPropItem {
     Image {
         id: ligtning1
         x: 295
-        y: 369
+        y: 256
         width: 55
         height: 63
         visible: true
         source: "lightning.svg"
-        anchors.horizontalCenterOffset: -70
+        anchors.horizontalCenterOffset: -69
         anchors.horizontalCenter: parent.horizontalCenter
         z: 1
         sourceSize.width: parent.width
@@ -462,12 +462,12 @@ UnitPropItem {
     Image {
         id: ligtning2
         x: 443
-        y: 369
+        y: 256
         width: 55
         height: 63
         visible: true
         source: "lightning.svg"
-        anchors.horizontalCenterOffset: 70
+        anchors.horizontalCenterOffset: 71
         anchors.horizontalCenter: parent.horizontalCenter
         z: 1
         sourceSize.width: parent.width
@@ -476,7 +476,7 @@ UnitPropItem {
 
     Pipe {
         x: 194
-        y: 514
+        y: 397
         width: 40
         height: 187
         z: 1
@@ -488,7 +488,7 @@ UnitPropItem {
 
     PipeAngle90 {
         x: 305
-        y: 684
+        y: 567
         width: 50
         height: 60
         anchors.horizontalCenterOffset: -70
@@ -503,7 +503,7 @@ UnitPropItem {
 
     Pipe {
         x: 360
-        y: 699
+        y: 582
         width: 158
         height: 40
         anchors.horizontalCenterOffset: 36
@@ -514,7 +514,7 @@ UnitPropItem {
 
     Pipe {
         x: 195
-        y: 514
+        y: 397
         width: 40
         height: 175
         horOrVert: false
@@ -525,9 +525,9 @@ UnitPropItem {
 
     Pipe {
         x: 194
-        y: 472
+        y: 355
         width: 25
-        height: 267
+        height: 388
         z: 0
         horOrVert: false
         anchors.horizontalCenterOffset: -143
@@ -537,7 +537,7 @@ UnitPropItem {
 
     Pipe {
         x: 480
-        y: 442
+        y: 325
         width: 46
         height: 25
         anchors.horizontalCenterOffset: 103
@@ -548,12 +548,12 @@ UnitPropItem {
     AnalogSignalVar2 {
         id: tSmoke
         x: 525
-        y: 18
+        y: 8
         width: 70
         objectName: "tSmoke"
         height: indicHeigth
         visible: true
-        anchors.horizontalCenterOffset: -121
+        anchors.horizontalCenterOffset: (mirrorVentSmoke ? -1 : 1) * 195
         anchors.horizontalCenter: parent.horizontalCenter
         z: 0
         shWidth: 5
@@ -572,7 +572,7 @@ UnitPropItem {
         objectName:  "pTopPID"
         colorImpact: pipeOutWaterColor
         colorProcess: "yellow"
-        impIsOut: false
+        //impIsOut: false
         mfuToProcess.valueReal: 3
         mfuToImpact.valueReal: 100
         mfuImpact.separCorrButtons: true
@@ -599,7 +599,7 @@ UnitPropItem {
         objectName:  "pBottomPID"
         colorImpact: pipeSteamColor
         colorProcess: "yellow"
-        impIsOut: false
+        //impIsOut: false
         mfuToProcess.valueReal: 3
         mfuToImpact.valueReal: 100
         mfuImpact.separCorrButtons: true
@@ -620,7 +620,7 @@ UnitPropItem {
 
     PipeAngle90 {
         x: 238
-        y: 442
+        y: 325
         width: 30
         height: 30
         anchors.horizontalCenterOffset: -141
@@ -638,7 +638,7 @@ UnitPropItem {
 
     Pipe {
         x: 268
-        y: 442
+        y: 325
         width: 46
         height: 25
         anchors.horizontalCenterOffset: -103
@@ -649,7 +649,7 @@ UnitPropItem {
 
     Pipe {
         x: 190
-        y: 472
+        y: 355
         width: 25
         height: 118
         z: 3
@@ -660,7 +660,7 @@ UnitPropItem {
     }
     Pipe {
         x: 267
-        y: 595
+        y: 478
         width: 259
         height: 25
         anchors.horizontalCenterOffset: -3
@@ -672,7 +672,7 @@ UnitPropItem {
 
     Rectangle {
         x: 450
-        y: 455
+        y: 338
         width: 40
         height: 60
         color: "#cd2e2e"
@@ -718,7 +718,7 @@ UnitPropItem {
     Rectangle {
         id: rectangle
         x: 310
-        y: 455
+        y: 338
         width: 40
         height: 60
         color: "#cd2e2e"
@@ -762,7 +762,7 @@ UnitPropItem {
     }
     Rectangle {
         x: 355
-        y: 451
+        y: 334
         width: 10
         height: 60
         color: "#b9b9b9"
@@ -789,9 +789,10 @@ UnitPropItem {
     AnalogSignalVar2 {
         id: pGasBV
         x: 368
-        y: 603
+        y: 486
         width: 70
         height: indicHeigth
+        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         backgroundColor: indicColor
         postfix: "кПа"
@@ -806,7 +807,7 @@ UnitPropItem {
     AnalogSignalVar2 {
         id: vGasCloserMain
         x: 215
-        y: 704
+        y: 573
         width: 70
         height: indicHeigth
         anchors.horizontalCenterOffset: -143
@@ -823,7 +824,7 @@ UnitPropItem {
 
     PipeAngle90 {
         x: 525
-        y: 442
+        y: 325
         width: 30
         height: 30
         anchors.horizontalCenterOffset: 140
@@ -837,9 +838,10 @@ UnitPropItem {
 
     Pipe {
         x: 190
-        y: 495
+        y: 378
         width: 6
         height: 102
+        borderWidth: 1
         anchors.horizontalCenterOffset: 26
         nActiveColor: pipeGasColor
         anchors.horizontalCenter: parent.horizontalCenter
@@ -849,9 +851,10 @@ UnitPropItem {
 
     Pipe {
         x: 190
-        y: 495
+        y: 378
         width: 6
         height: 102
+        borderWidth: 1
         anchors.horizontalCenterOffset: -26
         nActiveColor: pipeGasColor
         anchors.horizontalCenter: parent.horizontalCenter
@@ -861,7 +864,7 @@ UnitPropItem {
 
     PipeAngle90 {
         x: 525
-        y: 590
+        y: 473
         width: 30
         height: 30
         anchors.horizontalCenterOffset: 140
@@ -872,12 +875,20 @@ UnitPropItem {
         rotation: 0
         borderWidth: 2
     }
-
+        Pipe {
+            x: 27
+            y: 500
+            width: 89
+            height: 6
+            z: 1
+            nActiveColor: pipeGasColor
+            borderWidth: 1
+        }
     StartStopUnit {
         id: ignition1_vGasCloser1
         name: "КЗ1"
         x: 354
-        y: 547
+        y: 430
         width: 34
         height: 20
         anchors.horizontalCenterOffset: -26
@@ -920,7 +931,7 @@ UnitPropItem {
         id: ignition2_vGasCloser
         name: "КЗ2"
         x: 409
-        y: 547
+        y: 430
         width: 34
         height: 20
         anchors.horizontalCenterOffset: 26
@@ -961,7 +972,7 @@ UnitPropItem {
 
     Rectangle {
         x: 431
-        y: 451
+        y: 334
         width: 10
         height: 60
         color: "#b9b9b9"
@@ -986,19 +997,19 @@ UnitPropItem {
     }
 
     AnalogSignalVar2 {
-        id: burner1_pGas1
+        id: pSteam
         x: 368
-        y: 68
+        y: 8
         width: 70
         height: indicHeigth
-        anchors.horizontalCenterOffset: 77
+        anchors.horizontalCenterOffset: 44
         anchors.horizontalCenter: parent.horizontalCenter
-        objectName: "burner1.vGas"
+        objectName: "pSteam"
         confmOnEnter: true
         postfix: "кПа"
         shWidth: 5
         z: 10
-        tooltipText: "Давление горелка 1"
+        tooltipText: "Давление пара"
         backgroundColor: indicColor
         colorShortName: "#ff8c00"
         SimpleButton{
@@ -1025,6 +1036,82 @@ UnitPropItem {
             onS_checkedUserChanged: pidPBott.s_manOn(Checked)
         }
     }
+
+    StartStopUnit {
+        id: vCandleCloser
+        name: "КЗС"
+        x: 48
+        y: 490
+        width: 35
+        height: 25
+        colorStopReady: "#000000"
+        z: 2
+        Rectangle {
+            id: rect5
+            color: parent.backgroundCurrentColor
+            radius: 3
+            border.color: parent.borderCurrentColor
+            border.width: parent.borderWidth
+            anchors.fill: parent
+        }
+        Text {
+            id: nameTextVGC5
+            color: "#ffffff"
+            text: parent.name
+            anchors.fill: rect5
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            anchors.topMargin: 3
+            anchors.rightMargin: 6
+            fontSizeMode: Text.Fit
+            minimumPointSize: 10
+            anchors.leftMargin: 6
+            anchors.bottomMargin: 3
+            font.pointSize: 300
+            minimumPixelSize: 10
+        }
+        colorRun: "#ffd700"
+        linked: true
+        borderWidth: 2
+        connected: true
+        objectName: "burner1.vGasCloser"
+    }
+
+    PipeAngle90 {
+        x: 17
+        y: 496
+        width: 10
+        height: 10
+        endAmgle: 90
+        nActiveColor: pipeGasColor
+        borderWidth: 1
+        pipeThin: 6
+        rotation: 90
+    }
+
+    Pipe {
+        x: 17
+        y: -15
+        width: 6
+        height: 511
+        z: 1
+        horOrVert: false
+        nActiveColor: pipeGasColor
+        borderWidth: 1
+    }
+
+    PipeAngle180 {
+        x: 16
+        y: -24
+        width: 20
+        height: 9
+        endAmgle: 180
+        nActiveColor: pipeGasColor
+        borderWidth: 1
+        rotation: 180
+        pipeThin: 6
+
+    }
 }
 
 
@@ -1035,7 +1122,8 @@ UnitPropItem {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.25}D{i:5;locked:true}D{i:10;locked:true}D{i:11;locked:true}
-D{i:13;locked:true}D{i:14;locked:true}D{i:22;locked:true}
+    D{i:0;formeditorZoom:0.75}D{i:2;locked:true}D{i:4}D{i:10;locked:true}D{i:11;locked:true}
+D{i:13;locked:true}D{i:14;locked:true}D{i:68;locked:true}D{i:69;locked:true}D{i:67}
+D{i:70}D{i:71}
 }
 ##^##*/

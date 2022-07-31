@@ -45,14 +45,14 @@ InETag::InETag(Unit * Owner,
 void InETag::saveParam()
 {
     ETag::saveParam();
-    _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".detectLevel", _detectLevel);
+    _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "detectLevel", _detectLevel);
 }
 
 //------------------------------------------------------------------------------
 void InETag::loadParam()
 {
-    if( _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + ".detectLevel") )
-        _detectLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".detectLevel", 0).toDouble();
+    if( _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "detectLevel") )
+        _detectLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "detectLevel", 0).toDouble();
     ETag::loadParam();
 }
 
@@ -182,7 +182,7 @@ void InETag::needBe(bool DtctOrNot, bool AlarmOn, bool SetTimer)
                 else {
                     _mayResetAlarm = false;
                     _alarm = true;
-                    emit s_alarm(_name + " - авария недупустимого состояния, при смене режима обработки сигнала");
+                    emit s_alarm(objectName() + " - авария недупустимого состояния, при смене режима обработки сигнала");
                 }
             }
         }

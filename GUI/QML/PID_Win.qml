@@ -37,35 +37,29 @@ Window {
 
     property bool adminView: false
 
-//    property alias process: mfuProcess.valueReal
-//    property alias setPt: mfuSetPt.valueReal
-//    property alias impact: mfuImpact.valueReal
+    //    property alias process: mfuProcess.valueReal
+    //    property alias setPt: mfuSetPt.valueReal
+    //    property alias impact: mfuImpact.valueReal
 
-//    property alias kp: mfuKp.valueReal
-//    property alias ki: mfuKi.valueReal
-//    property alias kd: mfuKd.valueReal
+    //    property alias kp: mfuKp.valueReal
+    //    property alias ki: mfuKi.valueReal
+    //    property alias kd: mfuKd.valueReal
 
-//    property alias kpOut: mfuKpOut.valueReal
-//    property alias kiOut: mfuKiOut.valueReal
-//    property alias kdOut: mfuKdOut.valueReal
+    //    property alias kpOut: mfuKpOut.valueReal
+    //    property alias kiOut: mfuKiOut.valueReal
+    //    property alias kdOut: mfuKdOut.valueReal
 
-    property bool impIsOut: true
-
+    property bool impIsAnlgOut: true
+    property bool impIs2DisctOuts: true
     property bool confmOnEnter: false
 
     signal s_manOn( variant ManOn )
-    onS_manOn: {
-        if( switchOnOff.checked !==  ManOn ){
-            switchOnOff.checked =  ManOn
-        }
-    }
-
     function setManOn( ManOn ){ switchOnOff.checked = ManOn }
 
+
+
     signal s_KpChanged( variant Kp )
-
     signal s_KiChanged( variant Ki )
-
     signal s_KdChanged( variant Kd )
 
     function setKp( Kp ) { mfuKp.setValue(Kp) }
@@ -79,17 +73,27 @@ Window {
     function setProcess ( Process  ) { mfuProcess.setValue(Process) }
 
     signal s_setPtChanged( variant SetPt )
-
-    function setSetPt ( SetPt  ) { mfuSetPt.setValue(SetPt) }
+    function setSetPt ( SetPt ) { mfuSetPt.setValue(SetPt) }
+    signal s_setPtMaxChanged(variant SetPtMax)
+    function setSetPtMax ( SetPtMax ) { mfuToProcess.setValue(SetPtMax) }
+    signal s_setPtMinChanged(variant SetPtMin)
+    function setSetPtMin ( SetPtMin ) { mfuFromProcess.setValue(SetPtMin) }
 
     signal s_impactChanged( variant Impact )
-
     function setImpact( Impact ) { mfuImpact.setValue(Impact) }
-
-    function setImpIsOut( ImpIsOut ){ impIsOut = ImpIsOut }
-
     signal s_impMore( variant More )
     signal s_impLess( variant Less )
+    signal s_impulseOn( variant ImpulseOn )
+    function setImpulseOn( ImpulseOn ){ impulsOnOff.checked = ImpulseOn }
+
+    signal s_manImpactChanged( variant ManImp)
+    function setManImpact ( ManImp ) { mfuManImpact.setValue(ManImp) }
+
+    signal s_impactMaxChanged(variant ImpactMax)
+    function setImpactMax ( ImpactMax ) { mfuToImpact.setValue(ImpactMax) }
+    signal s_impactMinChanged(variant ImpactMin)
+    function setImpactMin ( ImpactMin ) { mfuFromImpact.setValue(ImpactMin) }
+
     onVisibleChanged: {
         if (visible == true) {
             var absolutePos = mapToGlobal(0, 0)
@@ -162,6 +166,7 @@ Window {
             tooltip: "Max"
             backgroundColor: "#e6e6e6"
             confmOnEnter: wind.confmOnEnter
+            onValueChanged: s_setPtMaxChanged( Value )
         }
         MFUnit {
             id: mfuFromProcess
@@ -178,6 +183,7 @@ Window {
             tooltip: "Min"
             backgroundColor: mfuToProcess.backgroundColor
             confmOnEnter: wind.confmOnEnter
+            onValueChanged: s_setPtMinChanged( Value )
         }
     }
     Column{
@@ -200,7 +206,7 @@ Window {
             checkable: true
             pressCheckColor: "gray"
             unPressCheckColor: "#8afda6"
-            nameText.text: "Вкл"
+            nameText.text: "ВКЛ"
             onS_checkedUserChanged: s_manOn(Checked)
             onCheckedChanged: {
                 if (checked)
@@ -290,21 +296,68 @@ Window {
             anchors.leftMargin: 0
             anchors.rightMargin: 0
         }
-
-        MFUnit {
-            id: mfuImpact
-            width: parent.width *0.7
+        Row{
+            id: row
             height: parent.height * 0.1
+            anchors.left: parent.left
             anchors.right: parent.right
-            anchors.rightMargin: 0
-            readOnly: !impIsOut || ! manOnOff
-            correctingButtons: manOnOff
-            limited: false
-            backgroundColor: colorImpact
-            onS_more: s_impMore(More)
-            onS_less: s_impLess(Less)
-            onValueChanged: s_impactChanged( Value )
-            confmOnEnter: wind.confmOnEnter
+
+            SimpleButton {
+                id: impulsOnOff
+                width: parent.width * 0.18
+                height: parent.height * 0.8
+                radius: height / 2
+                visible: impIs2DisctOuts && impIsAnlgOut
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                checkable: true
+                pressCheckColor: "#8afda6"
+                unPressCheckColor: "gray"
+                nameText.text: "ИМП-Й РЕЖИМ"
+                onS_checkedUserChanged: s_impulseOn(Checked)
+            }
+             MFUnit {
+                id: mfuManImpact
+                width: parent.width *0.4
+                visible: impIsAnlgOut && ! impulsOnOff.checked
+                anchors.right: mfuImpact.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.topMargin: 0
+                anchors.bottomMargin: 0
+                anchors.rightMargin: 3
+                readOnly: impulsOnOff.checked || ! manOnOff
+                correctingButtons: manOnOff
+                limited: false
+                backgroundColor: "black"
+                textInput.color: "White"
+                maxBtn.nameText.color: "white"
+                minBtn.nameText.color: "white"
+                onS_more: s_impMore(More)
+                onS_less: s_impLess(Less)
+                onValueChanged: s_manImpactChanged( Value )
+                confmOnEnter: wind.confmOnEnter
+            }
+            MFUnit {
+                id: mfuImpact
+                width: parent.width *0.4
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.topMargin: 0
+                anchors.bottomMargin: 0
+                anchors.rightMargin: 0
+                readOnly: true
+                correctingButtons: manOnOff && impulsOnOff.checked
+                limited: false
+                backgroundColor: colorImpact
+                onS_more: s_impMore(More)
+                onS_less: s_impLess(Less)
+                onValueChanged: s_impactChanged( Value )
+                confmOnEnter: wind.confmOnEnter
+                separCorrButtons: (impulsOnOff.checked && impIs2DisctOuts)
+            }
         }
         Column{
             id: column
@@ -504,6 +557,7 @@ Window {
         readOnly: false
         borderColor: "Black"
         confmOnEnter: wind.confmOnEnter
+        onValueChanged: s_impactMaxChanged( Value )
     }
     MFUnit {
         id: mfuFromImpact
@@ -520,6 +574,7 @@ Window {
         readOnly: false
         borderColor: "Black"
         confmOnEnter: wind.confmOnEnter
+        onValueChanged: s_impactMinChanged( Value )
     }
 }
 

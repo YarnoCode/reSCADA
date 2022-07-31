@@ -12,17 +12,17 @@ const quint8 OUT_LIM_MAX  = 0b10;//0000 0010 Тег лимитирован на 
 const char ALL_8OPT_ON = 0b11111111;
 
 namespace EEopt {
-const  char KM_ALARM_ON =     0b00000001; // шестнадцатеричный литерал для 0000 0001
-//const  char kI =     0b00000010;
-//const  char kD =     0b00000100;
-//const  char allImp = 0b00111000;
-//const  char kPimp  = 0b00001000;
-//const  char kIimp  = 0b00010000;
-//const  char kDimp  = 0b00100000;
-//const  char manImp = 0b01000000;
-//const  char impIn  = 0b10000000;
-//  option8 = 0b10000000
-//};
+    const  char KM_ALARM_ON =     0b00000001; // шестнадцатеричный литерал для 0000 0001
+    //const  char kI =     0b00000010;
+    //const  char kD =     0b00000100;
+    //const  char allImp = 0b00111000;
+    //const  char kPimp  = 0b00001000;
+    //const  char kIimp  = 0b00010000;
+    //const  char kDimp  = 0b00100000;
+    //const  char manImp = 0b01000000;
+    //const  char impIn  = 0b10000000;
+    //  option8 = 0b10000000
+    //};
 }
 
 enum UnitModes {
@@ -168,7 +168,8 @@ enum UnitType {
     TypeDruer,
     TypeRectnColumn,
     TypePump,
-    TypeCommonTags
+    TypeCommonTags,
+    TypeBoiler
 };
 Q_ENUM_NS(UnitType)
 
@@ -211,14 +212,14 @@ enum RouteUnitInfo{
 };
 Q_ENUM_NS(RouteUnitInfo)
 
-enum SetModeResp{
-    RejNoCond = -3,
-    RejTransPr = - 2,
-    RejAlarm = -1,
-    RejAnnown = 0, //Не менять номер!!
-    DoneAlready = 1,
-    DoneWhait = 2,
-};
+    enum SetModeResp{
+        RejNoCond = -3,
+        RejTransPr = - 2,
+        RejAlarm = -1,
+        RejAnnown = 0, //Не менять номер!!
+        DoneAlready = 1,
+        DoneWhait = 2,
+        };
 Q_ENUM_NS(SetModeResp)
 
 enum ETagValConv{
@@ -282,7 +283,23 @@ const std::vector <QString> EF_GT_VSM_0KMQ   = { "Упр. вых. открыти
 const std::vector <QString> EF_GT_VSM_0KMQS  = { "Упр. вых. открытия|.open", "Упр. вых. закрытия|.close", "",                              "",                              "Защитный автомат|.QK|1", "Аварийный стоп|.AS|1" };
 const std::vector <QString> EF_GT_OW_0KMQi   = { "Упр. вых. открытия|.open", "Упр. вых. закрытия|.close", "",                              "",                              "Защитный автомат|.QK|0" };
 
-
+namespace PIDopt {
+    const  uint allOff = 0;
+    const  uint allOn = 0xFFFFFFFF;
+    const  uint kP =        0b00000001; // шестнадцатеричный литерал для 0000 0001
+    const  uint kI =        0b00000010;
+    const  uint kD =        0b00000100;
+    const  uint allImp =    0b01111000;
+    const  uint kPimp  =    0b00001000;
+    const  uint kIimp  =    0b00010000;
+    const  uint kDimp  =    0b00100000;
+    const  uint impIn  =    0b01000000;
+    const  uint manImp =    0b10000000;
+    const  uint impLimMax = 0b000000001;
+    const  uint impLimMin = 0b0000000001;
+    //  option8 = 0b10000000
+    //};
+}
 
 #define TSP_ENUMS
 //TSP ENUMS BEGIN

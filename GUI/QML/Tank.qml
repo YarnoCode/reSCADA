@@ -17,7 +17,7 @@ Item {
     property int levelMantissa: 1
     property alias nameText: nameText
     property alias nameTextPixSize: nameText.font.pixelSize
-    property int nameBottMarg: height * 0.3
+    property int nameTextBottMarg: height * 0.3
     property int nameTextHorOffset: 0
     property bool showSeam: true
     property bool showLevel: true
@@ -177,7 +177,7 @@ Item {
         fontSizeMode: Text.Fit
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: parent.nameBottMarg
+        anchors.bottomMargin: parent.nameTextBottMarg
         anchors.horizontalCenterOffset: parent.nameTextHorOffset
 
     }
@@ -198,7 +198,7 @@ Item {
         width:  parent.width* 0.85
         height: Math.max(parent.height* 0.1, parent.width* 0.3)
         visible: showLevel
-        color: levelDigColor
+        color: levelTextColor
     }
     Rectangle {
         id: seam2

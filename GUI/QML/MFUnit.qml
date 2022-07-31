@@ -230,7 +230,7 @@ Item {
                         timer.start()
                     }
                 }
-                onPressedChanged: s_less(pressed)
+                onPressedChanged:  if(separCorrButtons)s_less(pressed)
             }
             SimpleButton {
                 id: maxBtn
@@ -259,7 +259,7 @@ Item {
                         timer.start()
                     }
                 }
-                onPressedChanged: s_more( pressed )
+                onPressedChanged: if(separCorrButtons)s_more( pressed )
             }
         }
     }

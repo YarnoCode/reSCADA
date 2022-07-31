@@ -23,11 +23,11 @@ public:
 
     // Unit interface
 protected:
-    Prom::SetModeResp _customSetMode(Prom::UnitModes *mode, bool UserOrSys)override{};
+    Prom::SetModeResp _customSetMode(Prom::UnitModes *, bool )override{return Prom::DoneAlready;};
     void _doOnModeChange()override{};
 
 protected slots:
-    void _customConnectToGUI(QObject *guiItem, QObject *propWin)override{};
+    void _customConnectToGUI(QObject *, QObject *)override{};
     void _updateStateAndMode()override{};
 };
 #endif

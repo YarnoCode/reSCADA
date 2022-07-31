@@ -27,7 +27,8 @@ public:
                     bool EgnorableAlarm = true,
                     bool InGUI = true,
                     Prom::ETagValConv Convertion = Prom::VCNo,
-                    QVariant ChageStep = 0);
+                    QVariant ChageStep = 0,
+                    bool AlarmSelfReset = false);
 
     const Prom::ESTagType ttype;
 
@@ -52,6 +53,7 @@ public:
     QString fullTagName();
     QVariant value();
     virtual void connectToGUI(QObject *guiItem,  QObject *propWin);
+    void setAlarmSelfReset(bool AlarmSelfReset);
 
 protected:
     QVariant _value {0};
@@ -61,6 +63,7 @@ protected:
     Tag * _tag = nullptr;
     QString _name;
     QString _DBName;
+    QString _tspTagName;
     QTimerExt * _setTimer = nullptr;
     QTimerExt * _pulseTimer = nullptr;
     bool _imit = false;
@@ -68,7 +71,8 @@ protected:
     bool _alarmSetTime = false;
     //bool _ignorAlarmSetTime = false;
     bool _alarm = false;
-    bool _ignorAlarm = false;//!
+    bool _alarmSelfReset = false;
+    bool _ignorAlarm = false;
     bool _mayResetAlarm = true;
     bool _ok = false;
     QString _alarmStr = "";

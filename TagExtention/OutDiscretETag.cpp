@@ -226,6 +226,7 @@ void OutDiscretETag::_checkVal()
         else if(value() == _low){
             if(_OnOff){
                 _OnOff = false;
+                _pulseTimer->stop();
                 _logging(Prom::MessChangeSensor, "выключeн", false);
                 emit s_off();
             }
@@ -251,15 +252,15 @@ void OutDiscretETag::saveParam()
 {
     OutETag::saveParam();
     if(tunableImpulseTime)
-        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".impTime", _impTimer->interval());
+        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime", _impTimer->interval());
 }
 
 //------------------------------------------------------------------------------
 void OutDiscretETag::loadParam()
 {
     if(tunableImpulseTime){
-      if( _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + ".impTime") )
-        _impTimer->setInterval(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".impTime", tunableImpulseTime ? 2000 : 0).toInt());
+      if( _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime") )
+        _impTimer->setInterval(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime", tunableImpulseTime ? 2000 : 0).toInt());
         //qDebug() << _DBName + " Load " << _impTimer->interval();
     }
     OutETag::loadParam();
@@ -305,12 +306,12 @@ void OutDiscretETag::_customConnectToGUI(QObject *, QObject *engRow)
     tmpSgSt = qvariant_cast< QObject* >(ret);
     //получил указатель на главный раздел
     //-----подключил сигналы к кубикам
-    connect(tmpSgSt, SIGNAL(s_imChanged(     bool    )), this,      SLOT(writeImit(      bool    )), Qt::QueuedConnection);
-    connect(tmpSgSt, SIGNAL(s_imValChanged(  QVariant)), this,      SLOT(writeImitVal(   QVariant)), Qt::QueuedConnection);
-    connect(this,      SIGNAL(s_imitationChd(      QVariant)), tmpSgSt, SLOT(setIm(       QVariant)), Qt::QueuedConnection);
-    connect(this,      SIGNAL(s_imitationValueChd(   QVariant)), tmpSgSt, SLOT(setImVal(    QVariant)), Qt::QueuedConnection);
-    connect(this,      SIGNAL(s_liveValueChd(QVariant)), tmpSgSt, SLOT(setVal(      QVariant)), Qt::QueuedConnection);
-    connect(this,      SIGNAL(s_qualityChd(QVariant)), tmpSgSt, SLOT(setConnected(QVariant)), Qt::QueuedConnection);
+    connect(tmpSgSt, SIGNAL(s_imChanged(bool)),             this,    SLOT(writeImit(bool)),        Qt::QueuedConnection);
+    connect(tmpSgSt, SIGNAL(s_imValChanged(QVariant)),      this,    SLOT(writeImitVal(QVariant)), Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_imitationChd(QVariant)),      tmpSgSt, SLOT(setIm(QVariant)),        Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_imitationValueChd(QVariant)), tmpSgSt, SLOT(setImVal(QVariant)),     Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_liveValueChd(QVariant)),      tmpSgSt, SLOT(setVal(QVariant)),       Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_qualityChd(QVariant)),        tmpSgSt, SLOT(setConnected(QVariant)), Qt::QueuedConnection);
     //-----подключил сигналы к кубикам
 
     OutETag::_customConnectToGUI(nullptr, engRow);

@@ -19,7 +19,8 @@ ETag::ETag(Unit * Owner,
     bool EgnorableAlarm,
     bool InGUI,
     Prom::ETagValConv Convertion,
-    QVariant ChageStep)
+    QVariant ChageStep,
+    bool AlarmSelfReset)
     : QObject(Owner),
     ttype(Type),
     tunableSetTime(TunableSetTime),
@@ -30,8 +31,8 @@ ETag::ETag(Unit * Owner,
     _owner(Owner),
     _name(Name),
     _DBName(DBName),
+    _alarmSelfReset(AlarmSelfReset),
     _conv(Convertion)
-
 {
     extern TSP * g_TSP;
 
@@ -45,18 +46,24 @@ ETag::ETag(Unit * Owner,
     connect(_pulseTimer, &QTimer::timeout, this, &ETag::pulseTimerEnd);
 
     connect(this, &ETag::s_logging, _owner, &Unit::logging, Qt::QueuedConnection);
-    if(/*_owner->tagPrefix != "" &&*/ _DBName != ""){
+    if( _owner->ini ){
+        _tspTagName = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/tspTagName", "").toString();
+    }
+    if( _tspTagName == "" ){
+        _tspTagName = _owner->tagPrefix + _DBName;
+    }
+    if( _tspTagName != ""){
         if(g_TSP != nullptr)
-            _tag = g_TSP->getTagByName(_owner->tagPrefix + _DBName);
+            _tag = g_TSP->getTagByName(_tspTagName);
         if(_tag != nullptr){
             connect(_tag, &Tag::s_onQualityChanged, this, &ETag::_qualityChangedSlot, Qt::QueuedConnection);
             connect(_tag, &Tag::s_onValueChanged, this, &ETag::_acceptValue, Qt::QueuedConnection);
             _ok = true;
-            _logging (Prom::MessVerbose, "тэг " + _owner->tagPrefix + _DBName + " загружен", false);
+            _logging (Prom::MessVerbose, "тэг " + _tspTagName + " загружен", false);
         }
         else {
-            _owner->setAlarmTag(_owner->tagPrefix + _DBName);
-            _alarmStr = _owner->tagPrefix + _DBName + " тэг в TSP отсутствует";
+            _owner->setAlarmTag(_tspTagName);
+            _alarmStr = _tspTagName + " тэг в TSP отсутствует";
             _logging (Prom::MessAlarm, _alarmStr, false);
         }
     }
@@ -188,6 +195,9 @@ void ETag::_acceptValue(QVariant Val)
         }
         else{
             _checkVal();
+            if(_alarmSelfReset && _mayResetAlarm){
+                resetAlarm();
+            }
         }
     }
     // }
@@ -215,26 +225,32 @@ void ETag::setTimerStart()
 void ETag::saveParam()
 {
     if(_owner->ini){
-        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".imit", _imit);
-        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".imitVal", _imitVal.toDouble());
-        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".ignorAlarm", _ignorAlarm);
+        if(_tspTagName == _owner->tagPrefix + _DBName){
+            _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "tspTagName", "");
+        }
+        else{
+            _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "tspTagName", _tspTagName);
+        }
+        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "imit", _imit);
+        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "imitVal", _imitVal.toDouble());
+        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "ignorAlarm", _ignorAlarm);
         if(_setTimer->interval() > 0)
-            _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".setTime", _setTimer->interval());
+            _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "setTime", _setTimer->interval());
         if(_pulseDuration > 0)
-            _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".pulseTime", _pulseDuration);
+            _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "pulseTime", _pulseDuration);
     }
 }
 //------------------------------------------------------------------------------
 void ETag::loadParam()
 {
     //Если ini файл есть и есть запись по тегу, то загружаю
-    if( _owner->ini && _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + ".ignorAlarm")){
-        _ignorAlarm =             _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".ignorAlarm", false).toBool();
-        _setTimer->setInterval(  _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".setTime", tunableSetTime ? 2000 : 0).toInt());
-        _pulseDuration = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".pulseTime", tunablePulseTime ? 2000 : 0).toInt();
+    if( _owner->ini && _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "ignorAlarm")){
+        _ignorAlarm = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "ignorAlarm", false).toBool();
+        _setTimer->setInterval(  _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "setTime", tunableSetTime ? 2000 : 0).toInt());
+        _pulseDuration = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "pulseTime", tunablePulseTime ? 2000 : 0).toInt();
         _pulseTimer->setInterval(_pulseDuration);
-        writeImit(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".imit", false).toBool());
-        writeImitVal(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".imitVal", 0).toDouble());
+        writeImit(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "imit", false).toBool());
+        writeImitVal(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "imitVal", 0).toDouble());
     }
     //rescan();
 }
@@ -362,6 +378,13 @@ void ETag::connectToGUI(QObject *guiItem, QObject *propWin)
         connect(this, SIGNAL(s_valueChd(QVariant)), propWin, SLOT(setCurrent(QVariant)), Qt::QueuedConnection);
     }
 
+}
+
+//------------------------------------------------------------------------------
+void ETag::setAlarmSelfReset(bool AlarmSelfReset)
+{
+    _alarmSelfReset = AlarmSelfReset;
+    resetAlarm();
 }
 
 //------------------------------------------------------------------------------

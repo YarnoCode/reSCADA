@@ -16,17 +16,17 @@ Unit::Unit( Prom::UnitType Type,
     int * Id,
     QString Name,
     QString TagPrefix,
-    bool Mover,
+    bool SelfAlarmReset,
     Prom::UnitModes SaveMode,
     QSettings * Ini)
 
     :
     unitType(Type),
     saveMode(SaveMode),
-    mover(Mover),
     tagPrefix(TagPrefix),
     ini(Ini),
-    _id(*Id)
+    _id(*Id),
+    _alarmSelfReset(SelfAlarmReset)
 {
     *Id = *Id + 1;
     setObjectName(Name);
@@ -38,13 +38,6 @@ Unit::Unit( Prom::UnitType Type,
         }
     }
 
-    if(mover){
-        _cleanTimer = new QTimerExt(this);
-        _cleanTimer->setSingleShot(true);
-        //_cleanTimer->setInterval(120000);
-        addTimer(_cleanTimer);
-        connect(_cleanTimer, &QTimer::timeout, this, &Unit::_cleanTimeEnd, Qt::QueuedConnection);
-    }
     //LoadParam();
 }
 //------------------------------------------------------------------------------
@@ -56,6 +49,13 @@ int Unit::id() const
 void Unit::setId(int Id)
 {
     _id = Id;
+}
+
+//------------------------------------------------------------------------------
+void Unit::setAlarmSelfReset(bool AlarmSelfReset)
+{
+    _alarmSelfReset = AlarmSelfReset;
+    _resetAlarm();
 }
 
 //------------------------------------------------------------------------------
@@ -219,6 +219,32 @@ void Unit::_setCurrentState(Prom::UnitStates currentState)
         emit s_stateChange(this);
     }
 }
+
+//------------------------------------------------------------------------------
+void Unit::subUnTagAlarmReseted()
+{
+    if( !_alarmSelfReset) return;
+
+    static bool preAlarm { false };
+    preAlarm = _alarm;
+
+    foreach(ETag * tag, _tags){
+        _alarm |= tag->isAlarm();
+    }
+    foreach (Unit * unit, _subUnits) {
+        _alarm |= unit->isAlarm();
+    }
+    _alarm |= _alarmConnection;
+
+    if(_alarm){
+        emit s_alarm("");
+    }
+    else {
+        emit s_alarmReseted();
+        if(preAlarm)logging(Prom::MessInfo, QDateTime::currentDateTime(), false, "", "аварии сброшены");
+        _resetAlarmDo();
+    }
+}
 //------------------------------------------------------------------------------
 void Unit::allTimerStop()
 {
@@ -290,9 +316,12 @@ void Unit::addETag(ETag * tag)
     _tags.append(tag);
     if(ownThread)
         tag->moveToThread(ownThread);
-    tag->setParent(this);
+    if(!tag->parent())
+        tag->setParent(this);
     connect(tag, &ETag::s_qualityChd, this, &Unit::_sensorConnect);
     connect(tag, &ETag::s_alarm, this, &Unit::detectAlarm);
+    if(_alarmSelfReset)
+        connect(tag, &ETag::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
     if(_sensorsConnected != tag->connected())
         _sensorConnect();
 }
@@ -310,6 +339,8 @@ bool Unit::addSubUnit(Unit * unit)
         connect(unit, &Unit::s_alarmForAnderUnit, this, &Unit::detectSubUnitAlarm, Qt::QueuedConnection);
         connect(unit, &Unit::s_modeChange, this, &Unit::_updateSubUnitMode, Qt::QueuedConnection);
         connect(unit, &Unit::s_stateChange, this, &Unit::_updateSubUnitState, Qt::QueuedConnection);
+        if(_alarmSelfReset)
+            connect(unit, &Unit::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
         //    if( _owner != nullptr ){
         //      _owner->addSubUnit( unit );
         //    }
@@ -453,28 +484,7 @@ bool Unit::connectToGUI(const QObject * GUI)
     QObject * propWin =  guiItemUnit->findChild<QObject*>("propWindow");
 
     QVariant ret;
-    QObject * tmpSgSt, * engRow;
-
-    if(this->mover){
-        connect(this, SIGNAL(Cleaning()         ), guiItemUnit, SLOT(cleaningWork()), Qt::QueuedConnection);
-        //connect(this, SIGNAL(s_quitAlarm(QString)), this, SLOT(MoverAlarm()), Qt::QueuedConnection);
-
-        QMetaObject::invokeMethod(propWin, "addEngRow", Qt::DirectConnection, Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, this->objectName())); //создал строку меню задержки
-        engRow = qvariant_cast< QObject* >(ret);
-        QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
-            Q_RETURN_ARG(QVariant, ret),
-            Q_ARG(QVariant, this->objectName() + "_clean_delay" ),
-            Q_ARG(QVariant, "сек. - время зачистки"),
-            Q_ARG(QVariant, 1));
-
-        tmpSgSt = qvariant_cast< QObject* >(ret);//получаю указатель на зачистку
-        //подключаю сигналы к зачистке
-        connect(tmpSgSt, SIGNAL(s_valChanged(QVariant)), this,      SLOT(writeCleanDelay(QVariant)), Qt::QueuedConnection);
-        connect(this,  SIGNAL(s_changeCleanDelay(QVariant)), tmpSgSt, SLOT(setVal(QVariant)), Qt::QueuedConnection);
-        connect(this->_cleanTimer,  SIGNAL(StartSig(QVariant)),                 tmpSgSt, SLOT(startCountdown(QVariant)),       Qt::QueuedConnection);
-        connect(this->_cleanTimer,  SIGNAL(StopSig() ), tmpSgSt, SLOT(stopCountdown()),       Qt::QueuedConnection);
-        connect(this->_cleanTimer,  SIGNAL(timeout() ), tmpSgSt, SLOT(stopCountdown()),       Qt::QueuedConnection);
-    }
+    //QObject * tmpSgSt, * engRow;
 
     _customConnectToGUI(guiItem, propWin);
     foreach (ETag * ET , _tags) {
@@ -494,7 +504,6 @@ bool Unit::connectToGUI(const QObject * GUI)
 //------------------------------------------------------------------------------
 void Unit::saveParam()
 {
-    if(mover)ini->setValue(tagPrefix + "/cleanTimeSec", _cleanTimer->interval()/1000);
     ini->setValue(tagPrefix + "/exName", _exName);
     foreach(ETag * tag, _tags){
         tag->saveParam();
@@ -508,10 +517,6 @@ void Unit::saveParam()
 //------------------------------------------------------------------------------
 void Unit::loadParam()
 {
-    if(mover) {
-        _cleanTimer->setInterval(ini->value(tagPrefix + "/cleanTimeSec", 1).toInt() * 1000);
-        emit s_changeCleanDelay(_cleanTimer->interval() / 1000);
-    }
     _exName = ini->value(tagPrefix + "/exName", "").toString();
     emit s_shangeExName(_exName);
     foreach (ETag * tag, _tags) {
@@ -526,7 +531,6 @@ void Unit::loadParam()
 //------------------------------------------------------------------------------
 void Unit::reInitialise()
 {
-    if(mover)emit s_changeCleanDelay(_cleanTimer->interval() / 1000);
     emit s_shangeExName(_exName);
     _sensorConnect();
     foreach(ETag * tag, _tags){
@@ -535,12 +539,6 @@ void Unit::reInitialise()
     foreach (Unit * unit, _subUnits) {
         unit->reInitialise();
     }
-}
-
-//------------------------------------------------------------------------------
-void Unit::writeCleanDelay(QVariant Mnt)
-{
-    _cleanTimer->setInterval(Mnt.toInt() * 1000);
 }
 
 //------------------------------------------------------------------------------

@@ -45,10 +45,8 @@ public slots:
     virtual void start()      { if(! _blocked)setMode(Prom::UnMdStart, true); }//для визуализации
     virtual void stop()       { if(! (_blockedStop && _blocked))setMode(Prom::UnMdStop, true); }//для визуализации
     //virtual void BlockedStop(){ if(! _blocked)SetMode(Prom::UnMdStop, true); }//для визуализации
-    virtual void cleanStop()  { if(! _blocked)setMode(Prom::UnMdCleanStop, true); } ;//для визуализации
 
     void _updateStateAndMode() override;
-    void _cleanTimeEnd() override;
 
 };
 

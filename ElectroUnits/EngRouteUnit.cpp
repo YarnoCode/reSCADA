@@ -28,7 +28,6 @@ Prom::SetModeResp EngRouteUnit::_customSetMode(Prom::UnitModes *Mode, bool)
     case Prom::UnMdFreeze:
     case Prom::UnMdStop:{
         _stop();
-        if(mover) _cleanTimer->stop();///убрать в отдельный класс
         if(currentState() == Prom::UnStStoped)
             return Prom::DoneAlready;
         else{
@@ -40,9 +39,6 @@ Prom::SetModeResp EngRouteUnit::_customSetMode(Prom::UnitModes *Mode, bool)
     }
     case Prom::UnMdStart:
         if( _sensorsConnected && ! _alarm) {
-            if(mover) {               ///убрать в отдельный класс
-                _cleanTimer->stop();
-            }
             if(currentState() == Prom::UnStStarted)
                 return Prom::DoneAlready;
             else if(_start()){
@@ -51,17 +47,6 @@ Prom::SetModeResp EngRouteUnit::_customSetMode(Prom::UnitModes *Mode, bool)
             }
         }
         break;
-    case Prom::UnMdCleanStop:{          /// убрать в отдельный класс
-        if(mover && currentMode() == Prom::UnMdStart) {
-            _cleaned = false;
-            _cleanTimer->start();
-            emit s_cleaning();
-//            _setSetedMode(*Mode);
-            return Prom::DoneWhait;
-        }
-        else return RejNoCond;
-
-    }
     default:;
     }
     return RejAnnown;
@@ -84,10 +69,7 @@ void EngRouteUnit::_updateStateAndMode()
     }
     case Prom::EngStoped: {
         _setCurrentState(Prom::UnStStoped);
-        if(_cleaned) _setCurrentMode(Prom::UnMdCleanStop);
-        else {
             _setCurrentMode(Prom::UnMdStop);
-        }
         emit s_stoped();
         break;
     }
@@ -97,23 +79,23 @@ void EngRouteUnit::_updateStateAndMode()
         break;
     }
     case Prom::EngForvard: {
-        _cleaned = false;
-        emit s_started();
-        if(mover && _cleanTimer->isActive()){
-            _setCurrentState(Prom::UnStClean);
-            _setCurrentMode(Prom::UnMdStart);
-            emit s_cleaning();
-        }
-        else{
-            if(_cleaned) {
-                _setCurrentState(Prom::UnStCleanStarted);
-                _setCurrentMode(Prom::UnMdCleanStart);
-            }
-            else {
+//        _cleaned = false;
+//        emit s_started();
+//        if(mover && _cleanTimer->isActive()){
+//            _setCurrentState(Prom::UnStClean);
+//            _setCurrentMode(Prom::UnMdStart);
+//            emit s_cleaning();
+//        }
+//        else{
+//            if(_cleaned) {
+//                _setCurrentState(Prom::UnStCleanStarted);
+//                _setCurrentMode(Prom::UnMdCleanStart);
+//            }
+//            else {
                 _setCurrentState(Prom::UnStStarted);
                 _setCurrentMode(Prom::UnMdStart);
-            }
-        }
+//            }
+//        }
         break;
     }
     case Prom::EngManualForward: {
@@ -132,13 +114,6 @@ void EngRouteUnit::_updateStateAndMode()
         detectAlarm("недопустимое состояние электродвигателя");
     }
     }
-}
-
-//------------------------------------------------------------------------------
-void EngRouteUnit::_cleanTimeEnd()
-{
-    _cleaned = true;
-    _stop();
 }
 
 //------------------------------------------------------------------------------

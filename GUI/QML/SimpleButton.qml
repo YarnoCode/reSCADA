@@ -7,7 +7,7 @@ Rectangle {
     id: rectBody
     width: 100
     height: 50
-    radius: 0
+    border.color: "#919191"
     property  alias mouseArea: mA
     property  alias nameText: nameText
 
@@ -17,9 +17,8 @@ Rectangle {
     property color unPressCheckColor: Fap.buttonsBackground
     property color pressCheckColor: Qt.hsla(unPressCheckColor.hslHue,
                                             unPressCheckColor.hslSaturation,
-                                            unPressCheckColor.hslLightness * 0.9,
+                                            unPressCheckColor.hslLightness * 0.5,
                                             unPressCheckColor.a)
-    border.color: Fap.buttonsBorder
     border.width: 1
 
     Component.onCompleted: renewColor()
@@ -72,12 +71,13 @@ Rectangle {
         onExited: border.width--
         onClicked: {
             if((mouse.button & Qt.LeftButton) && checkable) {
-                //checked = !checked
+
                 s_checkedUserChanged(!checked)
                 if( checked )
                     s_on()
                 else
                     s_off()
+                checked = !checked
             }
         }
         onPressedChanged: {

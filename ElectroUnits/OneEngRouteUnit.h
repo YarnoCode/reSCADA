@@ -14,7 +14,7 @@ public:
                               int *Id,
                               QString Name,
                               QString TagPefix,
-                              bool Mover,
+                              bool SelfResetAlarm,
                               std::vector<QString> EngSensorNames,
                               bool BlockedStop = false,
                               Prom::UnitModes SaveMode = Prom::UnMdStop,

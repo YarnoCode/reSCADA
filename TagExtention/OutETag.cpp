@@ -119,7 +119,7 @@ bool OutETag::setValue(QVariant Value, bool notImit)
         if(_preValue != _value){
             _preValue = _value;
             if(_owner->ini && saveValue){
-                _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".value", _value);
+                _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/value", _value);
             }
             emit s_valueChd(Value);
         }
@@ -139,7 +139,7 @@ void OutETag::_checkVal()
     if( _value.toDouble() != _preValue.toDouble() ){
         if( _value.toDouble() == _setedValue.toDouble() ){
             if( saveValue && _owner->ini != nullptr )
-                _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".value", _value);
+                _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/value", _value);
         }
         else{
             //_logging(Prom::MessAlarm,"не удалось установить требуемое значение (получили - " + QString::number( _value.toDouble()) + ", нужно - " + QString::number(_setedValue.toDouble()) + ")", _imit);
@@ -248,8 +248,8 @@ void OutETag::_checkPulse()
 void OutETag::loadParam()
 {
     if(_owner->ini && saveValue
-        && _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + ".hardInitValue") ){
-        _iniValue = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".hardInitValue", (_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + ".value", 0).toDouble())).toDouble();
+        && _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "hardInitValue") ){
+        _iniValue = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "hardInitValue", (_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/.value", 0).toDouble())).toDouble();
         _setedValue = _iniValue;
         _value = _iniValue;
     }
@@ -265,7 +265,7 @@ void OutETag::saveParam()
 {
     ETag::saveParam();
     if(_owner->ini && saveValue)
-        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + ".value", _value);
+        _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "value", _value);
 }
 
 //------------------------------------------------------------------------------

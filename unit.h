@@ -25,13 +25,12 @@ public:
                    int *Id,
                    QString Name,
                    QString TagPrefix,
-                   bool Mover = false,//TODO Убрать в отдельный параметрдочерних классов!
+                   bool SelfAlarmReset = false,//TODO Убрать в отдельный параметрдочерних классов!
                    Prom::UnitModes SaveMode = Prom::UnMdNoDef,
                    QSettings * Ini = nullptr);
 
     const Prom::UnitType unitType;
     const Prom::UnitModes saveMode;
-    const bool mover = false;
     QString tagPrefix = "";
     QSettings *ini;
 
@@ -78,6 +77,8 @@ public:
     int id() const;
     void setId(int value);
 
+    void setAlarmSelfReset(bool AlarmSelfReset);
+
 protected:
     int _id;
     PromObject * _owner{nullptr};
@@ -89,16 +90,14 @@ protected:
     bool _alarmConnection = false;
     bool _alarmInit = false;
 //    bool _mayResetAlarm = true;
-    QTimerExt * _cleanTimer;
-    bool _cleaned = false;
 
     Prom::UnitModes _prevMode = Prom::UnMdNoDef;
     Prom::UnitStates _prevState = Prom::UnStNotConnected;
 
     virtual Prom::SetModeResp _customSetMode(Prom::UnitModes *mode, bool UserOrSys) = 0;
 
-
     bool _alarm = false;
+    bool _alarmSelfReset = false;
     QString _exName;
     virtual void _alarmDo();
     virtual void _alarmSubUnitDo(Unit * unit);
@@ -130,19 +129,17 @@ signals:
     void s_connected();
     void s_disconnected();
     void s_shangeExName(QVariant exName);
-    void s_changeCleanDelay(QVariant Mnt);
     void s_alarmForAnderUnit(Unit *, QString);
-    void s_cleanTimerStart();
 
 public slots:
     void freeze(bool UserOrSys) { setMode(Prom::UnMdStop, UserOrSys); }//одинаково действует на всех юнитах - немедленная остановка
     virtual bool resetAlarm(){ return _resetAlarm(); }
+    virtual void subUnTagAlarmReseted();
     virtual void updateState();
     virtual void saveParam();
     virtual void loadParam();
     virtual void reInitialise();
     void setExName( QString exName) { _exName = exName; }
-    void writeCleanDelay(QVariant);
     void logging(Prom::MessType MessTypeID, QDateTime DateTime, bool UserOrSys, QString Source, QString Message);
     bool connectToGUI(const QObject * GUI);
     virtual void detectAlarm(QVariant Description);
@@ -150,7 +147,6 @@ public slots:
 
 protected slots:
     virtual bool _resetAlarm(bool upClassAlarm = false);
-    virtual void _cleanTimeEnd(){};
     virtual void _sensorConnect();
     virtual void _customConnectToGUI(QObject * guiItem, QObject * propWin = nullptr) = 0;
     virtual void _updateSubUnitState(Unit *){};
