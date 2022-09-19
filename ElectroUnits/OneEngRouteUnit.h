@@ -13,7 +13,7 @@ public:
     explicit OneEngRouteUnit(Prom::UnitType Type,
                               int *Id,
                               QString Name,
-                              QString TagPefix,
+                              QString TagPrefix,
                               bool SelfResetAlarm,
                               std::vector<QString> EngSensorNames,
                               bool BlockedStop = false,

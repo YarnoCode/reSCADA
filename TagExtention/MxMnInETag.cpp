@@ -335,8 +335,8 @@ bool MxMnInETag::connectTagToMinLevel(OutETag *Tag)
 bool MxMnInETag::findMaxMinTags()
 {
     bool res = true;
-    res &= connectTagToMaxLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false));
-    res &= connectTagToMinLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " мин.", _DBName + ".min",false,false,false));
+    res &= connectTagToMaxLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
+    res &= connectTagToMinLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
     _tunabDetectLevel = !res;
     return res;
 }
@@ -476,6 +476,9 @@ void MxMnInETag::_checkVal()
         if( _maxDetect ) emit s_maxDetected();
         else if( _minDetect ) emit s_minDetected();
         break;
+    }
+    if(_alarmSelfReset && _mayResetAlarm){
+        resetAlarm();
     }
 }
 

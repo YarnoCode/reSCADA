@@ -17,8 +17,8 @@ Item {
     property color borderColor: "black"
     property int borderWidth: 1
     property alias textInput: valueLable
-    property bool showTooltip: !(tooltip == "")
-    property string tooltip: ""
+    property bool showTooltip: !(tooltipText == "")
+    property string tooltipText: ""
 
     property bool limited: false
     property bool correctingButtons: true
@@ -197,10 +197,10 @@ Item {
             }
             ToolTip {
                 id: ttip
-                delay: 2000
-                timeout: 2000
+                delay: 1000
+                timeout: 10000
                 visible: false
-                text: tooltip
+                text: tooltipText
             }
             SimpleButton {
                 id: minBtn

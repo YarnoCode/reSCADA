@@ -5,13 +5,13 @@
 
 PLC::PLC(int *Id,
           QString Name,
-          QString TagPefix,
+          QString TagPrefix,
           Prom::UnitModes SaveMode
          )
     :Unit(Prom::TypePLC,
            Id,
            Name,
-           TagPefix,
+           TagPrefix,
            false,
            SaveMode)
 {

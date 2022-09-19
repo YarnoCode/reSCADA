@@ -1,5 +1,4 @@
-﻿
-#include "deairator.h"
+﻿#include "burner.h"
 
 #include "FC.h"
 #include "InETag.h"
@@ -10,69 +9,88 @@
 #include "simpElecEngine.h"
 #include "regValveDO.h"
 #include "GUIconnect.h"
-
+#include "workUnit.h"
 
 //------------------------------------------------------------------------------
-Deairator::Deairator(int *Id,
+Burner::Burner(int *Id,
     QString Name,
-    QString TagPefix,
-    QString lvlPIDPefix,
-    QString steamPIDPefix,
+    QString TagPrefix,
+    QString pGasPIDPrefix,
+    bool SelfAlarmReset,
     const pid::tagsMap *PIDTagsNames )
-    : Tank( Id,
+    : Unit( Prom::TypeNoDef,
+        Id,
         Name,
-        TagPefix)
+        TagPrefix,
+        SelfAlarmReset)
 {
     _currentMode = Prom::UnMdCantHaveMode;
 
-    tWater = new MxMnInETag( this, Prom::TpMxMnIn, "t°C воды", ".tWater", 120, 5, 2, false, false );
-    tWater->needBeUndetectedAlarm();
-    tWater->findMaxMinTags();
-
-    pSteam = new MxMnInETag( this, Prom::TpMxMnIn, "давление пара", ".pSteam", 4, 0.5, 0.05, false, false );
-    pSteam->needBeUndetectedAlarm();
-    pSteam->findMaxMinTags();
-
     alarm = new InDiscretETag(this, "aвария", ".alarm",true,false,true,false,false,false);
-    reset = new OutDiscretETag( this, Prom::PreSet, "сброс ошибок", ".resetAlarm",
+
+    alarm->setAlarmSelfReset(SelfAlarmReset);
+    alarm->needBeUndetectedAlarm();
+    alarmFlame = new InDiscretETag(this, "aвария задержки на появление пламени горелки", ".alarmFlame",true,false,true,false,false,false);
+    alarmFlame->setAlarmSelfReset(SelfAlarmReset);
+    alarmFlame->needBeUndetectedAlarm();
+    reset = new OutDiscretETag( this, Prom::PreSet, "сброс аварий", ".resetAlarm",
         true, false, false, false, false, true, false, false,
         false, true,Prom::VCNo, true );
-    reset->setImpulseDuration(5);
+    reset->setImpulseDuration(1);
+    state = new InETag( this, Prom::TpIn, "состояние горелки", ".state", true, 100, 1, false, false, false, false );
+    disabled = new OutDiscretETag( this, Prom::PreSet, "отключена", +".disabled",true, false, false, false, false, true );
+    pGas = new InETag( this, Prom::TpMxMnIn, "давление газа", ".pGas", true, 4, 0.05, false, false, false, false );
+    flameS    = new InDiscretETag(this, "датчик пламени горелки", ".flameS",true,false,true,false,false,false);
+    ignitionAlarmDelay  = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка на появление пламени розжига с.", ".ignitionAlarmDelay", false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    ignitionStableDelay = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка на стабилизацию пламени розжига с.",    ".ignitionStableDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    flameStartDelay     = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка на появление пламени горелки с.", ".flameStartDelay",    false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    flameStableDelay    = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка стабилизацию пламени горелки с.",    ".flameStableDelay",   false,false,false,true,Prom::VCdiv1000,false,false,0,true);
 
-    lvlPID = new PIDstep(this, "ПИД уровня воды", "частота насоса",lvlPIDPefix,PIDTagsNames, PIDopt::allOn );
-    steamPID = new PIDstep(this, "ПИД давления пара", "положение клапана", steamPIDPefix, PIDTagsNames, PIDopt::allOn );
+    gasPID = new PIDstep(this, "ПИД давления газа", "положение клапана", pGasPIDPrefix, PIDTagsNames, PIDopt::allOn );
 
-    waterFC = new FCUnitOkSrtFq0Fq0(Id, "ЧП насосов воды", TagPefix + ".FCWater", true);
-    waterFC->setFreqMan( lvlPID->manImp);
-    waterFC->setFreqPID( lvlPID->impIn);
-    addSubUnit(waterFC);
+    ignition = new ActWorkSt(Id, "Рожиг", tagPrefix + ".ignition", false, "искра", ".onOff", true);
+    addSubUnit(ignition);
+    ignitionS    = new InDiscretETag(this, "датчик пламени розжига", ".ignition.flameS",true,false,true,false,false,false);
+    removeETag(ignitionS);
+    ignition->addETag(ignitionS);
+    alarmIgnition = new InDiscretETag(this, "aвария задержки на появление пламени розжига", ".alarmIgnition",true,false,true,false,false,false);
+    alarmIgnition->setAlarmSelfReset(SelfAlarmReset);
+    alarmIgnition->needBeUndetectedAlarm();
+    removeETag(alarmIgnition);
+    ignition->addETag(alarmIgnition);
 
-    waterPump1 = new SimpElecEgine( Prom::TypePump, Id, "Насос охл. воды 1", TagPefix + ".pumpWater1", true);
-    addSubUnit(waterPump1);
-    waterPump2 = new SimpElecEgine( Prom::TypePump, Id, "Насос охл. воды 2", TagPefix + ".pumpWater2", true);
-    addSubUnit(waterPump2);
-
-    vSteam = new RegValveDO( Id, "Клапан подачи пара", TagPefix + ".vSteam", true, &regValve::SiemensPIDTagsNames);
-    addSubUnit(vSteam);
+    vIgnition = new ActWorkSt(Id, "Клапан розжига",  tagPrefix + ".vIgnition", false, "открыть", ".open", true );
+    addSubUnit(vIgnition);
+    vGas = new ActWorkSt(Id, "Клапан газа",  tagPrefix + ".vGas", false, "открыть", ".open", true );
+    addSubUnit(vGas);
+    vrGas = new RegValveDO( Id, "Рег-й клапан газа", tagPrefix + ".vrGas", true, &regValve::SiemensPIDTagsNames);
+    addSubUnit(vrGas);
 }
 
 //------------------------------------------------------------------------------
-bool Deairator::resetAlarm()
+bool Burner::resetAlarm()
 {
     reset->on();
     return Unit::resetAlarm();
 }
 
 //------------------------------------------------------------------------------
-void Deairator::_customConnectToGUI(QObject *guiItem, QObject *)
+void Burner::_customConnectToGUI(QObject *guiItem, QObject *)
 {
-    Tank::_customConnectToGUI(guiItem);
-
     if( guiItem != nullptr ){
-        AnalogSignalVar2Connect(guiItem, tWater->getDBName(), tWater);
-        AnalogSignalVar2Connect(guiItem, pSteam->getDBName(), pSteam);
-        PIDwinConnect(guiItem, lvlPID->tagPrefix, lvlPID);
-        PIDwinConnect(guiItem, steamPID->tagPrefix, steamPID);
+        if( !AnalogSignalVar1Connect(guiItem, pGas->getDBName(),   pGas) )
+            logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pGas->getDBName() + " в GUI " + guiItem->objectName());
+        PIDwinConnect(guiItem, gasPID->tagPrefix, gasPID);
+        connect( flameS,    SIGNAL(s_valueChd(QVariant)), guiItem, SLOT(setFlameS(QVariant)),    Qt::QueuedConnection);
+
+        //        connect( ignitionStart,  SIGNAL(s_valueChd(QVariant)), guiItem, SLOT(setIgnition(QVariant)),    Qt::QueuedConnection);
+        //        connect( guiItem,   SIGNAL(s_ignition(QVariant)), ignitionStart, SLOT(setValue(QVariant)),    Qt::QueuedConnection);
+
+        connect( ignitionS, SIGNAL(s_valueChd(QVariant)), guiItem, SLOT(setIgnitionS(QVariant)), Qt::QueuedConnection);
+
+        connect( guiItem,  SIGNAL(s_blocked(QVariant)), disabled, SLOT(setValue(QVariant)),    Qt::QueuedConnection);
+        connect( disabled, SIGNAL(s_valueChd(QVariant)), guiItem, SLOT(setBlocked(QVariant)), Qt::QueuedConnection);
+        connect( state, SIGNAL(s_valueChd(QVariant)), guiItem, SLOT(setState(QVariant)), Qt::QueuedConnection);
     }
 }
 //------------------------------------------------------------------------------

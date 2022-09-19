@@ -1,16 +1,18 @@
 ﻿import QtQuick 2.15
-//import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15
 import "fap.js" as Fap
 
 Item {
     id: unit
     property string name: "NoName"
+    property string title: "NoTitle"
+    property string tooltipText: (name == "NoName" || name == "") ? "" : name
     property string description: "Unknown"
     property string alarmDescr: "Unknown"
 
     property bool alarm: false
-    property bool alarmNotify: false
-    property bool notify: false
+    property bool alarmNotify: true
+    property bool notify: true
     property bool alarmReact: true
     property bool allovAlarmTextBlinck: true
     property bool allovAlarmBodyBlinck: true
@@ -35,7 +37,29 @@ Item {
     property color textColor: Fap.text
     property color textCurrentColor: Fap.text
     property color textAlarmColor: Fap.textAlarm
+    property alias tooltip: tTip
 
+    property bool _setFromGui: true
+
+    function setBlocked( Blocked ){
+        _setFromGui = false
+        blocked = Blocked
+        _setFromGui = true
+    }
+    signal s_blocked( variant Blocked)
+    onBlockedChanged: {
+        if(_setFromGui){
+            s_blocked( blocked)
+        }
+        renewColors()
+    }
+
+    ToolTip{
+        id: tTip
+        delay: 500
+        timeout: 5000
+        text: tooltipText
+    }
 
     Component.onCompleted: {
         renewColors()
@@ -65,7 +89,8 @@ Item {
     }
     function setQuitAlarm( Descr ) {
         setAlarm( Descr )
-        if(alarmReact)alarmNotify = true
+        if(alarmReact)
+            alarmNotify = true
     }
     function alarmReseted() {
         notify = false
@@ -184,7 +209,6 @@ Item {
         else if (!alarmNotify)
             timer.stop()
     }
-    onBlockedChanged: renewColors()
     onLinkedChanged: renewColors()
     onConnectedChanged: renewColors()
     onBackgroundColorChanged: renewColors()

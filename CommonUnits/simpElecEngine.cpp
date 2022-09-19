@@ -7,50 +7,56 @@
 #include "InDiscretETag.h"
 #include "OutDiscretETag.h"
 
-SimpElecEgine::SimpElecEgine(
+SimpElecEngine::SimpElecEngine(
     Prom::UnitType Type,
     int *Id,
     QString Name,
-    QString TagPefix,
+    QString TagPrefix,
     bool SelfResetAlarm)
 
     : Unit( Type,
         Id,
         Name,
-        TagPefix,
+        TagPrefix,
         SelfResetAlarm,
         Prom::UnMdStop)
 {
     _alarm = new InDiscretETag(this, "авария", ".alarm",true,false,true,false,false,false);
+    _alarm->setAlarmSelfReset(SelfResetAlarm);
     _alarm->needBeUndetectedAlarm();
     _alarmKM = new InDiscretETag(this, "авария контактора", ".alarmKM",true,false,true,false,false,false);
+    _alarmKM->setAlarmSelfReset(SelfResetAlarm);
     _alarmKM->needBeUndetectedAlarm();
     _alarmQF= new InDiscretETag(this, "авария автомата", ".alarmQF",true,false,true,false,false,false);
+    _alarmQF->setAlarmSelfReset(SelfResetAlarm);
     _alarmQF->needBeUndetectedAlarm();
     _reset = new OutDiscretETag( this, Prom::PreSet, "сброс ошибок", ".resetAlarm",
         true, false, false, false, false, true, false, false,
         false, true,Prom::VCNo, true );
     _reset->setImpulseDuration(5);
+
     _start= new OutDiscretETag( this, Prom::PreSet, "старт", ".start",
         true, false, false, false, false, true );
-    connect(_start, &OutDiscretETag::s_on, this, &SimpElecEgine::updateState);
-    connect(_start, &OutDiscretETag::s_off, this, &SimpElecEgine::updateState);
+    _start->setAlarmSelfReset(SelfResetAlarm);
+    connect(_start, &OutDiscretETag::s_on, this, &SimpElecEngine::updateState);
+    connect(_start, &OutDiscretETag::s_off, this, &SimpElecEngine::updateState);
 
     _started = new InDiscretETag(this, "работа", ".started",true,false,true,false,false,false);
-    connect(_started, &InDiscretETag::s_detected, this, &SimpElecEgine::updateState);
-    connect(_started, &InDiscretETag::s_undetected, this, &SimpElecEgine::updateState);
+    _started->setAlarmSelfReset(SelfResetAlarm);
+    connect(_started, &InDiscretETag::s_detected, this, &SimpElecEngine::updateState);
+    connect(_started, &InDiscretETag::s_undetected, this, &SimpElecEngine::updateState);
 
     _QF = new InDiscretETag(this, "автомат", ".QF",true,false,true,false,false,false);
     _KM = new InDiscretETag(this, "контактор", ".KM",true,false,true,false,false,false);
 }
 //------------------------------------------------------------------------------
-bool SimpElecEgine::resetAlarm()
+bool SimpElecEngine::resetAlarm()
 {
     _reset->on();
     return Unit::resetAlarm();
 }
 //------------------------------------------------------------------------------
-Prom::SetModeResp SimpElecEgine::_customSetMode(Prom::UnitModes *Mode, bool)
+Prom::SetModeResp SimpElecEngine::_customSetMode(Prom::UnitModes *Mode, bool)
 {
     switch(*Mode) {
     case Prom::UnMdFreeze:
@@ -80,7 +86,7 @@ Prom::SetModeResp SimpElecEgine::_customSetMode(Prom::UnitModes *Mode, bool)
     return RejAnnown;
 }
 //------------------------------------------------------------------------------
-void SimpElecEgine::_updateStateAndMode()
+void SimpElecEngine::_updateStateAndMode()
 {
     if(_start && _started){
 
@@ -116,7 +122,7 @@ void SimpElecEgine::_updateStateAndMode()
     }
 }
 //------------------------------------------------------------------------------
-bool SimpElecEgine::start()
+bool SimpElecEngine::start()
 {
     if(_start) {
         return _start->on();
@@ -124,7 +130,7 @@ bool SimpElecEgine::start()
     else return false;
 }
 //------------------------------------------------------------------------------
-bool SimpElecEgine::stop()
+bool SimpElecEngine::stop()
 {
     if(_start) {
         return _start->off();
@@ -132,7 +138,7 @@ bool SimpElecEgine::stop()
     else return false;
 }
 //------------------------------------------------------------------------------
-void SimpElecEgine::_customConnectToGUI(QObject *guiItem,  QObject */*propWin*/)
+void SimpElecEngine::_customConnectToGUI(QObject *guiItem,  QObject */*propWin*/)
 {
     connect(this,    SIGNAL(s_startComand()),           guiItem, SLOT(startComand()),             Qt::QueuedConnection);
     connect(this,    SIGNAL(s_stopComand()),            guiItem, SLOT(stopComand()),              Qt::QueuedConnection);

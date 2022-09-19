@@ -58,7 +58,7 @@ AnalogSignalVar1 {
         anchors.bottomMargin: -1
         anchors.horizontalCenter: parent.horizontalCenter
         backgroundColor: "#c36b6b"
-        tooltip: "Макс."
+        tooltipText: "Макс."
         readOnly: false
         visible: parent._usrAct
         correctingButtons: true
@@ -82,7 +82,7 @@ AnalogSignalVar1 {
         height: parent.height
         anchors.horizontalCenter: parent.horizontalCenter
         backgroundColor: "#6b9ac3"
-        tooltip: "Мин."
+        tooltipText: "Мин."
         readOnly: false
         visible: parent._usrAct
         anchors.top: parent.bottom

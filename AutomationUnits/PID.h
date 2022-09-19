@@ -34,10 +34,11 @@ enum tagsNom{
     impMin,
     manImpulseOn,
     manImplMore,
-    manImplLess
+    manImplLess,
+    feedback
 };
 typedef std::map< tagsNom, QString> tagsMap;
-const tagsMap StdPIDTagsNames
+static const tagsMap StdPIDTagsNames
     {
         {manOn,      ".manOn"},
         {setPt,      ".setPt"},
@@ -59,8 +60,9 @@ const tagsMap StdPIDTagsNames
         {manImpulseOn,".manImpulseOn"},
         {manImplMore,".manImplMore"},
         {manImplLess,".manImplLess"},
+        {feedback,   ".feedback"},
         };
-const tagsMap SiemensPIDTagsNames
+static const tagsMap SiemensPIDTagsNames
     {
         {manOn,      ".MAN_ON"},
         {setPt,      ".SP_INT"},
@@ -82,6 +84,7 @@ const tagsMap SiemensPIDTagsNames
         {manImpulseOn,".LMNS_ON"},
         {manImplMore,".LMNUP"},
         {manImplLess,".LMNDN"},
+        {feedback,   ".MP10"},
         };
 }
 //------------------------------------------------------------------------------
@@ -108,13 +111,14 @@ public:
     OutETag * manImp { nullptr };
     OutETag * impMax { nullptr };
     OutETag * impMin { nullptr };
+    InETag * feedback { nullptr };
 };
 //------------------------------------------------------------------------------
 struct PIDstep: public PID{
     PIDstep(Unit *Owner, QString Name, QString ImpName, QString TagPrefix, const pid::tagsMap *TagsNames, uint Option = Prom::PIDopt::allOn );
     OutDiscretETag * manImpulseOn { nullptr };
     OutDiscretETag * manImplUp { nullptr };
-    OutDiscretETag * manImplDow { nullptr };
+    OutDiscretETag * manImplDown { nullptr };
     InETag * impUp { nullptr };
     InETag * impDown { nullptr };
 };

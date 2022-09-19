@@ -394,6 +394,9 @@ void InETag::_checkVal()
         else emit s_undetected();
         break;
     }
+    if(_alarmSelfReset && _mayResetAlarm){
+        resetAlarm();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -416,6 +419,15 @@ void InETag::pulseTimerEnd()
     _detectPulse = false;
     if(! _trig) _checkVal();
 }
+//------------------------------------------------------------------------------
+//bool InETag::findLimitTags()
+//{
+//    bool res = true;
+//    res &= connectTagToMaxLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
+//    res &= connectTagToMinLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
+//    _tunabDetectLevel = !res;
+//    return res;
+//}
 
 //------------------------------------------------------------------------------
 

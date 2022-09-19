@@ -19,9 +19,7 @@ Unit::Unit( Prom::UnitType Type,
     bool SelfAlarmReset,
     Prom::UnitModes SaveMode,
     QSettings * Ini)
-
-    :
-    unitType(Type),
+    : unitType(Type),
     saveMode(SaveMode),
     tagPrefix(TagPrefix),
     ini(Ini),
@@ -227,6 +225,7 @@ void Unit::subUnTagAlarmReseted()
 
     static bool preAlarm { false };
     preAlarm = _alarm;
+    _alarm = false;
 
     foreach(ETag * tag, _tags){
         _alarm |= tag->isAlarm();
@@ -240,9 +239,9 @@ void Unit::subUnTagAlarmReseted()
         emit s_alarm("");
     }
     else {
-        emit s_alarmReseted();
         if(preAlarm)logging(Prom::MessInfo, QDateTime::currentDateTime(), false, "", "аварии сброшены");
         _resetAlarmDo();
+        emit s_alarmReseted();
     }
 }
 //------------------------------------------------------------------------------
@@ -313,6 +312,10 @@ void Unit::moveToThread(QThread *thread)
 //------------------------------------------------------------------------------
 void Unit::addETag(ETag * tag)
 {
+
+    if(_tags.contains(tag)){
+        return;
+    }
     _tags.append(tag);
     if(ownThread)
         tag->moveToThread(ownThread);
@@ -322,6 +325,24 @@ void Unit::addETag(ETag * tag)
     connect(tag, &ETag::s_alarm, this, &Unit::detectAlarm);
     if(_alarmSelfReset)
         connect(tag, &ETag::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
+    if(_sensorsConnected != tag->connected())
+        _sensorConnect();
+}
+
+//------------------------------------------------------------------------------
+void Unit::removeETag(ETag *tag)
+{
+    if(!_tags.contains(tag)){
+        return;
+    }
+    _tags.removeOne(tag);
+
+    if(tag->parent() == (QObject*)this)
+        tag->setParent(nullptr);
+    disconnect(tag, &ETag::s_qualityChd, this, &Unit::_sensorConnect);
+    disconnect(tag, &ETag::s_alarm, this, &Unit::detectAlarm);
+    if(_alarmSelfReset)
+        disconnect(tag, &ETag::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
     if(_sensorsConnected != tag->connected())
         _sensorConnect();
 }
@@ -360,7 +381,7 @@ void Unit::detectAlarm(QVariant Description)
         Source = sender()->objectName();
     _alarm = true;
     //_mayResetAlarm = false;
-    if(!Prom::icvalModes(_currentMode, saveMode) && _currentMode != Prom::UnMdNoDef && ! _firstLoad) {
+    if( ! _firstLoad/*!Prom::icvalModes(_currentMode, saveMode) && _currentMode != Prom::UnMdNoDef &&*/) {
         emit s_quitAlarm(objectName() + " - " +  Description.toString());
         logging(Prom::MessQuitAlarm, QDateTime::currentDateTime(), false, Source, Description.toString());
     }
@@ -425,14 +446,14 @@ bool Unit::_resetAlarm(bool upClassAlarm)
     _alarm |= _alarmConnection;
 
     if(_alarm){
+        logging(Prom::MessWarning, QDateTime::currentDateTime(), false, "", "аварии не сброшены");
         emit s_alarmReseted();
         emit s_alarm("");
-        logging(Prom::MessWarning, QDateTime::currentDateTime(), false, "", "аварии не сброшены");
     }
     else {
-        emit s_alarmReseted();
         if(preAlarm)logging(Prom::MessInfo, QDateTime::currentDateTime(), false, "", "аварии сброшены");
         _resetAlarmDo();
+        emit s_alarmReseted();
     }
     return ! _alarm;
 }
@@ -465,14 +486,13 @@ bool Unit::connectToGUI(const QObject * GUI)
     QObject * guiItemUnit = guiItem->findChild<QObject*>("unit");
 
     if(!guiItem){
-        logging(Prom::MessInfo, QDateTime::currentDateTime(), false, "", "GUI не обнаружен");
+        logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "в " + GUI->objectName() + " GUI не обнаружен");
         return false;
     }
     if(!guiItemUnit) guiItemUnit = guiItem; //Если нет дочернего с .unit, то подключаем GUI как обычно к корневому.
     //Logging(Prom::MessChangeInfo, QDateTime::currentDateTime(), unit->objectName(), "GUI обнаружен");
     connect(this, SIGNAL(s_connected()), guiItemUnit, SLOT(setConnected()), Qt::QueuedConnection);
     connect(this, SIGNAL(s_disconnected()), guiItemUnit, SLOT(setDisconnected()), Qt::QueuedConnection);
-    //TODO приделать обратно!!! connect(this, SIGNAL(SetInRoute(QVariant)), guiItemUnit, SLOT(setRoute(QVariant)), Qt::QueuedConnection);
 
     connect(this,        SIGNAL(s_alarm(QVariant)),     guiItemUnit, SLOT(setAlarm(QVariant)), Qt::QueuedConnection);
     connect(this,        SIGNAL(s_quitAlarm(QVariant)), guiItemUnit, SLOT(setQuitAlarm(QVariant)   ), Qt::QueuedConnection);
@@ -483,7 +503,7 @@ bool Unit::connectToGUI(const QObject * GUI)
 
     QObject * propWin =  guiItemUnit->findChild<QObject*>("propWindow");
 
-    QVariant ret;
+    //QVariant ret;
     //QObject * tmpSgSt, * engRow;
 
     _customConnectToGUI(guiItem, propWin);

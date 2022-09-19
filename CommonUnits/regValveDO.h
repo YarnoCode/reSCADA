@@ -21,8 +21,7 @@ enum tagsNom
     closeOutDBN,
     };
 typedef std::map< tagsNom, QString> tagsMap;
-const tagsMap StdTagsNames
-    {
+static const tagsMap StdTagsNames{
         {posSetDBN,      ".posSet"},
         {posDBN,         ".pos"},
         {rangeTopDBN,    ".rangeTop"},
@@ -30,15 +29,14 @@ const tagsMap StdTagsNames
         {openOutDBN,     ".openOut"},
         {closeOutDBN,    ".closeOut"}
         };
-const tagsMap SiemensPIDTagsNames
-    {
+static const tagsMap SiemensPIDTagsNames{
         {posSetDBN,      ".MAN"},
-        {posDBN,         ".LMN"},
+        {posDBN,         ".pos"},//".LMN"
         {rangeTopDBN,    ".LMN_HLM"},
         {rangeBottomDBN, ".LMN_LLM"},
         {openOutDBN,     ".LMNUP"},
         {closeOutDBN,    ".LMNDN"},
-        };
+    };
 }
 
 class RegValveDO : public Unit
@@ -47,7 +45,7 @@ class RegValveDO : public Unit
 public:
     explicit RegValveDO(int *Id,
         QString Name,
-        QString TagPefix,
+        QString TagPrefix,
         bool SefResetAlarm,
         const regValve::tagsMap *TagsMap);
 

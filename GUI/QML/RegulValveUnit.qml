@@ -35,7 +35,7 @@ UnitPropItem {
         borderColor: borderCurrentColor
         backgroundColor: backgroundCurrentColor
         borderWidth: borderCurrentWidth
-        nameText.text: name
+        nameText.text: title
         //position: mangWin.value
     }
     RegPersentWin {
@@ -94,7 +94,11 @@ UnitPropItem {
                 mangWin.title = name
                 mangWin.show()
             }
+
         }
+        hoverEnabled: true
+        onEntered: tooltip.visible = tooltipText != ""
+        onExited: tooltip.visible = false
     }
 }
 

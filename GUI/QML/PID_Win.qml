@@ -94,6 +94,8 @@ Window {
     signal s_impactMinChanged(variant ImpactMin)
     function setImpactMin ( ImpactMin ) { mfuFromImpact.setValue(ImpactMin) }
 
+    function setFeedback ( Feedback ) { mfuFeedback.setValue(Feedback) }
+
     onVisibleChanged: {
         if (visible == true) {
             var absolutePos = mapToGlobal(0, 0)
@@ -163,7 +165,7 @@ Window {
             borderColor: "#000000"
             readOnly: false
             limited: false
-            tooltip: "Max"
+            tooltipText: "Max"
             backgroundColor: "#e6e6e6"
             confmOnEnter: wind.confmOnEnter
             onValueChanged: s_setPtMaxChanged( Value )
@@ -180,7 +182,7 @@ Window {
             readOnly: false
             anchors.leftMargin: 0
             limited: false
-            tooltip: "Min"
+            tooltipText: "Min"
             backgroundColor: mfuToProcess.backgroundColor
             confmOnEnter: wind.confmOnEnter
             onValueChanged: s_setPtMinChanged( Value )
@@ -242,7 +244,7 @@ Window {
             readOnly: true
             borderColor: "Black"
             correctingButtons: false
-            tooltip: "Контролируемый параметр"
+            tooltipText: "Контролируемый параметр"
             confmOnEnter: wind.confmOnEnter
         }
         //        Text {
@@ -270,7 +272,7 @@ Window {
             readOnly: false
             correctingButtons: true
             borderColor: "Black"
-            tooltip: "Задание"
+            tooltipText: "Задание"
             limited: false
             backgroundColor: colorSetPt
             textInput.color: "White"
@@ -301,62 +303,80 @@ Window {
             height: parent.height * 0.1
             anchors.left: parent.left
             anchors.right: parent.right
+            layoutDirection: Qt.LeftToRight
+            spacing: 1
 
             SimpleButton {
                 id: impulsOnOff
-                width: parent.width * 0.18
+                width: parent.width * 0.08
                 height: parent.height * 0.8
-                radius: height / 2
-                visible: impIs2DisctOuts && impIsAnlgOut
+                //radius: height / 2
+                visible: impIs2DisctOuts
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 0
                 checkable: true
                 pressCheckColor: "#8afda6"
                 unPressCheckColor: "gray"
-                nameText.text: "ИМП-Й РЕЖИМ"
+                toolTipText: "Вкл/Откл импульсный режим для прямого управления дискретными выходами управляемого устройства при отключенном ПИД-регуляторе."
+                nameText.text: "ИР"
                 onS_checkedUserChanged: s_impulseOn(Checked)
+                checked: false
             }
-             MFUnit {
-                id: mfuManImpact
+            MFUnit {
+                id: mfuFeedback
                 width: parent.width *0.4
-                visible: impIsAnlgOut && ! impulsOnOff.checked
-                anchors.right: mfuImpact.left
+                tooltipText: "Ответ от управляемого механизма. В ручном режиме можно управлять напрямую с помощью +/- (дискретные сигналы 'больше' и 'меньше')."
+                visible: impulsOnOff.checked //&& impIs2DisctOuts
+                anchors.right: mfuImpact.left//impIs2DisctOuts
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                anchors.topMargin: 0
-                anchors.bottomMargin: 0
-                anchors.rightMargin: 3
-                readOnly: impulsOnOff.checked || ! manOnOff
-                correctingButtons: manOnOff
+                anchors.rightMargin: 2
+                readOnly: true
+                correctingButtons: impulsOnOff.checked
                 limited: false
-                backgroundColor: "black"
+                backgroundColor: "darkgrey"
                 textInput.color: "White"
                 maxBtn.nameText.color: "white"
                 minBtn.nameText.color: "white"
                 onS_more: s_impMore(More)
                 onS_less: s_impLess(Less)
-                onValueChanged: s_manImpactChanged( Value )
+                separCorrButtons: true
                 confmOnEnter: wind.confmOnEnter
             }
+             MFUnit {
+                id: mfuManImpact
+                width: parent.width *0.4
+                tooltipText: "Ручное воздействие.\nЗначение на выходе ПИД-регулятора\nкогда он выключен."
+                visible: impIsAnlgOut && ! impulsOnOff.checked
+                anchors.right: mfuImpact.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 2
+                //readOnly: true
+                //correctingButtons: manOnOff
+                limited: false
+                backgroundColor: "black"
+                textInput.color: "White"
+                maxBtn.nameText.color: "white"
+                minBtn.nameText.color: "white"
+                onValueChanged: s_manImpactChanged( Value )
+                //separCorrButtons: false
+                confmOnEnter: wind.confmOnEnter
+            }
+
             MFUnit {
                 id: mfuImpact
                 width: parent.width *0.4
                 anchors.right: parent.right
+                tooltipText: "Итоговое воздействие. Вычисляется если ПИД-регулятор включен. Если выключен, берется из поля\"Ручное воздействие\"."
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                anchors.topMargin: 0
-                anchors.bottomMargin: 0
-                anchors.rightMargin: 0
                 readOnly: true
-                correctingButtons: manOnOff && impulsOnOff.checked
+                correctingButtons: false
                 limited: false
                 backgroundColor: colorImpact
-                onS_more: s_impMore(More)
-                onS_less: s_impLess(Less)
                 onValueChanged: s_impactChanged( Value )
                 confmOnEnter: wind.confmOnEnter
-                separCorrButtons: (impulsOnOff.checked && impIs2DisctOuts)
+                //separCorrButtons: (impulsOnOff.checked && impIs2DisctOuts)
             }
         }
         Column{
@@ -383,7 +403,7 @@ Window {
                     correctingButtons: false
                     backgroundColor: "#ffffff"
                     mantissa: 4
-                    tooltip: "Коэфициент пропорциональности"
+                    tooltipText: "Коэфициент пропорциональности"
                     onValueChanged:s_KpChanged(Value)
                     confmOnEnter: wind.confmOnEnter
                 }
@@ -410,7 +430,7 @@ Window {
                     correctingButtons: false
                     limited: false
                     backgroundColor: "#ffffff"
-                    tooltip: "Пропорциональная составляющая воздействия"
+                    tooltipText: "Пропорциональная составляющая воздействия"
                     confmOnEnter: wind.confmOnEnter
                     mantissa: mfuImpact.mantissa + 1
                 }
@@ -432,7 +452,7 @@ Window {
                     limited: false
                     backgroundColor: "#ffffff"
                     mantissa: 4
-                    tooltip: "Интегральный коэфициент"
+                    tooltipText: "Интегральный коэфициент"
                     onValueChanged: s_KiChanged( Value )
                     confmOnEnter: wind.confmOnEnter
                 }
@@ -460,7 +480,7 @@ Window {
                     correctingButtons: false
                     limited: false
                     backgroundColor: "#ffffff"
-                    tooltip: "Интегральная составляющая воздействия"
+                    tooltipText: "Интегральная составляющая воздействия"
                     confmOnEnter: wind.confmOnEnter
                     mantissa: mfuImpact.mantissa + 1
                 }
@@ -482,7 +502,7 @@ Window {
                     limited: false
                     backgroundColor: "#ffffff"
                     mantissa: 4
-                    tooltip: "Дифференциальный коэфициент"
+                    tooltipText: "Дифференциальный коэфициент"
                     onValueChanged: s_KdChanged( Value )
                     confmOnEnter: wind.confmOnEnter
                 }
@@ -510,7 +530,7 @@ Window {
                     correctingButtons: false
                     limited: false
                     backgroundColor: "#ffffff"
-                    tooltip: "Дифференциаьная составляющая воздействия"
+                    tooltipText: "Дифференциаьная составляющая воздействия"
                     confmOnEnter: wind.confmOnEnter
                     mantissa: mfuImpact.mantissa + 1
                 }
@@ -552,7 +572,7 @@ Window {
         limited: false
         anchors.topMargin: 0
         correctingButtons: false
-        tooltip: "Max"
+        tooltipText: "Max"
         backgroundColor: mfuToProcess.backgroundColor
         readOnly: false
         borderColor: "Black"
@@ -569,7 +589,7 @@ Window {
         anchors.bottomMargin: 0
         limited: false
         correctingButtons: false
-        tooltip: "Min"
+        tooltipText: "Min"
         backgroundColor: mfuToProcess.backgroundColor
         readOnly: false
         borderColor: "Black"

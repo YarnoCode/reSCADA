@@ -57,7 +57,7 @@ signals:
     void s_onStartedChanged();
     void s_connectDriver();
     void s_disconnectDriver();
-    void s_logging(MessType MessTypeID,  QDateTime DateTime, bool UserOrSys, QString Source, QString Message);
+    void s_logging(Prom::MessType MessTypeID,  QDateTime DateTime, bool UserOrSys, QString Source, QString Message);
 public slots:
     virtual void createWriteTask(Tag * tag, QVariant NewValue = 0) = 0;
 protected slots:

@@ -11,7 +11,7 @@ public:
     explicit EngRouteUnit(Prom::UnitType Type,
                            int *Id,
                            QString Name,
-                           QString TagPefix,
+                           QString TagPrefix,
                            bool Mover,
                            std::vector<QString> EngSensorNames,
                            bool BlockedStop = false,

@@ -5,11 +5,11 @@
 #include "GUIconnect.h"
 
 //------------------------------------------------------------------------------
-Tank::Tank(int *Id, QString Name, QString TagPefix, bool SelfResetAlarm)
+Tank::Tank(int *Id, QString Name, QString TagPrefix, bool SelfResetAlarm)
     : Unit( TypeNoDef,
         Id,
         Name,
-        TagPefix,
+        TagPrefix,
         SelfResetAlarm)
 {
     _currentMode = Prom::UnMdCantHaveMode;
@@ -27,10 +27,10 @@ void Tank::_customConnectToGUI(QObject *guiItem, QObject *)
         tmpElem = guiItem;
     if( tmpElem != nullptr ){
         connect( level, SIGNAL(s_valueChd(QVariant)),  tmpElem, SLOT(setLevel(QVariant)) , Qt::QueuedConnection);
-        QObject::connect( level, SIGNAL(s_maxLevelChanged(QVariant)), tmpElem, SLOT( setAlarmLevelTop(QVariant) ), Qt::QueuedConnection );
-        QObject::connect( tmpElem, SIGNAL(s_alarmTopLevelChanged(QVariant)), level, SLOT( setMaxLevel(QVariant) ), Qt::QueuedConnection );
-        QObject::connect( level, SIGNAL(s_minLevelChanged(QVariant)), tmpElem, SLOT( setAlarmLevelBottom(QVariant) ), Qt::QueuedConnection );
-        QObject::connect( tmpElem, SIGNAL(s_alarmBottomLevelChanged(QVariant)), level, SLOT( setMinLevel(QVariant) ), Qt::QueuedConnection );
+        connect( level, SIGNAL(s_maxLevelChanged(QVariant)), tmpElem, SLOT( setAlarmLevelTop(QVariant) ), Qt::QueuedConnection );
+        connect( tmpElem, SIGNAL(s_alarmTopLevelChanged(QVariant)), level, SLOT( setMaxLevel(QVariant) ), Qt::QueuedConnection );
+        connect( level, SIGNAL(s_minLevelChanged(QVariant)), tmpElem, SLOT( setAlarmLevelBottom(QVariant) ), Qt::QueuedConnection );
+        connect( tmpElem, SIGNAL(s_alarmBottomLevelChanged(QVariant)), level, SLOT( setMinLevel(QVariant) ), Qt::QueuedConnection );
     }
 }
 //------------------------------------------------------------------------------
@@ -39,14 +39,14 @@ void Tank::_customConnectToGUI(QObject *guiItem, QObject *)
 //template<class T>
 TankPIDFC::TankPIDFC(int *Id,
     QString Name,
-    QString TagPefix,
+    QString TagPrefix,
     QString PIDPrefix,
     bool SelfResetAlarm,
     pid::tagsMap PIDTagsNames)
 
     : Tank(Id,
         Name,
-        TagPefix,
+        TagPrefix,
         SelfResetAlarm)
 {
     freqPID = new PID(this, "ПИД рег-р уровня", "воздействие", PIDPrefix,&PIDTagsNames, PIDopt::allOn );
@@ -56,13 +56,13 @@ TankPIDFC::TankPIDFC(int *Id,
 //template<>
 //TankPIDFC<PIDstep>::TankPIDFC(int *Id,
 //    QString Name,
-//    QString TagPefix,
+//    QString TagPrefix,
 //    QString PIDPrefix,
 //    std::map< pidTags, QString> PIDTagsNames)
 
 //    : Tank(Id,
 //        Name,
-//        TagPefix)
+//        TagPrefix)
 //{
 //    freqPID = new PIDstep(this, "ПИД рег-р уровня", PIDPrefix, PIDopt::allOn, PIDTagsNames );
 //}
@@ -80,10 +80,10 @@ void TankPIDFC::_customConnectToGUI(QObject *guiItem, QObject *propWin)
 //------------------------------------------------------------------------------
 TankAL::TankAL(int *Id,
     QString Name,
-    QString TagPefix, bool SelfResetAlarm)
+    QString TagPrefix, bool SelfResetAlarm)
     : Tank(Id,
         Name,
-        TagPefix,
+        TagPrefix,
         SelfResetAlarm)
 {
     autoLvl1 = new OutDiscretETag( this, Prom::PreSet, "вкл. автоуровень на насосе №1", ".autoLvl1" );
@@ -100,9 +100,9 @@ void TankAL::_customConnectToGUI(QObject *guiItem, QObject *)
     connect( autoLvl2, SIGNAL( s_valueChd(QVariant) ), guiItem, SLOT( setAutoLevel2(QVariant) ), Qt::QueuedConnection );
     connect( guiItem , SIGNAL( s_autoLevelChanged2(QVariant) ), autoLvl2, SLOT( setValue(QVariant) ), Qt::QueuedConnection );
 
-    connect( autoMaxLvl, SIGNAL( s_valueChd(QVariant) ),       guiItem,    SLOT( setAutoLevelMax( QVariant )), Qt::QueuedConnection );
+    connect( autoMaxLvl, SIGNAL( s_valueChd(QVariant) ),       guiItem,    SLOT( setAutoLevelMax(QVariant)), Qt::QueuedConnection );
     connect( guiItem,    SIGNAL( s_autoMaxChanged(QVariant) ), autoMaxLvl, SLOT( setValue(QVariant) ), Qt::QueuedConnection );
-    connect( autoMinLvl, SIGNAL( s_valueChd(QVariant) ),       guiItem,    SLOT( setAutoLevelMin( QVariant )), Qt::QueuedConnection );
+    connect( autoMinLvl, SIGNAL( s_valueChd(QVariant) ),       guiItem,    SLOT( setAutoLevelMin(QVariant)), Qt::QueuedConnection );
     connect( guiItem,    SIGNAL( s_autoMinChanged(QVariant) ), autoMinLvl, SLOT( setValue(QVariant) ), Qt::QueuedConnection );
 }
 //------------------------------------------------------------------------------

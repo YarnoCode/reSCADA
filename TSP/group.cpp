@@ -31,7 +31,7 @@ Group::~Group()
     }
 }
 //------------------------------------------------------------------------------
-Quality Group::readQuality()
+Prom::Quality Group::readQuality()
 {
     return quality;
 }

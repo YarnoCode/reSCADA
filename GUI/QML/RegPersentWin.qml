@@ -69,7 +69,7 @@ Window {
         valueReal: 100
         backgroundColor: "#c36b6b"
         borderColor: "#c36b6b"
-        tooltip: "максимальное значение"
+        tooltipText: "максимальное значение"
         readOnly: false
         visible: true
         anchors.left: parent.horizontalCenter
@@ -89,7 +89,7 @@ Window {
         valueReal: 0
         backgroundColor: "#6e9ec8"
         borderColor: "#6e9ec8"
-        tooltip: "минимальное значение"
+        tooltipText: "минимальное значение"
         readOnly: false
         visible: true
         anchors.left: parent.left
@@ -164,7 +164,7 @@ Window {
         valueReal: 60
         backgroundColor: mainColor
         borderColor: mainColor
-        tooltip: "Min"
+        tooltipText: "Min"
         readOnly: false
         visible: true
         anchors.left: parent.left

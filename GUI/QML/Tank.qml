@@ -264,7 +264,7 @@ Item {
         objectName: "alarmTopLevel"
         height: 20
         backgroundColor: "#f03e3e"
-        tooltip: "Предельный верхний уровень"
+        tooltipText: "Предельный верхний уровень"
         readOnly: false
         visible: showAlarmLevel
         anchors.top: capacity.bottom
@@ -286,14 +286,14 @@ Item {
         height: 20
         objectName: "alarmBottomLevel"
         backgroundColor: "#3e6ff0"
-        tooltip: "Предельный нижний уровень"
+        tooltipText: "Предельный нижний уровень"
         readOnly: false
-        visible: showAlarmLevel//NOTE пока закрыл
+        visible: showAlarmLevel
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: 0
         valueFontSize.bold: false
-        disappear: showAlarmLevel//NOTE пока закрыл
+        disappear: showAlarmLevel
         correctingButtons: true
         limited: true
         upLimit: mfuAlarmTopLevel.valueReal

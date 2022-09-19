@@ -15,7 +15,7 @@ class PLC : public Unit
 public:
     explicit PLC(int *Id,
                   QString Name,
-                  QString TagPefix,
+                  QString TagPrefix,
                   Prom::UnitModes SaveMode = Prom::UnMdStart);
 
 protected:

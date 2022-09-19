@@ -12,14 +12,14 @@ class OutETag;
 class InDiscretETag;
 class OutDiscretETag;
 
-class SimpElecEgine : public Unit
+class SimpElecEngine : public Unit
 {
     Q_OBJECT
 public:
-    explicit SimpElecEgine(Prom::UnitType Type,
+    explicit SimpElecEngine(Prom::UnitType Type,
         int *Id,
         QString Name,
-        QString TagPefix,
+        QString TagPrefix,
         bool SelfResetAlarm = false);
 
 protected:

@@ -21,7 +21,7 @@ UnitPropItem {
 
 
     function started() {
-        //startComand()
+        st = true
         std = true
         manual = false
         backgroundColor = colorRun
@@ -29,6 +29,7 @@ UnitPropItem {
     }
     function stoped() {
         //stopComand()
+        st = false
         std = false
         manual = false
         backgroundColor = colorStopReady
@@ -56,11 +57,13 @@ UnitPropItem {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+
         acceptedButtons: Qt.RightButton | Qt.LeftButton
         onClicked: {
             if (mouse.button & Qt.RightButton) {
                 openSettings()
-            } else if (mouse.button & Qt.LeftButton) {
+            }
+            else if (mouse.button & Qt.LeftButton) {
                 notify = false
                 alarmNotify = false
             }
@@ -68,13 +71,17 @@ UnitPropItem {
         onDoubleClicked: {
             if(st || std){
                 s_stop()
-                stoped()
+                //stoped() //for test
             }
             else{
                 s_start()
-                started()
+                //setAlarmNotify()//for test
+                //started() //for test
             }
         }
+        hoverEnabled: true
+        onEntered: tooltip.visible = tooltipText != ""
+        onExited: tooltip.visible = false
     }
 }
 

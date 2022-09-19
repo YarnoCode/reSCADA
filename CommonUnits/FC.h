@@ -18,7 +18,7 @@ class FCUnitRstFwdFqFq : public Unit
 public:
     explicit FCUnitRstFwdFqFq(int *Id,
         QString Name,
-        QString TagPefix,
+        QString TagPrefix,
         bool SelfResetAlarm = false);
 
     OutDiscretETag *reset   {nullptr};
@@ -52,7 +52,7 @@ class FCUnitOkSrtFq0Fq0 : public Unit
 public:
     explicit FCUnitOkSrtFq0Fq0(int *Id,
         QString Name,
-        QString TagPefix,
+        QString TagPrefix,
         bool SelfResetAlarm = false);
 
     InDiscretETag  *ok      {nullptr};

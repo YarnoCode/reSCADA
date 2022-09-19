@@ -54,7 +54,7 @@ StartStopUnit {
     }
     Text {
         id: fanName
-        text: name
+        text: title
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top

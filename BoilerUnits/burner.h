@@ -1,46 +1,55 @@
-﻿#ifndef DEAIRATOR_H
-#define DEAIRATOR_H
+﻿#ifndef BURNER_H
+#define BURNER_H
 
-//#ifndef UNIT_H
-//#include "unit.h"
-//#endif
+#ifndef UNIT_H
+#include "unit.h"
+#endif
 //#include "SCADAenums.h"
 #include "PID.h"
-#include "tank.h"
 
 class OutETag;
 class MxMnInETag;
 class OutDiscretETag;
 class FCUnitOkSrtFq0Fq0;
 class SimpElecEgine;
+class ActWorkSt;
 class RegValveDO;
-//class PIDstep;
 class InDiscretETag;
+class ActWorkStWk;
 
-class Deairator : public Tank
+class Burner : public Unit
 {
     Q_OBJECT
 public:
-    explicit Deairator(
-        int *Id,
+    explicit Burner(int *Id,
         QString Name,
-        QString TagPefix,
-        QString lvlPIDPefix,
-        QString steamPIDPefix,
+        QString TagPrefix,
+        QString pGasPIDPrefix,
+        bool SelfResetAlarm,
         const pid::tagsMap *PIDTagsNames = &pid::StdPIDTagsNames);
 
-    MxMnInETag *tWater;
-    MxMnInETag *pSteam;
+    InETag *pGas;
 
     InDiscretETag * alarm;
+    InDiscretETag * alarmIgnition;
+    InDiscretETag * alarmFlame;
     OutDiscretETag * reset;
+    InETag * state;
+    OutDiscretETag * disabled;
+    InDiscretETag * flameS;
+    InDiscretETag * ignitionS;
+    OutETag *ignitionAlarmDelay;
+    OutETag *ignitionStableDelay;
+    OutETag *flameStartDelay;
+    OutETag *flameStableDelay;
 
-    PIDstep *lvlPID;
-    PIDstep *steamPID;
-    FCUnitOkSrtFq0Fq0 *waterFC;
-    SimpElecEgine *waterPump1;
-    SimpElecEgine *waterPump2;
-    RegValveDO *vSteam;
+    PIDstep *gasPID;
+
+    ActWorkSt *ignition;
+    ActWorkSt *vIgnition;
+    ActWorkSt *vGas;
+    RegValveDO *vrGas;
+
 public slots:
     bool resetAlarm() override;
 
@@ -52,4 +61,4 @@ protected slots:
 };
 
 
-#endif // DEAIRATOR_H
+#endif // BURNER_H

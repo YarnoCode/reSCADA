@@ -114,7 +114,6 @@ Window {
             }
         }
     }
-
     Component {
         id: propertyEngRow
         Column {
@@ -356,7 +355,6 @@ Window {
                                     + ((hours + ":")) + ((minutes > 9 ? "" : "0") + (minutes + ":"))
                                     + ((seconds > 9 ? "" : "0") + seconds)
                         }
-
                         height: 16
                         width: timed ? (parent.width * parent.ratio / 2) : 0
                         anchors.top: parent.top
@@ -442,7 +440,6 @@ Window {
             }
         }
     }
-
     ObjectModel {
         id: alarms
         property int index: 0
@@ -495,7 +492,6 @@ Window {
                 height: alarmContent.height + padding * 2
                 padding: 4
                 property bool alarm: false
-                property bool alarmNotify: false
                 property color alarmColor: Fap.alarm
                 property color normalColor: Fap.menuBackground
                 background: Rectangle {

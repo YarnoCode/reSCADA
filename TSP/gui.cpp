@@ -46,9 +46,9 @@ void TSPWindow::on_action_TSP_triggered()
 void TSPWindow::on_action_resize_triggered()
 {
   switch (ui->tabWidget->currentIndex()) {
-    case tabTags:    emit ui->tableTags->resizeColumnsToContents();
-    case tabGroups:  emit ui->tableGroups->resizeColumnsToContents();
-    case tabDrivers: emit ui->tableDrivers->resizeColumnsToContents();
+    case tabTags:    ui->tableTags->resizeColumnsToContents();
+    case tabGroups:  ui->tableGroups->resizeColumnsToContents();
+    case tabDrivers: ui->tableDrivers->resizeColumnsToContents();
   }
 }
 
@@ -144,7 +144,7 @@ void TSPWindow::on_actionFalse_triggered()
   setValTagInCurrRow( false );
 }
 
-void TSPWindow::statusBarLog(MessType MessTypeID,  QDateTime DateTime, bool UserOrSys, QString Source, QString Message)
+void TSPWindow::statusBarLog(Prom::MessType MessTypeID,  QDateTime DateTime, bool, QString Source, QString Message)
 {
   if(ui->statusbar)
   switch (MessTypeID) {

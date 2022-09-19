@@ -195,9 +195,6 @@ void ETag::_acceptValue(QVariant Val)
         }
         else{
             _checkVal();
-            if(_alarmSelfReset && _mayResetAlarm){
-                resetAlarm();
-            }
         }
     }
     // }

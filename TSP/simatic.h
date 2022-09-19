@@ -45,7 +45,7 @@ private:
 
   //variables
   QList<Task*> listOfTasks;
-  TS7Client * client = nullptr;
+  TS7Client * client = {};
   QString address;
   int rack;
   int slot;

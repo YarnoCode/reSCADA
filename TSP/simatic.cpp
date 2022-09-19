@@ -33,8 +33,8 @@ void SimaticDriver::initThread()
     this->moveToThread(thread);
     taskTimer = new QTimer();
     taskTimer->moveToThread(thread);
-    client = new TS7Client();
-    client->moveToThread(thread);
+    //client = new TS7Client();
+    //client->moveToThread(thread);
     QObject::connect(this, &Driver::s_connectDriver, this, &Driver::connect, Qt::QueuedConnection);
     QObject::connect(this, &Driver::s_disconnectDriver, this, &Driver::disconnect, Qt::QueuedConnection);
 }
@@ -42,41 +42,35 @@ void SimaticDriver::initThread()
 //Проверяет соединение с ПЛК, если его нет - соединяет
 void SimaticDriver::connect()
 {
-    if( !client ) {
-        noError = false;
-        emit s_logging(MessError, QDateTime::currentDateTime(),
-            false, this->objectName(),
-            "driver is null" );
-        return;
+    if( client ) {
+        delete client;
     }
+    client = new TS7Client();
+    char charAddress[ address.size() ];
+    memcpy( &charAddress, address.toStdString().c_str(), address.size() );
+    charAddress[ address.size() ] = '\0';
 
-    if( !client->Connected() || !noError ){
-        char charAddress[ address.size() ];
-        memcpy( &charAddress, address.toStdString().c_str(), address.size() );
-        charAddress[ address.size() ] = '\0';
+    // Запрос на соединение
+    int res = client->ConnectTo(charAddress, rack, slot);
 
-        // Запрос на соединение
-        int res = client->ConnectTo(charAddress, rack, slot);
-
-        if( res == 0 ) {//Успешно соединился
-            emit s_logging(MessInfo, QDateTime::currentDateTime(), false,
-                this->objectName(), "Simatic driver connected");
-            noError = true;
-            PDULen = client->PDULength() - 64;
-        }
-        else {//Нет соединения. Сообщение об ошибке в лог.
-            noError = false;
-            if( errorCode != res )emit s_logging(MessError, QDateTime::currentDateTime(),
-                    false, this->objectName(),
-                    std::string("Simatic driver connection error: "
-                        + ( res < 0 ? "libruary error" : CliErrorText(res)) ).c_str() );
-            errorCode = res;
-        }
-        if (!started){
-            started = true;
-            emit s_onStartedChanged();
-            scheduleHandler();
-        }
+    if( res == 0 ) {//Успешно соединился
+        emit s_logging(MessInfo, QDateTime::currentDateTime(), false,
+            this->objectName(), "Simatic driver connected");
+        noError = true;
+        PDULen = client->PDULength() - 64;
+    }
+    else {//Нет соединения. Сообщение об ошибке в лог.
+        noError = false;
+        if( errorCode != res )emit s_logging(MessError, QDateTime::currentDateTime(),
+                false, this->objectName(),
+                std::string("Simatic driver connection error: "
+                    + ( res < 0 ? "libruary error" : CliErrorText(res)) ).c_str() );
+        errorCode = res;
+    }
+    if (!started){
+        started = true;
+        emit s_onStartedChanged();
+        scheduleHandler();
     }
 }
 //------------------------------------------------------------------------------
@@ -235,7 +229,6 @@ inline int toBitAdr( SimAddress *SA )
     return SA->regAddr.memSlot * 8 + SA->regAddr.bit;
 }
 
-//NOTE просто захотелось побаловаться с #define))) Ни разу не пробовал.
 #define offsetBuff (tagAdr->regAddr.memSlot - task->regAddr.memSlot) * sizeKf
 //------------------------------------------------------------------------------
 void SimaticDriver::read( SimaticDriver::Task *task )

@@ -70,9 +70,9 @@ QString Prom::modeToString(Prom::UnitModes UnitModeInt)
     switch (UnitModeInt) {
     case UnMdNoDef    : return "Не определено";
     case UnMdStop     : return "Остановить";
-    case UnMdCollingStop: return "Охлаждение для остановки";
+    case UnMdCollingStop  : return "Охлаждение для остановки";
     case UnMdCollingStoped: return "Остановлен с охлаждением";
-    case UnMdStart    : return "Запустить";
+    case UnMdStart      : return "Запустить";
     case UnMdCleanStart : return "Очистка";
     case UnMdCleanStop: return "Остановить после чистки";
     case UnMdForward  : return "Запустить вперед";
@@ -83,7 +83,7 @@ QString Prom::modeToString(Prom::UnitModes UnitModeInt)
     case UnMdMidle    : return "Средний уровень";
     case UnMdLow      : return "Нижний уровень";
     case UnMdEmpty    : return "Пустой";
-    case UnMdManualStarted : return "Ручной или внешний запуск";
+    case UnMdManualStarted  : return "Ручной или внешний запуск";
     case UnMdNoriaPropStart : return "Нория в режиме очистки подпора";
     case UnMdSaveMode : return "Безопасный режим";
     case UnMdFreeze   : return "Аварийно остановить";
@@ -92,11 +92,19 @@ QString Prom::modeToString(Prom::UnitModes UnitModeInt)
     case UnMdFire     : return "Пожар";
     case UnMdNeedLoad : return "Нужна загрузка";
     case UnMdNeedUnload : return "Нужна выгрузка";
-    case UnMdStorage  : return "Хранение";
+    case UnMdStorage    : return "Хранение";
     case UnMdStopAndWait  : return "Стоп до разрешения";
     case UnMdPartStarted  : return "Запущен частично";
-    case UnMdAutoStart  : return "Запущен в автоматическом режиме";
-    case UnMdWarmingUp  : return "Прогрев";
+    case UnMdAutoStart    : return "Запущен в автоматическом режиме";
+    case UnMdWarmingUp    : return "Прогрев";
+    case UnMdCantHaveMode : return "Не имеет режимов";
+    case UnMdBlowdown     : return "Продувка";
+    case UnMdFireStart    : return "Розжиг";
+    case UnMdHeating      : return "Прогрев";
+    case UnMdWork         : return "Работа";
+    case UnMdManual       : return "Ручной режим";
+    case UnMdSelfTest     : return "Режим самотестирования";
+    case UnMdGermTest     : return "Режим теста герметичности";
     }
     return "";
 }

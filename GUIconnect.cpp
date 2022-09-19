@@ -35,7 +35,9 @@ bool AnalogSignalVar1Connect(QObject *rootItem, QString ElementName, ETag *Tag)
 bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, ETag *Tag)
 {
     QObject * tmpElem;
-    if( ElementName != "")tmpElem = rootItem->findChild<QObject*>(ElementName);
+    if( ElementName != ""){
+        tmpElem = rootItem->findChild<QObject*>(ElementName);
+    }
     else tmpElem = rootItem;
     if( tmpElem != nullptr ){
         AnalogSignalVar1Connect(rootItem, ElementName, Tag);
@@ -119,7 +121,8 @@ bool PIDwinConnect(QObject *rootItem, QString ElementName, PID * PID)
         QObject::connect( PID->impMax, SIGNAL( s_valueChd(QVariant) ), tmpElem, SLOT( setImpactMax(QVariant) ), Qt::QueuedConnection );
         QObject::connect( tmpElem, SIGNAL(s_setPtMinChanged(QVariant)), PID->setPtMin , SLOT( setValue(QVariant) ), Qt::QueuedConnection );
         QObject::connect( PID->setPtMin, SIGNAL( s_valueChd(QVariant) ), tmpElem, SLOT( setImpactMin(QVariant) ), Qt::QueuedConnection );
-
+        if(PID->feedback)
+            QObject::connect(PID->feedback, SIGNAL( s_valueChd(QVariant) ), tmpElem, SLOT( setFeedback(QVariant) ), Qt::QueuedConnection );
         return true;
     }
     return false;
@@ -134,7 +137,7 @@ bool PIDwinConnect(QObject *rootItem, QString ElementName, PIDstep *PIDst)
     if( tmpElem != nullptr ){
         PIDwinConnect(rootItem, ElementName, (PID*)PIDst);
         QObject::connect( tmpElem, SIGNAL(s_impMore(QVariant)), PIDst->manImplUp , SLOT( setValue(QVariant) ), Qt::QueuedConnection );
-        QObject::connect( tmpElem, SIGNAL(s_impLess(QVariant)), PIDst->manImplDow , SLOT( setValue(QVariant) ), Qt::QueuedConnection );
+        QObject::connect( tmpElem, SIGNAL(s_impLess(QVariant)), PIDst->manImplDown , SLOT( setValue(QVariant) ), Qt::QueuedConnection );
 
         QObject::connect( tmpElem, SIGNAL(s_impulseOn(QVariant)), PIDst->manImpulseOn , SLOT( setValue(QVariant) ), Qt::QueuedConnection );
         QObject::connect( PIDst->manImpulseOn, SIGNAL( s_valueChd(QVariant) ), tmpElem, SLOT( setImpulseOn(QVariant) ), Qt::QueuedConnection );

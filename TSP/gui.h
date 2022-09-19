@@ -19,7 +19,7 @@ public:
 private:
   enum Tabs{tabTags = 0, tabGroups, tabDrivers};
 private slots:
-  void statusBarLog(MessType MessTypeID,  QDateTime DateTime, bool UserOrSys, QString Source, QString Message);
+  void statusBarLog(Prom::MessType MessTypeID,  QDateTime DateTime, bool UserOrSys, QString Source, QString Message);
   void setValTagInCurrRow( QVariant value );
 
   void on_tabWidget_currentChanged(int index);

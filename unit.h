@@ -35,6 +35,7 @@ public:
     QSettings *ini;
 
     void addETag(ETag * tag);
+    void removeETag(ETag * tag);
     bool isAlarm() { return _alarm; }
     bool isAlarmConnection(){ return _alarmConnection;}
     bool isBlocked() { return _blocked; }
@@ -52,7 +53,7 @@ public:
     virtual bool addSubUnit(Unit * unit);
     QVector<Unit *> subUnits() const;
     void moveToThread(QThread * thread);
-    virtual Prom::SetModeResp setMode(Prom::UnitModes mode, bool UserOrSys);
+    virtual Prom::SetModeResp setMode(Prom::UnitModes mode, bool UserOrSys = true);
     void setBlocked(bool blocked);
 
     Prom::UnitModes setedMode() { return _setedMode ; }

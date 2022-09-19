@@ -9,13 +9,13 @@
 
 FCUnitRstFwdFqFq::FCUnitRstFwdFqFq(int *Id,
     QString Name,
-    QString TagPefix,
+    QString TagPrefix,
     bool SelfResetAlarm)
 
     : Unit( Prom::TypeNoDef,
         Id,
         Name,
-        TagPefix,
+        TagPrefix,
         SelfResetAlarm,
         Prom::UnMdStop)
 {
@@ -75,20 +75,22 @@ void FCUnitRstFwdFqFq::_customConnectToGUI(QObject *guiItem,  QObject */*propWin
 FCUnitOkSrtFq0Fq0::FCUnitOkSrtFq0Fq0(
     int *Id,
     QString Name,
-    QString TagPefix,
+    QString TagPrefix,
     bool SelfResetAlarm)
     : Unit( Prom::TypeNoDef,
         Id,
         Name,
-        TagPefix,
+        TagPrefix,
         SelfResetAlarm,
         Prom::UnMdStop)
 {
     ok = new InDiscretETag(this, "ошибка", ".ok.alarm",true,false,true,false,false,false);
-    reset = new OutDiscretETag( this, Prom::PreSet, "сброс ошибок", ".resetAlarm",
+    ok->setAlarmSelfReset(SelfResetAlarm);
+    ok->needBeUndetectedAlarm();
+    reset = new OutDiscretETag( this, Prom::PreSet, "сброс ошибок", ".ok.resetAlarm",
         true, false, false, false, false, true, false, false,
         false, true,Prom::VCNo, true );
-    reset->setImpulseDuration(5);
+    reset->setImpulseDuration(1);
     start = new InDiscretETag(this, "старт", ".start",true,false,true,false,false,false);
     connect(start, &InDiscretETag::s_qualityChd, this, &FCUnitRstFwdFqFq::updateState);
     connect(start, &InDiscretETag::s_detected, this, &FCUnitRstFwdFqFq::updateState);

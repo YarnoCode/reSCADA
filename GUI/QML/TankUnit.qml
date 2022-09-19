@@ -7,7 +7,6 @@ UnitPropItem {
     property alias tank: tank
     property alias mouseArea : msAr
     allovAlarmBodyBlinck: false
-    allovAlarmBorderBlinck: true
 
 
     //++++++++ Test +++++++
@@ -33,9 +32,9 @@ UnitPropItem {
                 setAlarmNotified()
             }
         }
-        //        onPressAndHold: {
-        //            setLvl( level + 0.05 ) test
-        //        }
+        hoverEnabled: true
+        onEntered: tooltip.visible = tooltipText != ""
+        onExited: tooltip.visible = false
     }
     Tank {
         id: tank

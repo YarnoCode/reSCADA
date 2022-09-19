@@ -12,7 +12,7 @@ class OutETag;
 class MxMnInETag;
 class OutDiscretETag;
 class FCUnitOkSrtFq0Fq0;
-class SimpElecEgine;
+class SimpElecEngine;
 class RegValveDO;
 //class PIDstep;
 class InDiscretETag;
@@ -23,7 +23,7 @@ class Deairator : public Tank
 public:
     explicit Deairator(int *Id,
         QString Name,
-        QString TagPefix,
+        QString TagPrefix,
         QString lvlPIDPefix,
         QString steamPIDPefix,
         bool SelfAlarmReset = false,
@@ -38,9 +38,9 @@ public:
     PIDstep *lvlPID;
     PIDstep *steamPID;
     FCUnitOkSrtFq0Fq0 *waterFC;
-    SimpElecEgine *waterPump1;
-    SimpElecEgine *waterPump2;
-    RegValveDO *vSteam;
+    SimpElecEngine *waterPump1;
+    SimpElecEngine *waterPump2;
+    RegValveDO *vrSteam;
 public slots:
     bool resetAlarm() override;
 

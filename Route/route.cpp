@@ -42,9 +42,9 @@ Route::Route(PromObject * Owner, int ID, QString Name)
 
     if(objectName() == "") {
         setObjectName("Маршрут №" + QString::number(ID));
-        emit NameUpdate ( ID , objectName());
+        //emit NameUpdate ( ID , objectName());
     }
-    emit Logging  (Prom::MessChangeState, QDateTime::currentDateTime(), true, objectName(), "создан");
+    //emit Logging  (Prom::MessChangeState, QDateTime::currentDateTime(), true, objectName(), "создан");
 }
 
 //------------------------------------------------------------------------------

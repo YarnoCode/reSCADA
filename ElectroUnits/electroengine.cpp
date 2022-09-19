@@ -208,7 +208,7 @@ void ElectroEngine::CheckStateSTART1KM()
         else {
             _nowState = EngToForvard;
             /*TEST*/if(KMforward->isImit() && startForward->isImit())
-                /*TEST*/QTimer::singleShot(1000, [ this ]() {
+                /*TEST*/QTimer::singleShot(1000, this,[ this ]() {
                     this->KMforward->writeImitVal(true);
                 });///
         }
@@ -218,7 +218,7 @@ void ElectroEngine::CheckStateSTART1KM()
             if(_nowState == EngForvard || _nowState == EngToForvard) {
                 _nowState = EngToStopForward;
                 /*TEST*/if(KMforward->isImit() && startForward->isImit())
-                    /*TEST*/QTimer::singleShot(1000, [ this ]() {
+                    /*TEST*/QTimer::singleShot(1000, this,[ this ]() {
                         this->KMforward->writeImitVal(false);
                     });///
             }
@@ -248,14 +248,14 @@ void ElectroEngine::CheckStateSartStop1KM()
         else {
             _nowState = EngToForvard;
             /*TEST*/if(KMforward->isImit() && startForward->isImit())
-                /*TEST*/QTimer::singleShot(1000, [ this ]() { this->KMforward->writeImitVal(true); });
+                /*TEST*/QTimer::singleShot(1000, this,[ this ]() { this->KMforward->writeImitVal(true); });
         }
     }
     else if(stop->isOn()) {
         if(KMforward->isDetected()) {
             _nowState = EngToStopForward;
             /*TEST*/if(KMforward->isImit() && startForward->isImit())
-                /*TEST*/QTimer::singleShot(1000, [ this ](){ this->KMforward->writeImitVal(false); });///
+                /*TEST*/QTimer::singleShot(1000, this,[ this ](){ this->KMforward->writeImitVal(false); });///
         }
         else {
             _nowState = EngToStopForward;
@@ -293,7 +293,7 @@ void ElectroEngine::CheckStateSartStop()
         }
     }
     else if(stop->isOn()) {
-        //QTimer::singleShot(5000, [ this ]() { this->stop->Off(); });
+        //QTimer::singleShot(5000, this,[ this ]() { this->stop->Off(); });
         _nowState = EngStoped;
         //stop->Off();
     }
@@ -378,7 +378,7 @@ void ElectroEngine::CheckStateREVERSE2KM()
         if(KMforward->isDetected()) _nowState = EngForvard;
         else {
             _nowState = EngToForvard;
-            /*TEST*/if(KMforward->isImit() && startForward->isImit()) QTimer::singleShot(1000, [ this ]() {
+            /*TEST*/if(KMforward->isImit() && startForward->isImit()) QTimer::singleShot(1000,this, [ this ]() {
                     this->KMforward->writeImitVal(true);
                 });///
         }
@@ -387,7 +387,7 @@ void ElectroEngine::CheckStateREVERSE2KM()
         if(KMbackward->isDetected()) _nowState = EngBackward;
         else {
             _nowState = EngToBackward;
-            /*TEST*/if(KMbackward->isImit() && startBackward->isImit()) QTimer::singleShot(1000, [ this ]() {
+            /*TEST*/if(KMbackward->isImit() && startBackward->isImit()) QTimer::singleShot(1000, this,[ this ]() {
                     this->KMbackward->writeImitVal(true);
                 });///
         }
@@ -396,7 +396,7 @@ void ElectroEngine::CheckStateREVERSE2KM()
         if(KMforward->isDetected() && !KMbackward->isDetected()) {
             if(_nowState == EngForvard || _nowState == EngToForvard) {
                 _nowState = EngToStopForward;
-                /*TEST*/if(KMforward->isImit() && startForward->isImit()) QTimer::singleShot(1000, [ this ]() {
+                /*TEST*/if(KMforward->isImit() && startForward->isImit()) QTimer::singleShot(1000, this,[ this ]() {
                         this->KMforward->writeImitVal(false);
                     });///
             }
@@ -405,7 +405,7 @@ void ElectroEngine::CheckStateREVERSE2KM()
         else if (!KMforward->isDetected() && KMbackward->isDetected()) {
             if(_nowState == EngBackward || _nowState == EngToBackward) {
                 _nowState = EngToStopBackward;
-                /*TEST*/if(KMbackward->isImit() && startBackward->isImit()) QTimer::singleShot(1000, [ this ]() {
+                /*TEST*/if(KMbackward->isImit() && startBackward->isImit()) QTimer::singleShot(1000, this, [ this ]() {
                         this->KMbackward->writeImitVal(false);
                     });///
             }

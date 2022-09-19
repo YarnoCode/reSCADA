@@ -16,7 +16,7 @@ public:
     explicit RouteUnit(Prom::UnitType Type,
                         int *Id,
                         QString Name,
-                        QString TagPefix,
+                        QString TagPrefix,
                         bool Mover,
                         Prom::UnitModes SaveMode);
     ~RouteUnit();

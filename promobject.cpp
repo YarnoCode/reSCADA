@@ -120,8 +120,8 @@ PromObject::~PromObject()
     delete iniRoute;
     delete _unitsThread;
     delete _routeThread;
-    tsp->stop();
     _tspWin->close();
+    //tsp->stop();
     delete tsp;
     delete _tspWin;
     Logging(Prom::MessInfo, QDateTime::currentDateTime(), false, "SCADA", "ВЫКЛЮЧЕНИЕ");
@@ -152,8 +152,8 @@ void PromObject::MegaRescan()
 void PromObject::alarmDo()
 {
     if(_alarmSoundF && _alarmSoundF->isFinished()) {
-        _alarmSoundF->setLoops(3);
-        _alarmSoundF->play();
+        //_alarmSoundF->setLoops(3);
+        //_alarmSoundF->play();
     }
 }
 

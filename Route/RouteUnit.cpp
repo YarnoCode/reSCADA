@@ -8,13 +8,13 @@ extern Route * g_currentRoute;
 RouteUnit::RouteUnit(Prom::UnitType Type,
                       int *Id,
                       QString Name,
-                      QString TagPefix,
+                      QString TagPrefix,
                       bool Mover,
                       Prom::UnitModes SaveMode)
     :Unit(Type,
            Id,
            Name,
-           TagPefix,
+           TagPrefix,
            Mover,
            SaveMode)
     //      _routeAlarmMode(AlarmRouteMode)
@@ -73,9 +73,9 @@ void RouteUnit::addInRoute(Route *route, Prom::UnitModes mode)
         return;
     }
     _routeCommand = Prom::RtCmNo;
-    connect   (this, SIGNAL(s_addInRouteSig(RouteUnit *, Prom::UnitModes)), route, SLOT(AddUnit(RouteUnit * , Prom::UnitModes)), Qt::QueuedConnection);
+    connect   (this, SIGNAL(s_addInRouteSig(RouteUnit*,Prom::UnitModes)), route, SLOT(AddUnit(RouteUnit * , Prom::UnitModes)), Qt::QueuedConnection);
     emit s_addInRouteSig(this, mode);
-    disconnect(this, SIGNAL(s_addInRouteSig(RouteUnit *, Prom::UnitModes)), route, SLOT(AddUnit(RouteUnit * , Prom::UnitModes)));
+    disconnect(this, SIGNAL(s_addInRouteSig(RouteUnit*,Prom::UnitModes)), route, SLOT(AddUnit(RouteUnit * , Prom::UnitModes)));
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ Prom::UnitModes RouteUnit::routeMode(Route * rout)
 void RouteUnit::commandFromRoute(Prom::RouteCommand Command)
 {
     static Prom::UnitModes newMode = Prom::UnMdNoDef;
-    emit logging  (Prom::MessInfo, QDateTime::currentDateTime(), true, objectName(), "обработка юнитом " + objectName() +
+    logging(Prom::MessInfo, QDateTime::currentDateTime(), true, objectName(), "обработка юнитом " + objectName() +
                      "команды - " + QString::number(Command));
     if(_myRoute != nullptr) {
         if(_routeCommand == Command){

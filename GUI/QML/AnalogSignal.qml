@@ -22,13 +22,14 @@ UnitItem {
             tooltipText += "\n" + alarmDescr
         }
     }
-
+    signal s_valueChd( variant Value )
     function setValue(value) {
         //уст значение
         //if (Fap.isString(value))
         value = Number(value)
         value = value.toFixed(mantissa)
         valueLable.text = "<b>"+value+"</b>" +postfix
+        s_valueChd(value)
     }
 
     Rectangle {

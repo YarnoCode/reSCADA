@@ -1,4 +1,4 @@
- #include "tsp.h"
+#include "tsp.h"
 #include "QFile"
 #include <QTextCodec>
 #include <QJsonDocument>
@@ -22,6 +22,7 @@ TSP::TSP(QObject *parent, QString name) : QObject(parent)
 TSP::~TSP()
 {
     foreach (Driver * driver, listOfDrivers) {
+        //driver->disconnect();
         delete driver;
     }
 }
@@ -415,7 +416,8 @@ void TSP::start()
 void TSP::stop()
 {
     foreach (Driver * driver, listOfDrivers) {
-        emit driver->s_disconnectDriver();
+        driver->disconnect();
+        //emit driver->s_disconnectDriver();
     }
 }
 //------------------------------------------------------------------------------

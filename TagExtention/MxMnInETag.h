@@ -64,7 +64,7 @@ protected:
     bool _detectPulse = false;
     bool _trig = true;
     bool _preDetect = true;
-    bool _tunabDetectLevel;
+    bool _tunabDetectLevel = false;
 //    bool _timeMaxValue = false;
 //    unsigned int _timeMaxInterval_ms = 1000;
     QVariant _timeMaxValue{0};

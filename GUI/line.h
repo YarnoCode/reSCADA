@@ -35,6 +35,7 @@ public:
         int x = qMin(m_x1, m_x2) - m_penWidth/2;
         int y = qMin(m_y1, m_y2) - m_penWidth/2;
         painter->drawLine(m_x1 - x, m_y1 - y, m_x2 - x, m_y2 - y);
+        //painter->drawLine(0, 0, 100, 100);
     }
 
     // Get methods

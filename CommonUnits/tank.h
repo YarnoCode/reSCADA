@@ -17,7 +17,7 @@ class Tank : public Unit
 {
     Q_OBJECT
 public:
-    explicit Tank( int *Id, QString Name, QString TagPefix, bool SelfResetAlarm = false );
+    explicit Tank( int *Id, QString Name, QString TagPrefix, bool SelfResetAlarm = false );
     //~expenSpan();
     MxMnInETag * level { nullptr };
 
@@ -33,7 +33,7 @@ class TankPIDFC : public Tank
 {
     Q_OBJECT
 public:
-    explicit TankPIDFC(int *Id, QString Name, QString TagPefix, QString PIDPrefix, bool SelfResetAlarm = false,
+    explicit TankPIDFC(int *Id, QString Name, QString TagPrefix, QString PIDPrefix, bool SelfResetAlarm = false,
         pid::tagsMap PIDTagsNames = pid::StdPIDTagsNames/*набор значений имен тегов ПИД регулятора*/);
 
     PID * freqPID;
@@ -48,7 +48,7 @@ class TankAL : public Tank
 {
     Q_OBJECT
 public:
-    explicit TankAL( int *Id, QString Name, QString TagPefix, bool SelfResetAlarm = false );
+    explicit TankAL( int *Id, QString Name, QString TagPrefix, bool SelfResetAlarm = false );
     //~expenSpan();
     OutDiscretETag *autoLvl1 {nullptr};
     OutDiscretETag *autoLvl2 {nullptr};

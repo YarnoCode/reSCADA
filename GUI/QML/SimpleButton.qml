@@ -8,16 +8,17 @@ Rectangle {
     width: 100
     height: 50
     border.color: "#919191"
-    property  alias mouseArea: mA
-    property  alias nameText: nameText
-
-    property bool checkable: false
-    property bool checked: true
+    property alias mouseArea: mA
+    property alias nameText: nameText
+    property alias toolTipText: tTip.text
+    property real  lightnessCoef:  0.5
+    property bool  checkable: false
+    property bool  checked: true
     property alias pressed: mA.pressed
     property color unPressCheckColor: Fap.buttonsBackground
     property color pressCheckColor: Qt.hsla(unPressCheckColor.hslHue,
                                             unPressCheckColor.hslSaturation,
-                                            unPressCheckColor.hslLightness * 0.5,
+                                            unPressCheckColor.hslLightness * lightnessCoef,
                                             unPressCheckColor.a)
     border.width: 1
 
@@ -67,8 +68,6 @@ Rectangle {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         hoverEnabled: true
-        onEntered: border.width++
-        onExited: border.width--
         onClicked: {
             if((mouse.button & Qt.LeftButton) && checkable) {
 
@@ -88,6 +87,20 @@ Rectangle {
                     s_off();
             }
         }
+        onEntered: {
+            border.width++
+            tTip.visible = tTip.text != ""
+        }
+        onExited: {
+            border.width--
+            tTip.visible = false
+        }
+    }
+    ToolTip {
+        id: tTip
+        delay: 500
+        timeout: 5000
+        visible: false
     }
 }
 

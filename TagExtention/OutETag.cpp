@@ -144,8 +144,10 @@ void OutETag::_checkVal()
         else{
             //_logging(Prom::MessAlarm,"не удалось установить требуемое значение (получили - " + QString::number( _value.toDouble()) + ", нужно - " + QString::number(_setedValue.toDouble()) + ")", _imit);
         }
-        //NOTE может и сломаться!!!_preValue = _value;
         emit s_valueChd(_value);
+    }
+    if(_alarmSelfReset && _mayResetAlarm){
+        resetAlarm();
     }
 }
 
