@@ -7,7 +7,6 @@
 using Prom::MessType;
 
 MxMnInETag::MxMnInETag(Unit * Owner,
-    Prom::ESTagType Type,
     QString Name,
     QString DBName,
     QVariant MaxLevel,
@@ -22,7 +21,7 @@ MxMnInETag::MxMnInETag(Unit * Owner,
     Prom::ETagValConv Convertion,
     int TimeMax)
     : ETag(Owner,
-        Type,
+        //Type,
         Name,
         DBName,
         TunableSetTime,
@@ -335,8 +334,8 @@ bool MxMnInETag::connectTagToMinLevel(OutETag *Tag)
 bool MxMnInETag::findMaxMinTags()
 {
     bool res = true;
-    res &= connectTagToMaxLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
-    res &= connectTagToMinLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
+    res &= connectTagToMaxLevel( new OutETag(_owner, /*Prom::TpOut,*/ Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
+    res &= connectTagToMinLevel( new OutETag(_owner, /*Prom::TpOut,*/ Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
     _tunabDetectLevel = !res;
     return res;
 }

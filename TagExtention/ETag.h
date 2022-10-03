@@ -18,24 +18,31 @@ class ETag : public QObject
     Q_OBJECT
 
 public:
+    explicit ETag();
     explicit ETag(Unit * Owner,
-                    Prom::ESTagType Type,
-                    QString Name,
-                    QString DBName,
-                    bool TunableSetTime = true,
-                    bool TunablePulseTime = false,
-                    bool EgnorableAlarm = true,
-                    bool InGUI = true,
-                    Prom::ETagValConv Convertion = Prom::VCNo,
-                    QVariant ChageStep = 0,
-                    bool AlarmSelfReset = false);
+        //Prom::ESTagType Type,
+        QString Name,
+        QString DBName,
+        bool TunableSetTime = true,
+        bool TunablePulseTime = false,
+        bool EgnorableAlarm = true,
+        bool InGUI = true,
+        Prom::ETagValConv Convertion = Prom::VCNo,
+        QVariant ChageStep = 0,
+        bool AlarmSelfReset = false);
 
-    const Prom::ESTagType ttype;
-
-    const bool tunableSetTime;
-    const bool tunablePulseTime;
-    const bool ignorableAlarm;
-    const bool inGUI; //! /=>--
+    bool init(Unit * Owner,
+        //Prom::ESTagType Type,
+        QString Name,
+        QString DBName,
+        bool useOwnerDBPref = true,
+        bool TunableSetTime = true,
+        bool TunablePulseTime = false,
+        bool EgnorableAlarm = true,
+        bool InGUI = true,
+        Prom::ETagValConv Convertion = Prom::VCNo,
+        QVariant ChageStep = 0,
+        bool AlarmSelfReset = false);
 
     int getSetTime() const;
     bool connected();
@@ -55,7 +62,18 @@ public:
     virtual void connectToGUI(QObject *guiItem,  QObject *propWin);
     void setAlarmSelfReset(bool AlarmSelfReset);
 
+    //Prom::ESTagType ttype() const {return _ttype;}
+    bool tunableSetTime() const{ return _tunableSetTime;}
+    bool tunablePulseTime() const{ return _tunablePulseTime;}
+    bool ignorableAlarm() const{ return _ignorableAlarm;}
+
 protected:
+    //Prom::ESTagType _ttype;
+    bool _tunableSetTime;
+    bool _tunablePulseTime;
+    bool _ignorableAlarm;
+    bool _inGUI; //! /=>--
+
     QVariant _value {0};
     QVariant _preValue{0};
     QVariant _changeStep {0};
@@ -101,13 +119,6 @@ signals:
     void s_setDelayChd(QVariant);
     void s_pulseDelayChd(QVariant);
 
-protected slots:
-    virtual void _checkVal() = 0;
-    virtual void _qualityChangedSlot();
-    virtual void _acceptValue(QVariant Value);
-    virtual void _checkPulse() = 0;
-    void _logValChange();
-
 public slots:
     virtual void writeImit(bool setImit) = 0;
     virtual void writeImitVal(QVariant setVal) = 0;
@@ -120,6 +131,13 @@ public slots:
     void writeIgnorAlarm(bool ignor);
     void setPulseDuration(QVariant Sec);
     virtual void pulseTimerEnd() = 0;
+
+protected slots:
+    virtual void _checkVal() = 0;
+    virtual void _qualityChangedSlot();
+    virtual void _acceptValue(QVariant Value);
+    virtual void _checkPulse() = 0;
+    void _logValChange();
 };
 
 #endif // ESTAG_H

@@ -71,7 +71,7 @@ ElectroEngine::ElectroEngine(Unit *Owner, std::vector<QString> SensorsNames, QSt
                 connect(stop,         &OutDiscretETag::s_valueChd, this,      &ElectroEngine::CheckStateSartStop1KM,   Qt::QueuedConnection);
                 connect(KMforward,    &InDiscretETag::s_valueChd,  this,      &ElectroEngine::CheckStateSartStop1KM,   Qt::QueuedConnection);
 
-                if(startForward->tunableImpulseTime)
+                if(startForward->tunableImpulseTime())
                     connect(stop, &OutDiscretETag::s_on, KMforward, &InDiscretETag::needBeUndetectedNoAlarm, Qt::QueuedConnection);
                 else
                     connect(startForward, &OutDiscretETag::s_off, KMforward, &InDiscretETag::needBeUndetectedNoAlarm, Qt::QueuedConnection);

@@ -35,7 +35,6 @@ Unit::Unit( Prom::UnitType Type,
             ini = new QSettings(tagPrefix + ".ini", QSettings::IniFormat);
         }
     }
-
     //LoadParam();
 }
 //------------------------------------------------------------------------------

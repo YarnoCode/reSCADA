@@ -9,7 +9,7 @@ using Prom::MessType;
 //extern QObject * Ob;
 
 InETag::InETag(Unit * Owner,
-    Prom::ESTagType Type,
+    //Prom::ESTagType Type,
     QString Name,
     QString DBName,
     bool HighOrLow,
@@ -23,7 +23,7 @@ InETag::InETag(Unit * Owner,
     Prom::ETagValConv Convertion,
     int TimeMax)
     : ETag(Owner,
-        Type,
+        //Type,
         Name,
         DBName,
         TunableSetTime,
@@ -423,8 +423,8 @@ void InETag::pulseTimerEnd()
 //bool InETag::findLimitTags()
 //{
 //    bool res = true;
-//    res &= connectTagToMaxLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
-//    res &= connectTagToMinLevel( new OutETag(_owner, Prom::TpOut, Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
+//    res &= connectTagToMaxLevel( new OutETag(_owner, /*Prom::TpOut,*/ Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
+//    res &= connectTagToMinLevel( new OutETag(_owner, /*Prom::TpOut,*/ Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
 //    _tunabDetectLevel = !res;
 //    return res;
 //}

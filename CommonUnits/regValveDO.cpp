@@ -18,10 +18,10 @@ RegValveDO::RegValveDO(int *Id,
         SefResetAlarm,
         Prom::UnMdNoDef )
 {
-    posSet = new OutETag( this, Prom::TpOut, Prom::PreSet, "уставка позиции",  TagsMap->at(regValve::posSetDBN), false, false, false, true);
-    pos = new InETag( this, Prom::TpIn, "позиция", TagsMap->at(regValve::posDBN), true, 100, 0.5, false, false, false, false, true );
-    rangeTop = new OutETag( this, Prom::TpOut, Prom::PreSet, "макс. открытие",  TagsMap->at(regValve::rangeTopDBN), false, false, false, true, Prom::VCNo, false, false, 0, true);
-    rangeBottom = new OutETag( this, Prom::TpOut, Prom::PreSet, "макс. закрытие",  TagsMap->at(regValve::rangeBottomDBN), false, false, false, true, Prom::VCNo, false, false, 0, true);
+    posSet = new OutETag( this, /*Prom::TpOut,*/ Prom::PreSet, "уставка позиции",  TagsMap->at(regValve::posSetDBN), false, false, false, true);
+    pos = new InETag( this, /*Prom::TpIn,*/ "позиция", TagsMap->at(regValve::posDBN), true, 100, 0.5, false, false, false, false, true );
+    rangeTop = new OutETag( this, /*Prom::TpOut,*/ Prom::PreSet, "макс. открытие",  TagsMap->at(regValve::rangeTopDBN), false, false, false, true, Prom::VCNo, false, false, 0, true);
+    rangeBottom = new OutETag( this, /*Prom::TpOut,*/ Prom::PreSet, "макс. закрытие",  TagsMap->at(regValve::rangeBottomDBN), false, false, false, true, Prom::VCNo, false, false, 0, true);
     openOut = new OutDiscretETag( this, Prom::PreSet, "руч. приоткрыть", TagsMap->at(regValve::openOutDBN), true, false,false,false );
     closeOut = new OutDiscretETag( this, Prom::PreSet, "руч. призакрыть", TagsMap->at(regValve::closeOutDBN), true, false,false,false );
 }

@@ -59,7 +59,7 @@ void SimaticDriver::connect()
         noError = true;
         PDULen = client->PDULength() - 64;
     }
-    else {//Нет соединения. Сообщение об ошибке в лог.
+    else if(noError){//Нет соединения. Сообщение об ошибке в лог.
         noError = false;
         if( errorCode != res )emit s_logging(MessError, QDateTime::currentDateTime(),
                 false, this->objectName(),
@@ -76,15 +76,15 @@ void SimaticDriver::connect()
 //------------------------------------------------------------------------------
 void SimaticDriver::disconnect()
 {
-    if(!client) return;
     started = false;
-    client->Disconnect();
     taskTimer->stop();
-    emit s_logging(MessInfo, QDateTime::currentDateTime(), false, this->objectName(), "Simatic driver disconnected");
     foreach(Group * group, listOfGroups){
         qualityFiller(group->listOfTags, Bad);
         group->update();
     }
+    if(!client) return;
+    client->Disconnect();
+    emit s_logging(MessInfo, QDateTime::currentDateTime(), false, this->objectName(), "Simatic driver disconnected");
     emit s_onStartedChanged();
 }
 

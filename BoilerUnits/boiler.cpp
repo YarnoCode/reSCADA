@@ -53,35 +53,35 @@ Boiler::Boiler(
     startCmd     = new OutDiscretETag( this, Prom::PreSet, "запуск", ".startCmd");
     stopCmd      = new OutDiscretETag( this, Prom::PreSet, "стоп", ".stopCmd");
     alarmStopCmd = new OutDiscretETag( this, Prom::PreSet, "аварийный стоп", ".alarmStopCmd");
-    startStage = new InETag(this, Prom::TpIn,"№ этапа запуска", ".startStage", true, 0, 0, false, false,false,false);
+    startStage = new InETag(this, /*Prom::TpIn,*/"№ этапа запуска", ".startStage", true, 0, 0, false, false,false,false);
 
-    state = new InETag(this, Prom::TpIn,"№ состояния", ".state", true, 0, 0, false, false,false,false);
+    state = new InETag(this, /*Prom::TpIn,*/"№ состояния", ".state", true, 0, 0, false, false,false,false);
 
     blowdownCmd = new OutDiscretETag( this, Prom::PreSet, "продувка", ".blowdownCmd");
-    blowdownET    = new InETag(this, Prom::TpIn,"продувка ост-ся время", ".blowdownET", true, 0, 0, false, false,false,false,true,Prom::VCdiv1000);
-    blowdownDelay = new OutETag(this, Prom::TpOut,Prom::PreSet,"время продувки в с.", ".blowdownDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-    blowdownFCArFreq = new OutETag(this, Prom::TpOut,Prom::PreSet,"частота ЧП при продувке Гц", ".blowdownFCArFreq",false,false,false,true,Prom::VCNo,false,false,0,true);
-    blowdownPSmoke   = new OutETag(this, Prom::TpOut,Prom::PreSet,"разряжение в котле при продувке кПа", ".blowdownPSmoke",false,false,false,true,Prom::VCNo,false,false,0,true);
+    blowdownET    = new InETag(this, /*Prom::TpIn,*/"продувка ост-ся время", ".blowdownET", true, 0, 0, false, false,false,false,true,Prom::VCdiv1000);
+    blowdownDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время продувки в с.", ".blowdownDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    blowdownFCArFreq = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"частота ЧП при продувке Гц", ".blowdownFCArFreq",false,false,false,true,Prom::VCNo,false,false,0,true);
+    blowdownPSmoke   = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"разряжение в котле при продувке кПа", ".blowdownPSmoke",false,false,false,true,Prom::VCNo,false,false,0,true);
 
-    pAirIgnition  = new OutETag(this, Prom::TpOut,Prom::PreSet,"давление воздуха при позжиге кПа", ".pAirIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);
-    pSmokeIgnition= new OutETag(this, Prom::TpOut,Prom::PreSet,"разряжение в топке при позжиге кПа", ".pSmokeIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);  ;
-    pGasStart = new OutETag(this, Prom::TpOut,Prom::PreSet,"давление газа при позжиге кПа", ".pGasStart",false,false,false,true,Prom::VCNo,false,false,0,true);
-    pGasHeating = new OutETag(this, Prom::TpOut,Prom::PreSet,"давление газа при прогреве кПа", ".pGasHeating",false,false,false,true,Prom::VCNo,false,false,0,true);
+    pAirIgnition  = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"давление воздуха при позжиге кПа", ".pAirIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);
+    pSmokeIgnition= new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"разряжение в топке при позжиге кПа", ".pSmokeIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);  ;
+    pGasStart = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"давление газа при позжиге кПа", ".pGasStart",false,false,false,true,Prom::VCNo,false,false,0,true);
+    pGasHeating = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"давление газа при прогреве кПа", ".pGasHeating",false,false,false,true,Prom::VCNo,false,false,0,true);
 
     germTestStart = new OutDiscretETag( this, Prom::PreSet, "запуск теста герметичности", ".germTestStart");
-    germTestStage = new InETag(this, Prom::TpIn,"№ этапа теста", ".germTestStage", true, 0, 0, false, false,false,false);
+    germTestStage = new InETag(this, /*Prom::TpIn,*/"№ этапа теста", ".germTestStage", true, 0, 0, false, false,false,false);
 
-    pumpWater_selectReserv = new InDiscretETag(this, "выбран резервный водяной насос", ".pumpWater.selectReserv",true,false,true,false,false,false);
+    //pumpWater_selectReserv = new InDiscretETag(this, "выбран резервный водяной насос", ".pumpWater.selectReserv",true,false,true,false,false,false);
 
-    startHeatingET = new InETag(this, Prom::TpIn,"оставшееся время прогрева холодной кладки с.", ".startHeatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
-    startHeatingDelay = new OutETag(this, Prom::TpOut,Prom::PreSet,"время прогрева кладки в с.", ".startHeatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    startHeatingET = new InETag(this, /*Prom::TpIn,*/"оставшееся время прогрева холодной кладки с.", ".startHeatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
+    startHeatingDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время прогрева кладки в с.", ".startHeatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
 
-    heatingET = new InETag(this, Prom::TpIn,"оставщееся время нагрева котла с.", ".heatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
-    coolingET = new InETag(this, Prom::TpIn,"оставщееся время охлаждения котла с.", ".coolingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
+    heatingET = new InETag(this, /*Prom::TpIn,*/"оставщееся время нагрева котла с.", ".heatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
+    coolingET = new InETag(this, /*Prom::TpIn,*/"оставщееся время охлаждения котла с.", ".coolingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
 
-    heatingDelay = new OutETag(this, Prom::TpOut,Prom::PreSet,"время полного прогрева котла в с.", ".heatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    heatingDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время полного прогрева котла в с.", ".heatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
 
-    coolingDelay = new OutETag(this, Prom::TpOut,Prom::PreSet,"время остывания котла с продувкой в с.", ".coolingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    coolingDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время остывания котла с продувкой в с.", ".coolingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
 
 
 
@@ -89,35 +89,35 @@ Boiler::Boiler(
     reqUserConf = new InDiscretETag(this, "нужно подтверждение от оператора", ".reqUserConf",true,false,true,false,false,false);
     userConfd = new OutDiscretETag( this, Prom::PreSet, "подтверждение от оператора", ".userConfd");
 
-    lvlWater = new MxMnInETag( this, Prom::TpMxMnIn, "уровень воды %", ".lvlWater", 100, 50, 2,false,false,false,false,false);
+    lvlWater = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "уровень воды %", ".lvlWater", 100, 50, 2,false,false,false,false,false);
     lvlWater->setAlarmSelfReset(SelfAlarmReset);
     lvlWater->needBeUndetectedAlarm();
     lvlWater->findMaxMinTags();
 
-    pGasBV = new InETag(this, Prom::TpIn,"давление газа между клапанами кПа", ".pGasBV", true, 0, 0.1, false, false,false,false);
+    pGasBV = new InETag(this, /*Prom::TpIn,*/"давление газа между клапанами кПа", ".pGasBV", true, 0, 0.1, false, false,false,false);
     pGasBV->setAlarmSelfReset(SelfAlarmReset);
 
-    pGas = new MxMnInETag( this, Prom::TpMxMnIn, "давление газа кПа", ".pGas", 5, 1, 0.1,false,false,false,false,false );
+    pGas = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление газа кПа", ".pGas", 5, 1, 0.1,false,false,false,false,false );
     pGas->setAlarmSelfReset(SelfAlarmReset);
     pGas->needBeUndetectedAlarm();
     pGas->findMaxMinTags();
 
-    pAir = new MxMnInETag( this, Prom::TpMxMnIn, "давление воздуха кПа", ".pAir", 5, 0.1, 0.1,false,false,false,false,false );
+    pAir = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление воздуха кПа", ".pAir", 5, 0.1, 0.1,false,false,false,false,false );
     pAir->setAlarmSelfReset(SelfAlarmReset);
     pAir->needBeUndetectedAlarm();
     pAir->findMaxMinTags();
 
-    pSmoke = new MxMnInETag( this, Prom::TpMxMnIn, "разряжение в топке кПа", ".pSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
+    pSmoke = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "разряжение в топке кПа", ".pSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
     pSmoke->setAlarmSelfReset(SelfAlarmReset);
     pSmoke->needBeUndetectedAlarm();
     pSmoke->findMaxMinTags();
 
-    pSteam = new MxMnInETag( this, Prom::TpMxMnIn, "давление пара кПа", ".pSteam", -0.1, -0.5, 0.1,false,false,false,false,false );
+    pSteam = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление пара кПа", ".pSteam", -0.1, -0.5, 0.1,false,false,false,false,false );
     pSteam->setAlarmSelfReset(SelfAlarmReset);
     pSteam->needBeUndetectedAlarm();
     pSteam->findMaxMinTags();
 
-    tSmoke = new MxMnInETag( this, Prom::TpMxMnIn, "t°C дыма", ".tSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
+    tSmoke = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "t°C дыма", ".tSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
     tSmoke->setAlarmSelfReset(SelfAlarmReset);
     tSmoke->needBeUndetectedAlarm();
     tSmoke->findMaxMinTags();

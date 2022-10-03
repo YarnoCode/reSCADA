@@ -12,7 +12,7 @@ class InETag: public ETag
 
 public:
     explicit InETag(Unit * Owner,
-                    Prom::ESTagType Type,
+                    //Prom::ESTagType Type,
                     QString Name,
                     QString DBName,
                     bool HighOrLow,

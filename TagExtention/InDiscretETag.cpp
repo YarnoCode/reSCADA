@@ -17,7 +17,7 @@ InDiscretETag::InDiscretETag(Unit * Owner,
                              Prom::ETagValConv Convertion,
                              int TimeMax )
     : InETag(Owner,
-              Prom::TpDiscretIn,
+              //Prom::TpDiscretIn,
               Name,
               DBName,
               NOnotNC,

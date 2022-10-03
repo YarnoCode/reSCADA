@@ -2,11 +2,11 @@
 //------------------------------------------------------------------------------
 Driver::~Driver()
 {
+    //thread->exit();
+    disconnect();
     foreach (Group * group, listOfGroups) {
         delete group;
     }
-    thread->exit();
-    //delete thread;
 }
 //------------------------------------------------------------------------------
 bool Driver::insertGroup(Group *group)

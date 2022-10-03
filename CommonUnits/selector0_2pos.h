@@ -5,12 +5,11 @@
 #include "unit.h"
 #endif
 
+//class MxMnInETag;
+//class InETag;
 class OutETag;
-class MxMnInETag;
-class InETag;
-class OutETag;
-class InDiscretETag;
-class OutDiscretETag;
+//class InDiscretETag;
+//class OutDiscretETag;
 
 //------------------------------------------------------------------------------
 class Selector0_2pos : public Unit
@@ -27,13 +26,20 @@ public:
 
     OutETag *pos {nullptr};
 
-public slots:
-    void setPos(QVariant Pos);
+signals:
+ void toFirst();
+ void toSecond();
+ void toNoOne();
+
 protected:
     Prom::SetModeResp _customSetMode(Prom::UnitModes */*mode*/, bool /*UserOrSys*/)override{return Prom::RejAnnown;};
     void _doOnModeChange()override{};
 protected slots:
     void _customConnectToGUI(QObject *guiItem, QObject *) override;
+
+    // Unit interface
+protected slots:
+    void _updateStateAndMode()override;
 };
 
 //------------------------------------------------------------------------------

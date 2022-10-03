@@ -11,7 +11,7 @@ class MxMnInETag: public ETag
     Q_OBJECT
 public:
     explicit MxMnInETag(Unit * Owner,
-                    Prom::ESTagType Type,
+                    //Prom::ESTagType Type,
                     QString Name,
                     QString DBName,
                     QVariant MaxLevel,

@@ -90,7 +90,7 @@ public:
     InDiscretETag *alarmGermTestStage;
     InDiscretETag *pGasBV_alarm;//.alarm;
 
-    InDiscretETag *pumpWater_selectReserv;
+    // *pumpWater_selectReserv;
 
     OutETag *blowdownDelay;
     InETag  *startStage;

@@ -37,14 +37,14 @@ Burner::Burner(int *Id,
         true, false, false, false, false, true, false, false,
         false, true,Prom::VCNo, true );
     reset->setImpulseDuration(1);
-    state = new InETag( this, Prom::TpIn, "состояние горелки", ".state", true, 100, 1, false, false, false, false );
+    state = new InETag( this, /*Prom::TpIn,*/ "состояние горелки", ".state", true, 100, 1, false, false, false, false );
     disabled = new OutDiscretETag( this, Prom::PreSet, "отключена", +".disabled",true, false, false, false, false, true );
-    pGas = new InETag( this, Prom::TpMxMnIn, "давление газа", ".pGas", true, 4, 0.05, false, false, false, false );
+    pGas = new InETag( this, /*Prom::TpMxMnIn,*/ "давление газа", ".pGas", true, 4, 0.05, false, false, false, false );
     flameS    = new InDiscretETag(this, "датчик пламени горелки", ".flameS",true,false,true,false,false,false);
-    ignitionAlarmDelay  = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка на появление пламени розжига с.", ".ignitionAlarmDelay", false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-    ignitionStableDelay = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка на стабилизацию пламени розжига с.",    ".ignitionStableDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-    flameStartDelay     = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка на появление пламени горелки с.", ".flameStartDelay",    false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-    flameStableDelay    = new OutETag(this, Prom::TpOut,Prom::PreSet,"задержка стабилизацию пламени горелки с.",    ".flameStableDelay",   false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    ignitionAlarmDelay  = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"задержка на появление пламени розжига с.", ".ignitionAlarmDelay", false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    ignitionStableDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"задержка на стабилизацию пламени розжига с.",    ".ignitionStableDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    flameStartDelay     = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"задержка на появление пламени горелки с.", ".flameStartDelay",    false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    flameStableDelay    = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"задержка стабилизацию пламени горелки с.",    ".flameStableDelay",   false,false,false,true,Prom::VCdiv1000,false,false,0,true);
 
     gasPID = new PIDstep(this, "ПИД давления газа", "положение клапана", pGasPIDPrefix, PIDTagsNames, PIDopt::allOn );
 

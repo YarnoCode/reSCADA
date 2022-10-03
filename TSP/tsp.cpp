@@ -21,8 +21,8 @@ TSP::TSP(QObject *parent, QString name) : QObject(parent)
 //------------------------------------------------------------------------------
 TSP::~TSP()
 {
+
     foreach (Driver * driver, listOfDrivers) {
-        //driver->disconnect();
         delete driver;
     }
 }

@@ -5,8 +5,14 @@
 
 using Prom::MessType;
 
+OutETag::OutETag()
+{
+    if(_impTimer == nullptr)_impTimer = new QTimerExt(this);
+    _impTimer->setSingleShot(true);
+}
+//------------------------------------------------------------------------------
 OutETag::OutETag(Unit * Owner,
-    Prom::ESTagType Type,
+    //Prom::ESTagType Type,
     Prom::OutESTagSetType SetType,
     QString Name,
     QString DBName,
@@ -23,27 +29,89 @@ OutETag::OutETag(Unit * Owner,
     QVariant HiLimit,
     QVariant LowLimit,
     bool TunableImpulseTime,
-    QVariant ChageStep )
-    : ETag(Owner,
-        Type,
+    QVariant ChageStep,
+    bool AlarmSelfReset )
+{
+    init(Owner,/*Type,*/SetType,Name,DBName, true,TunableSetTime,TunablePulseTime,EgnorableAlarm,InGUI,Convertion,ChageStep,AlarmSelfReset,Save,LoadDefault,DefaultValue,MenuChanged,LimitFlag,HiLimit,LowLimit,TunableImpulseTime);
+    if(_impTimer == nullptr)_impTimer = new QTimerExt(this);
+    _impTimer->setSingleShot(true);
+}
+
+//------------------------------------------------------------------------------
+OutETag::OutETag(Unit *Owner,
+    OutESTagSetType SetType,
+    QString Name,
+    bool useOwnerDBPref,
+    QString DBName,
+    bool TunableSetTime,
+    bool TunablePulseTime,
+    bool EgnorableAlarm,
+    bool InGUI,
+    ETagValConv Convertion,
+    bool Save,
+    bool LoadDefault,
+    QVariant DefaultValue,
+    bool MenuChanged,
+    quint8 LimitFlag,
+    QVariant HiLimit,
+    QVariant LowLimit,
+    bool TunableImpulseTime,
+    QVariant ChageStep,
+    bool AlarmSelfReset)
+{
+    init(Owner,/*Type,*/SetType,Name,DBName, useOwnerDBPref,TunableSetTime,TunablePulseTime,EgnorableAlarm,InGUI,Convertion,ChageStep,AlarmSelfReset,Save,LoadDefault,DefaultValue,MenuChanged,LimitFlag,HiLimit,LowLimit,TunableImpulseTime);
+    if(_impTimer == nullptr)_impTimer = new QTimerExt(this);
+    _impTimer->setSingleShot(true);
+}
+
+//------------------------------------------------------------------------------
+bool OutETag::init(Unit *Owner,
+    //ESTagType Type,
+    Prom::OutESTagSetType SetType,
+    QString Name,
+    QString DBName,
+    bool useOwnerDBPref,
+    bool TunableSetTime,
+    bool TunablePulseTime,
+    bool EgnorableAlarm,
+    bool InGUI,
+    ETagValConv Convertion,
+    QVariant ChageStep,
+    bool AlarmSelfReset,
+    bool Save,
+    bool LoadDefault,
+    QVariant DefaultValue,
+    bool MenuChanged,
+    quint8 LimitFlag,
+    QVariant HiLimit,
+    QVariant LowLimit,
+    bool TunableImpulseTime)
+{
+    ETag::init(Owner,
+        //Type,
         Name,
         DBName,
+        useOwnerDBPref,
         TunableSetTime,
         TunablePulseTime,
         EgnorableAlarm,
         InGUI,
         Convertion,
-        ChageStep),
-    saveValue(Save), loadDefalt(LoadDefault),
-    tunableImpulseTime(TunableImpulseTime), _setType(SetType),
-    _defaultValue(DefaultValue), _menuChanged(MenuChanged), _hiLimit(HiLimit),
-    _lowLimit(LowLimit), _limitFlag(LimitFlag)
-{
-    _mayResetAlarm = true;
-    _impTimer = new QTimerExt(this);
-    _impTimer->setSingleShot(true);
-}
+        ChageStep,
+        AlarmSelfReset);
 
+    saveValue = Save;
+    loadDefalt = LoadDefault;
+    _tunableImpulseTime = TunableImpulseTime;
+    _setType = SetType;
+    _defaultValue = DefaultValue;
+    _menuChanged = MenuChanged;
+    _hiLimit = HiLimit;
+    _lowLimit = LowLimit;
+    _limitFlag = LimitFlag;
+    _mayResetAlarm = true;
+    return _ok;
+}
 //------------------------------------------------------------------------------
 
 bool OutETag::setValue(QVariant Value, bool notImit)
@@ -377,11 +445,13 @@ void OutETag::setImpulseDuration(QVariant Delay)
 //------------------------------------------------------------------------------
 int OutETag::impulseDuration()
 {
-    if(tunableImpulseTime){
+    if(_tunableImpulseTime){
         return _impulseDuration;
     }
     else return 0;
 }
+
+
 
 //------------------------------------------------------------------------------
 void OutETag::_customConnectToGUI(QObject *, QObject *engRow)
@@ -389,7 +459,8 @@ void OutETag::_customConnectToGUI(QObject *, QObject *engRow)
     QVariant ret;
     QObject * tmpSgSt;
 
-    if(ttype == Prom::TpOut) { //Для аналоговых ВЫходных сигналов
+    if(typeid(this) == typeid(OutETag*)){
+        //if(_ttype == Prom::TpOut) { //Для аналоговых ВЫходных сигналов
         //!создал в строке главный раздел
         QMetaObject::invokeMethod(engRow, "addPropertyValue", Qt::DirectConnection,
             Q_RETURN_ARG(QVariant, ret),
@@ -421,7 +492,7 @@ void OutETag::_customConnectToGUI(QObject *, QObject *engRow)
             //подключаю сигналы к уровням срабатывания
         }
     }        //!добавляю время импульса
-    if(tunableImpulseTime){
+    if(_tunableImpulseTime){
         QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
             Q_RETURN_ARG(QVariant, ret),
             Q_ARG(QVariant, this->getDBName() + "_impulseTime" ),

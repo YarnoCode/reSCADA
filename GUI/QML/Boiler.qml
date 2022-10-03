@@ -4,7 +4,7 @@ import "fap.js" as Fap
 
 UnitPropItem {
     id: root
-    width: 540
+    width: 700
     height: 622
 
     borderWidth: 0
@@ -56,7 +56,20 @@ UnitPropItem {
     signal s_germTestStart(variant Start);
     function setGermTestStart(Start){btTestGerm.checked = Start}
 
-    function setState( State )              {boilerState.text = State}
+    function setState( State ){
+        switch (State){
+        case 0: boilerState.text = "Стоп"; break;
+        case 1: boilerState.text = "Пуск"; break;
+        case 2: boilerState.text = "Работа"; break;
+        case 3: boilerState.text = "Розжиг"; break;
+        case 4: boilerState.text = "Прогрев"; break;
+        case 5: boilerState.text = "Охлаждение"; break;
+        case 6: boilerState.text = "Продувка"; break;
+        case 7: boilerState.text = "Пусковой прогрев"; break;
+        case 8: boilerState.text = "Аварийная остановка"; break;
+        }
+    }
+
     function setStartStage( StartStage )    {startBut.stateChd( StartStage )}
     function setStartHeatingET( StartHeatin ) {
         let days = ~~(StartHeatin / 86400)
@@ -100,7 +113,7 @@ UnitPropItem {
 
     Rectangle{
         y: 1
-        width: 540
+        width: 683
         height: 486
         visible: true
         color: backgroundCurrentColor
@@ -129,7 +142,7 @@ UnitPropItem {
     Rectangle{
         id: dlgAlarmButtonPress
         x: 212
-        y: 180
+        y: 161
         width: 120
         height: 140
         z: 100
@@ -138,6 +151,7 @@ UnitPropItem {
         color: "#f2f2f2"
         border.color: "#ff0000"
         border.width: 3
+        anchors.horizontalCenterOffset: -3
         anchors.horizontalCenter: parent.horizontalCenter
         AnimatedImage {
             source: "alarmButtonPress.gif"
@@ -170,7 +184,7 @@ UnitPropItem {
     Rectangle{
         id: dlgReqUserConf
         x: 212
-        y: 180
+        y: 161
         width: 120
         height: 140
         z: 100
@@ -179,7 +193,7 @@ UnitPropItem {
         radius: 10
         border.color: "#ff0000"
         border.width: 3
-        anchors.horizontalCenterOffset: 0
+        anchors.horizontalCenterOffset: -3
         anchors.horizontalCenter: parent.horizontalCenter
         Button{
             y: 56
@@ -233,9 +247,9 @@ UnitPropItem {
 
     Column {
         id: column
-        x: 447
-        y: 203
-        width: 84
+        x: 543
+        y: 205
+        width: 144
         height: 270
         SimpleButton {
             id: autoModeBut
@@ -266,7 +280,21 @@ UnitPropItem {
             unPressCheckColor: "#04ff07"
             onS_checkedUserChanged: s_start(!Checked)
             function stateChd( State ) {
-                nameText.text ="СТАРТ" + "\n" + State
+                nameText.text ="СТАРТ" + "\n"
+                switch (State){
+                case -1: nameText.text += "";break;
+                case 0: nameText.text += "Обе горелки заблокированы";break;
+                case 105: nameText.text += "Подтверждение пуска стоп-кнопкой";break;
+                case 110: nameText.text += "Тест на герметичность";break;
+                case 120: nameText.text += "Продувка перед пуском";break;
+                case 125: nameText.text += "Подтверждение пуска";break;
+                case 130: nameText.text += "Открытие перепускного.";break;
+                case 140: nameText.text += "Выравнивание давления" ;break;
+                case 150: nameText.text += "Розжиг запальников горелок";break;
+                case 160: nameText.text += "Запуск горелок";break;
+                case 165: nameText.text += "Прогрев";break;
+                case 170: nameText.text += "Рабочая Фаза";break;
+                }
             }
         }
 
@@ -362,7 +390,7 @@ UnitPropItem {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
         wrapMode: Text.WordWrap
-        anchors.horizontalCenterOffset: (mirrorVentSmoke ? 1 : -1) * 170
+        anchors.horizontalCenterOffset: (mirrorVentSmoke ? 1 : -1) * 200
         z: 1
         anchors.horizontalCenter: parent.horizontalCenter
         font.capitalization: Font.AllUppercase
@@ -401,7 +429,7 @@ UnitPropItem {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
         wrapMode: Text.WordWrap
-        anchors.horizontalCenterOffset: (mirrorVentSmoke ? 1 : -1) * 170
+        anchors.horizontalCenterOffset: (mirrorVentSmoke ? 1 : -1) * 200
         styleColor: "#000000"
         z: 1
         anchors.horizontalCenter: parent.horizontalCenter
@@ -446,8 +474,8 @@ UnitPropItem {
         function setIgnitionS(IgnitionS) {ignitionflame1.visible = IgnitionS }
         AnalogSignalVar1 {
             id: burner1_pGas
-            x: -80
-            y: -10
+            x: -15
+            y: -8
             objectName: ".pGas"
             width: 70
             height: indicHeigth
@@ -641,8 +669,8 @@ UnitPropItem {
         function setIgnitionS(IgnitionS) {ignitionflame2.visible = IgnitionS }
         AnalogSignalVar1 {
             id: burner2_pGas
-            x: 52
-            y: -8
+            x: 138
+            y: -9
             objectName: ".pGas"
             width: 70
             height: indicHeigth
@@ -1360,7 +1388,7 @@ UnitPropItem {
         objectName: root.objectName + ".vCandle"
         name: "Запорный клапан свечи безопасности " + root.name
         title: "КСБ"
-        x: 48
+        x: 93
         y: 450
         z: 2
         width: 35
@@ -1402,7 +1430,7 @@ UnitPropItem {
         objectName: root.objectName + ".vGasSml"
         name: "Запорный перепускной клапан " + root.name
         title: "КП"
-        x: 13
+        x: 93
         y: 528
         z: 2
         width: 35
@@ -1729,7 +1757,7 @@ UnitPropItem {
     Pipe {
         x: 27
         y: 459
-        width: 89
+        width: 169
         height: 6
         z: 1
         nActiveColor: pipeGasColor
@@ -1778,7 +1806,7 @@ UnitPropItem {
 
 
     Pipe {
-        x: 37
+        x: 117
         y: 501
         width: 79
         height: 6
@@ -1788,7 +1816,7 @@ UnitPropItem {
     }
 
     PipeAngle90 {
-        x: 27
+        x: 107
         y: 603
         width: 10
         height: 10
@@ -1800,7 +1828,7 @@ UnitPropItem {
     }
 
     PipeAngle90 {
-        x: 27
+        x: 107
         y: 501
         width: 10
         height: 10
@@ -1825,7 +1853,7 @@ UnitPropItem {
     }
 
     Pipe {
-        x: 37
+        x: 117
         y: 607
         width: 79
         height: 6
@@ -1871,7 +1899,8 @@ UnitPropItem {
 
 /*##^##
 Designer {
-    D{i:0}D{i:2;locked:true}D{i:4;locked:true}D{i:5}D{i:10}D{i:64;locked:true}D{i:63;locked:true}
-D{i:80;locked:true}D{i:79;locked:true}
+    D{i:0;formeditorZoom:0.9}D{i:2;locked:true}D{i:4;locked:true}D{i:64;locked:true}D{i:63;locked:true}
+D{i:80;locked:true}D{i:79;locked:true}D{i:86;locked:true}D{i:85;locked:true}D{i:89;locked:true}
+D{i:88;locked:true}
 }
 ##^##*/

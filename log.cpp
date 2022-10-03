@@ -13,7 +13,7 @@ Log::Log(QObject* parant) : QObject(parant)
     //    _sdb.setDatabaseName("./LOG/log.sqlite");
 
     //    if(_sdb.isOpen()){
-    _query = QSqlQuery(_sdb);
+    _queryMess = QSqlQuery(_sdb);
     //        Logging(Prom::MessChangeInfo, QDateTime::currentDateTime(), "SYSTEM","LogSYS", "база данных журнала открыта");
     //    }
 }
@@ -142,32 +142,43 @@ void Log::bufferToDB()
     if (_sdb.isOpen())
     {
         _sdb.transaction();
-        _query.prepare(
+        _queryMess.prepare(
             "INSERT INTO SEL_ALL (TYPE, TIME, USER, UNIT, MESSAGE) "
             "VALUES (:type, :time, :user, :unit, :mess)");
+        _queryVal.prepare(
+            "INSERT INTO SEL_VAL (DATE_TIME, UNIT, VAL)"
+            "VALUES (:time, :unit, :val)");
         // int co = 1;
         if (tmpBuff->size() > 20000){
             buffOverload = true;
-            _query.bindValue(":time", QDateTime::currentDateTime().toMSecsSinceEpoch());
-            _query.bindValue(":type", Prom::messToString(Prom::MessAlarm));
-            _query.bindValue(":user", "SYSTEM");
-            _query.bindValue(":unit", "LOG Process");
-            _query.bindValue(":mess", "Переполнение буфера. Из " + QString::number(tmpBuff->size()) +
+            _queryMess.bindValue(":time", QDateTime::currentDateTime().toMSecsSinceEpoch());
+            _queryMess.bindValue(":type", Prom::messToString(Prom::MessAlarm));
+            _queryMess.bindValue(":user", "SYSTEM");
+            _queryMess.bindValue(":unit", "LOG Process");
+            _queryMess.bindValue(":mess", "Переполнение буфера. Из " + QString::number(tmpBuff->size()) +
                     " записей в БД только важные. Остальное в файле: " + QDate::currentDate().toString("yyyy.MM") +
                     "_LOG.csv.");
-            _query.exec();
+            _queryMess.exec();
             buffOverload = true;
         }
         for (message tmpMess : *tmpBuff){
-            if (!(buffOverload && tmpMess.m_type < 0))
+            if (!(buffOverload && tmpMess.m_type < 0)) //Если буфер переполнен, в БД пойдут только важные сообщения (с № в enum MessType боьше 0)
             {
                 // qDebug()<< "Start WriteValue " << co << "/" << tmpBuff->size() << QTime::currentTime().toString("mm:ss.zz");
-                _query.bindValue(":time", tmpMess.m_dateTime.toMSecsSinceEpoch());
-                _query.bindValue(":type", Prom::messToString(tmpMess.m_type));
-                _query.bindValue(":user", tmpMess.m_user);
-                _query.bindValue(":unit", tmpMess.m_source);
-                _query.bindValue(":mess", tmpMess.m_text);
-                _query.exec();
+                if( tmpMess.m_type == Prom::MessChangeValue ){
+                    _queryVal.bindValue(":time", tmpMess.m_dateTime.toMSecsSinceEpoch());
+                    _queryVal.bindValue(":unit", tmpMess.m_source);
+                    _queryVal.bindValue(":val",  tmpMess.m_text);
+                    _queryVal.exec();
+                }
+                else {
+                    _queryMess.bindValue(":time", tmpMess.m_dateTime.toMSecsSinceEpoch());
+                    _queryMess.bindValue(":type", Prom::messToString(tmpMess.m_type));
+                    _queryMess.bindValue(":user", tmpMess.m_user);
+                    _queryMess.bindValue(":unit", tmpMess.m_source);
+                    _queryMess.bindValue(":mess", tmpMess.m_text);
+                    _queryMess.exec();
+                }
                 // co++;
             }
         }

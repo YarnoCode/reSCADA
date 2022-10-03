@@ -37,7 +37,8 @@ protected:
     bool fin = false;
     QSqlDatabase _sdb;
 
-    QSqlQuery _query;
+    QSqlQuery _queryMess;
+    QSqlQuery _queryVal;
     QFile * _logFile;
     bool _prd =false;
     int _activeBuff = 0;

@@ -8,6 +8,8 @@
 #include "InDiscretETag.h"
 #include "OutDiscretETag.h"
 #include "PID.h"
+//#include <typeinfo>
+
 //#include "promobject.h"
 //#include "QTimerExt.h"
 
@@ -34,6 +36,8 @@ bool AnalogSignalVar1Connect(QObject *rootItem, QString ElementName, ETag *Tag)
 //------------------------------------------------------------------------------
 bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, ETag *Tag)
 {
+    using namespace std;
+
     QObject * tmpElem;
     if( ElementName != ""){
         tmpElem = rootItem->findChild<QObject*>(ElementName);
@@ -41,7 +45,7 @@ bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, ETag *Tag)
     else tmpElem = rootItem;
     if( tmpElem != nullptr ){
         AnalogSignalVar1Connect(rootItem, ElementName, Tag);
-        if( Tag->ttype == Prom::TpIn ){
+        if (typeid(Tag) == typeid(InETag*)){//if( Tag->ttype() == Prom::TpIn ){
             try {
                 if(static_cast<InETag*>(Tag)->highOrLow()){
                     QObject::connect( Tag, SIGNAL(s_delectLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
@@ -57,7 +61,7 @@ bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, ETag *Tag)
             }
 
         }
-        else if(Tag->ttype == Prom::TpMxMnIn ){
+        else if (typeid(Tag) == typeid(MxMnInETag*)){//if(Tag->ttype() == Prom::TpMxMnIn ){
             QObject::connect( Tag, SIGNAL(s_maxLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
             QObject::connect( tmpElem, SIGNAL(s_maxLimitChanged(QVariant)), Tag, SLOT( setMaxLevel(QVariant) ), Qt::QueuedConnection );
             QObject::connect( Tag, SIGNAL(s_minLevelChanged(QVariant)), tmpElem, SLOT( setMinLimit(QVariant) ), Qt::QueuedConnection );

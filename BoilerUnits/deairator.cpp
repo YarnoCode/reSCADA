@@ -36,12 +36,12 @@ Deairator::Deairator(int *Id,
     reset->setAlarmSelfReset(SelfAlarmReset);
     reset->setImpulseDuration(1);
 
-    tWater = new MxMnInETag( this, Prom::TpMxMnIn, "t°C воды", ".tWater", 120, 5, 2, false, false );
+    tWater = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "t°C воды", ".tWater", 120, 5, 2, false, false );
     tWater->setAlarmSelfReset(SelfAlarmReset);
     tWater->needBeUndetectedAlarm();
     tWater->findMaxMinTags();
 
-    pSteam = new MxMnInETag( this, Prom::TpMxMnIn, "давление пара", ".pSteam", 4, 0.5, 0.05, false, false );
+    pSteam = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление пара", ".pSteam", 4, 0.5, 0.05, false, false );
     pSteam->setAlarmSelfReset(SelfAlarmReset);
     pSteam->needBeUndetectedAlarm();
     pSteam->findMaxMinTags();

@@ -25,13 +25,13 @@ public:
     int id;
     QString comment;
     QString options;
-    bool started = false;
+    bool started {false};
     QString type;
     //methods
     virtual bool insertGroup(Group  * group);
     Group * getGroupById(int Id);
     virtual void connect() = 0;
-    virtual void disconnect() = 0;
+    virtual void disconnect(){};
 
     const QList<Group *> &getListOfGroups() const;
     void setListOfGroups(const QList<Group *> &newListOfGroups);

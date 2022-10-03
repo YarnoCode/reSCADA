@@ -22,7 +22,7 @@ OutDiscretETag::OutDiscretETag(Unit * Owner,
                                Prom::ETagValConv Convertion,
                                bool TunableImpulseTime)
     : OutETag(Owner,
-              Prom::TpDiscretOut,
+              //Prom::TpDiscretOut,
               SetType,
               Name,
               DBName,
@@ -251,16 +251,16 @@ void OutDiscretETag::impilseTimerEnd()
 void OutDiscretETag::saveParam()
 {
     OutETag::saveParam();
-    if(tunableImpulseTime)
+    if(_tunableImpulseTime)
         _owner->ini->setValue(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime", _impTimer->interval());
 }
 
 //------------------------------------------------------------------------------
 void OutDiscretETag::loadParam()
 {
-    if(tunableImpulseTime){
+    if(_tunableImpulseTime){
       if( _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime") )
-        _impTimer->setInterval(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime", tunableImpulseTime ? 2000 : 0).toInt());
+        _impTimer->setInterval(_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "impTime", _tunableImpulseTime ? 2000 : 0).toInt());
         //qDebug() << _DBName + " Load " << _impTimer->interval();
     }
     OutETag::loadParam();
@@ -314,7 +314,7 @@ void OutDiscretETag::_customConnectToGUI(QObject *, QObject *engRow)
     connect(this,    SIGNAL(s_qualityChd(QVariant)),        tmpSgSt, SLOT(setConnected(QVariant)), Qt::QueuedConnection);
     //-----подключил сигналы к кубикам
 
-    OutETag::_customConnectToGUI(nullptr, engRow);
+   // OutETag::_customConnectToGUI(nullptr, engRow);
 }
 
 //------------------------------------------------------------------------------

@@ -10,6 +10,7 @@ QString Prom::messToString (MessType MessTypeInt)
     case MessChangeCommand : return "Команда";
     case MessChangeState   : return "Изменение состояния";
     case MessChangeSensor  : return "Изменение сенсора";
+    case MessChangeValue   : return  "Изменение значения тэга";
     case MessInfo          : return "Информирование";
     case MessError         : return "Ошибка";
     case MessVerbose       : return "Отладочная информация";

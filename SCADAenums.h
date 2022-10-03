@@ -141,7 +141,8 @@ enum MessType {
     MessQuitAlarm,
     MessChangeCommand,
     MessError,
-    MessVerbose
+    MessVerbose,
+    MessChangeValue
 };
 Q_ENUM_NS(MessType)
 
@@ -178,14 +179,14 @@ enum UnitType {
 };
 Q_ENUM_NS(UnitType)
 
-enum ESTagType {
-    TpDiscretOut,
-    TpDiscretIn,
-    TpOut,
-    TpIn,
-    TpMxMnIn
-};
-Q_ENUM_NS(ESTagType)
+//enum ESTagType {
+//    TpDiscretOut,
+//    TpDiscretIn,
+//    TpOut,
+//    TpIn,
+//    TpMxMnIn
+//};
+//Q_ENUM_NS(ESTagType)
 
 enum OutESTagSetType {
     PreSet,

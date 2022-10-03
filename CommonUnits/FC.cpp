@@ -29,11 +29,11 @@ FCUnitRstFwdFqFq::FCUnitRstFwdFqFq(int *Id,
     connect(fwd, &InDiscretETag::s_detected, this, &FCUnitRstFwdFqFq::updateState);
     connect(fwd, &InDiscretETag::s_undetected, this, &FCUnitRstFwdFqFq::updateState);
 
-    freqPID = new InETag(this, Prom::TpIn,
+    freqPID = new InETag(this, ///*Prom::TpIn,*/
         "установка частоты ЧП от ПИД рег-ра",
         ".freqPID", true, 50, 1, false, false, false, false, true, Prom::VCdiv2);
 
-    freqMan = new OutETag(this, Prom::TpOut, Prom::PreSet,
+    freqMan = new OutETag(this, /*Prom::TpOut,*/ Prom::PreSet,
         "ручная установка частоты ЧП", ".freqMan", false, false, false, true, Prom::VCdiv2);
 }
 //------------------------------------------------------------------------------

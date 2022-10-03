@@ -13,7 +13,7 @@ Tank::Tank(int *Id, QString Name, QString TagPrefix, bool SelfResetAlarm)
         SelfResetAlarm)
 {
     _currentMode = Prom::UnMdCantHaveMode;
-    level = new MxMnInETag(this, Prom::TpMxMnIn, "уровень", ".lvl", 100, 0, 2, false, false );
+    level = new MxMnInETag(this, /*Prom::TpMxMnIn,*/ "уровень", ".lvl", 100, 0, 2, false, false );
     level->needBeUndetectedAlarm();
     level->findMaxMinTags();
 }
@@ -88,8 +88,8 @@ TankAL::TankAL(int *Id,
 {
     autoLvl1 = new OutDiscretETag( this, Prom::PreSet, "вкл. автоуровень на насосе №1", ".autoLvl1" );
     autoLvl2 = new OutDiscretETag( this, Prom::PreSet, "вкл. автоуровень на насосе №2", ".autoLvl2" );
-    autoMaxLvl = new OutETag( this, Prom::TpOut, Prom::PreSet, "авто уровень макс.",  ".autoMaxLvl");
-    autoMinLvl = new OutETag( this, Prom::TpOut, Prom::PreSet, "авто уровень мин.",   ".autoMinLvl");
+    autoMaxLvl = new OutETag( this, /*Prom::TpOut,*/ Prom::PreSet, "авто уровень макс.",  ".autoMaxLvl");
+    autoMinLvl = new OutETag( this, /*Prom::TpOut,*/ Prom::PreSet, "авто уровень мин.",   ".autoMinLvl");
 }
 //------------------------------------------------------------------------------
 void TankAL::_customConnectToGUI(QObject *guiItem, QObject *)
