@@ -46,6 +46,7 @@ public:
     void MegaRescan();
     Route * ptrCurrentRoute() { return _currentRoute; }
     void addUnit(Unit * Un);
+    //void removeUnit(Unit * Un);
     void addSubUnit(Unit * Un);
     int getCurrUserN() const;
     Unit * UnitByName(QString Name);

@@ -60,7 +60,7 @@ AnalogSignalVar1 {
         backgroundColor: "#c36b6b"
         tooltipText: "Макс."
         readOnly: false
-        visible: parent._usrAct
+        visible: parent._usrAct & maxShow
         correctingButtons: true
         limited: false
         onValueChanged: s_maxLimitChanged( Value )
@@ -84,7 +84,7 @@ AnalogSignalVar1 {
         backgroundColor: "#6b9ac3"
         tooltipText: "Мин."
         readOnly: false
-        visible: parent._usrAct
+        visible: parent._usrAct && minShow
         anchors.top: parent.bottom
         anchors.topMargin: -2
         correctingButtons: true

@@ -2,6 +2,7 @@
 #include <QDebug>
 #include "unit.h"
 #include <QSettings>
+#include "OutETag.h"
 
 using Prom::MessType;
 //using Prom::PropType;
@@ -32,7 +33,7 @@ InETag::InETag(Unit * Owner,
         InGUI,
         Convertion,
         ChageStep),
-    tunabDetectLevel(TunabDetectLevel),
+    _tunabDetectLevel(TunabDetectLevel),
     _highOrLow(HighOrLow),
     _detectLevel(DetectLevel)
 {
@@ -54,6 +55,33 @@ void InETag::loadParam()
     if( _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "detectLevel") )
         _detectLevel = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "detectLevel", 0).toDouble();
     ETag::loadParam();
+}
+//------------------------------------------------------------------------------
+bool InETag::connectTagToLimit(OutETag *Tag)
+{
+    bool res = true;
+    if( Tag == nullptr ) return false;
+    if( !Tag->isOk() ) return false;
+    setDetectLevel( Tag->value() );
+    res = res && connect( this, SIGNAL(s_delectLevelChanged(QVariant)), Tag,SLOT(setValue(QVariant)), Qt::QueuedConnection);
+    res = res && connect( Tag,  &OutETag::s_valueChd,           this, &InETag::setDetectLevel, Qt::QueuedConnection);
+    if( !res ) {
+        disconnect( this, SIGNAL(s_delectLevelChanged(QVariant)), Tag,  SLOT(setValue(QVariant)) );
+        disconnect( Tag,  &OutETag::s_valueChd,           this, &InETag::setDetectLevel );
+    }
+    return res;
+}
+//------------------------------------------------------------------------------
+bool InETag::findLimTag()
+{
+    bool res = true;
+    QString tmp = _DBName;
+    tmp = tmp.remove(".value");
+    res &= connectTagToLimit( new OutETag(_owner, Prom::PreSet,
+        _name + (highOrLow()? " макс.":" мин."), tmp + ".alarmLim",false,false,false,true,
+        Prom::VCNo,false,false,0,true));
+    _tunabDetectLevel = !res;
+    return res;
 }
 
 //------------------------------------------------------------------------------
@@ -455,7 +483,7 @@ void InETag::_customConnectToGUI(QObject *, QObject *engRow)
     //-----подключил сигналы к значению и имитации
 
     //!добавляю уровень срабатывания
-    if(tunabDetectLevel){
+    if(_tunabDetectLevel){
 
         QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
             Q_RETURN_ARG(QVariant, ret),

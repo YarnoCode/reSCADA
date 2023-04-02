@@ -46,7 +46,7 @@ Burner::Burner(int *Id,
     flameStartDelay     = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"задержка на появление пламени горелки с.", ".flameStartDelay",    false,false,false,true,Prom::VCdiv1000,false,false,0,true);
     flameStableDelay    = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"задержка стабилизацию пламени горелки с.",    ".flameStableDelay",   false,false,false,true,Prom::VCdiv1000,false,false,0,true);
 
-    gasPID = new PIDstep(this, "ПИД давления газа", "положение клапана", pGasPIDPrefix, PIDTagsNames, PIDopt::allOn );
+    gasPID = new PIDstep(this, "ПИД давления газа", "положение клапана", pGasPIDPrefix, &pid::SiemensCONT_CPIDTagsNames, PIDopt::SimensCONT_S & ~PIDopt::feedback );
 
     ignition = new ActWorkSt(Id, "Рожиг", tagPrefix + ".ignition", false, "искра", ".onOff", true);
     addSubUnit(ignition);
@@ -63,7 +63,7 @@ Burner::Burner(int *Id,
     addSubUnit(vIgnition);
     vGas = new ActWorkSt(Id, "Клапан газа",  tagPrefix + ".vGas", false, "открыть", ".open", true );
     addSubUnit(vGas);
-    vrGas = new RegValveDO( Id, "Рег-й клапан газа", tagPrefix + ".vrGas", true, &regValve::SiemensPIDTagsNames);
+    vrGas = new RegValveDO( Id, "Рег-й клапан газа", tagPrefix + ".vrGas", true, &regValve::StdTagsNames);
     addSubUnit(vrGas);
 }
 
@@ -78,7 +78,7 @@ bool Burner::resetAlarm()
 void Burner::_customConnectToGUI(QObject *guiItem, QObject *)
 {
     if( guiItem != nullptr ){
-        if( !AnalogSignalVar1Connect(guiItem, pGas->getDBName(),   pGas) )
+        if( !AnalogSignalVar2Connect(guiItem, pGas->getDBName(),   pGas) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pGas->getDBName() + " в GUI " + guiItem->objectName());
         PIDwinConnect(guiItem, gasPID->tagPrefix, gasPID);
         connect( flameS,    SIGNAL(s_valueChd(QVariant)), guiItem, SLOT(setFlameS(QVariant)),    Qt::QueuedConnection);

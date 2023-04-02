@@ -7,33 +7,33 @@
 using Prom::MessType;
 
 MxMnInETag::MxMnInETag(Unit * Owner,
-    QString Name,
-    QString DBName,
-    QVariant MaxLevel,
-    QVariant MinLevel,
-    QVariant ChageStep,
-    bool InOrOutDetect,
-    bool TunableSetTime,
-    bool TunablePulseTime,
-    bool TunabDetectLevel,
-    bool EgnorableAlarm,
-    bool InGUI,
-    Prom::ETagValConv Convertion,
-    int TimeMax)
+                       QString Name,
+                       QString DBName,
+                       QVariant MaxLevel,
+                       QVariant MinLevel,
+                       QVariant ChageStep,
+                       bool InOrOutDetect,
+                       bool TunableSetTime,
+                       bool TunablePulseTime,
+                       bool TunabDetectLevel,
+                       bool EgnorableAlarm,
+                       bool InGUI,
+                       Prom::ETagValConv Convertion,
+                       int TimeMax)
     : ETag(Owner,
-        //Type,
-        Name,
-        DBName,
-        TunableSetTime,
-        TunablePulseTime,
-        EgnorableAlarm,
-        InGUI,
-        Convertion,
-        ChageStep),
-    _inOrOutDetect(InOrOutDetect),
-    _maxLevel(MaxLevel),
-    _minLevel(MinLevel),
-    _tunabDetectLevel(TunabDetectLevel)
+           //Type,
+           Name,
+           DBName,
+           TunableSetTime,
+           TunablePulseTime,
+           EgnorableAlarm,
+           InGUI,
+           Convertion,
+           ChageStep),
+      _inOrOutDetect(InOrOutDetect),
+      _maxLevel(MaxLevel),
+      _minLevel(MinLevel),
+      _tunabDetectLevel(TunabDetectLevel)
 {
     _timeMax = new QTimerExt(this);
     _timeMax->setInterval(TimeMax * 1000);
@@ -167,8 +167,8 @@ void MxMnInETag::needBe(bool DtctOrNot, bool AlarmOn, bool SetTimer)
 {
     if(_DnotU != DtctOrNot || _alarmOn != AlarmOn){
         _logging (Prom::MessVerbose, QString("установлен режим обработки сигнала - необходтимо быть ")
-                + QString(DtctOrNot ? "" : "не")
-                + "сработавшим (больше " + _maxLevel.toString() + "/меньше "
+                  + QString(DtctOrNot ? "" : "не")
+                  + "сработавшим (больше " + _maxLevel.toString() + "/меньше "
                 + _minLevel.toString() + ")"
                 +  QString(_alarmOn ? " с генерацией":" без генерации ") + " аварии,"
                 + QString(SetTimer ? " с таймером":" без таймера") + " на установку нужного состояния"
@@ -275,6 +275,13 @@ bool MxMnInETag::_checkDetect()
 
     return _inOrOutDetect ? !(_maxDetect || _minDetect) : _maxDetect || _minDetect;
 }
+
+//------------------------------------------------------------------------------
+MinMaxTagContdStay MxMnInETag::minMaxTagConnected() const
+{
+    return _minMaxTagConnected;
+}
+
 //------------------------------------------------------------------------------
 void MxMnInETag::setTimeMax( int TimeMax )
 {
@@ -298,7 +305,9 @@ bool MxMnInETag::connectTagToMaxLevel(OutETag *Tag)
     bool res = true;
     if( Tag == nullptr ) return false;
     if( !Tag->isOk() ) return false;
-    setMaxLevel( Tag->value() );
+    if(_maxLevel != Tag->value()){
+        setMaxLevel( Tag->value() );
+    }
     res = res && connect( this, SIGNAL(s_maxLevelChanged(QVariant)), Tag,  SLOT(setValue(QVariant)), Qt::QueuedConnection );
     res = res && connect( Tag,  &OutETag::s_valueChd,           this, &MxMnInETag::setMaxLevel, Qt::QueuedConnection );
     if( !res ) {
@@ -317,7 +326,9 @@ bool MxMnInETag::connectTagToMinLevel(OutETag *Tag)
     bool res = true;
     if( Tag == nullptr ) return false;
     if( !Tag->isOk() ) return false;
-    setMinLevel( Tag->value() );
+    if(_minLevel != Tag->value()){
+        setMinLevel( Tag->value() );
+    }
     res = res && connect( this, SIGNAL(s_minLevelChanged(QVariant)), Tag,  SLOT(setValue(QVariant)), Qt::QueuedConnection);
     res = res && connect( Tag,  &OutETag::s_valueChd,           this, &MxMnInETag::setMinLevel, Qt::QueuedConnection);
     if( !res ) {
@@ -334,8 +345,13 @@ bool MxMnInETag::connectTagToMinLevel(OutETag *Tag)
 bool MxMnInETag::findMaxMinTags()
 {
     bool res = true;
-    res &= connectTagToMaxLevel( new OutETag(_owner, /*Prom::TpOut,*/ Prom::PreSet, _name + " макс.", _DBName + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
-    res &= connectTagToMinLevel( new OutETag(_owner, /*Prom::TpOut,*/ Prom::PreSet, _name + " мин.",  _DBName + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
+    QString tmp = _DBName;
+    tmp = tmp.remove(".value");
+    res &= connectTagToMaxLevel( new OutETag(_owner, Prom::PreSet, _name + " макс.", tmp + ".max",false,false,false,true,Prom::VCNo,false,false,0,true));
+    if(res) _minMaxTagConnected = Max_noMin;
+    else _minMaxTagConnected = Min_noMax;
+    res &= connectTagToMinLevel( new OutETag(_owner, Prom::PreSet, _name + " мин.",  tmp + ".min",false,false,false,true,Prom::VCNo,false,false,0,true));
+    if(res) _minMaxTagConnected = Max_Min;
     _tunabDetectLevel = !res;
     return res;
 }
@@ -435,8 +451,8 @@ void MxMnInETag::_checkVal()
                             //if( preMaxDetect != _maxDetect || preMinDetect != _minDetect || ! _alarm )
 
                             if( _alarm
-                                && (_inOrOutDetect ? ( ( !preMaxDetect && _minAlarm ) || ( !preMinDetect && _maxAlarm ))
-                                                   : ( ( _minDetect   && _minAlarm ) || ( _maxDetect   && _maxAlarm ))) ){
+                                    && (_inOrOutDetect ? ( ( !preMaxDetect && _minAlarm ) || ( !preMinDetect && _maxAlarm ))
+                                        : ( ( _minDetect   && _minAlarm ) || ( _maxDetect   && _maxAlarm ))) ){
                                 //if( ( ( (_maxDetect && _minAlarm)||(_minDetect && _maxAlarm) ) && _inOrOutDetect ) )
                                 emit s_alarm("");
                                 //_logging(Prom::MessAlarm, _alarmStr, _imit);
@@ -511,9 +527,9 @@ void MxMnInETag::_customConnectToGUI(QObject *, QObject *engRow)
 
     //!создал в строке главный раздел
     QMetaObject::invokeMethod(engRow, "addPropertyValue", Qt::DirectConnection,
-        Q_RETURN_ARG(QVariant, ret),
-        Q_ARG(QVariant, this->fullTagName() + "_PrVal"),
-        Q_ARG(QVariant, this->getName()));
+                              Q_RETURN_ARG(QVariant, ret),
+                              Q_ARG(QVariant, this->fullTagName() + "_PrVal"),
+                              Q_ARG(QVariant, this->getName()));
 
     //tmpSgSt = propWin->findChild<QObject*>(est->fullTagName() + "_PrSig");
     tmpSgSt = qvariant_cast< QObject* >(ret);
@@ -531,10 +547,10 @@ void MxMnInETag::_customConnectToGUI(QObject *, QObject *engRow)
     if(_tunabDetectLevel){
 
         QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
-            Q_RETURN_ARG(QVariant, ret),
-            Q_ARG(QVariant, this->getDBName() + "_delay"),
-            Q_ARG(QVariant, " - макс. уровень срабатывания"),
-            Q_ARG(QVariant, -1));
+                                  Q_RETURN_ARG(QVariant, ret),
+                                  Q_ARG(QVariant, this->getDBName() + "_delay"),
+                                  Q_ARG(QVariant, " - макс. уровень срабатывания"),
+                                  Q_ARG(QVariant, -1));
         //tmpSgSt = guiItem->findChild<QObject*>(est->getDBName() + "_delay");
         tmpSgSt = qvariant_cast< QObject* >(ret);//получаю указатель на уровень срабатывания
         //подключаю сигналы к уровням срабатывания
@@ -542,10 +558,10 @@ void MxMnInETag::_customConnectToGUI(QObject *, QObject *engRow)
         connect(this,    SIGNAL(s_maxLevelChanged(QVariant)), tmpSgSt, SLOT(setVal(QVariant)),      Qt::QueuedConnection);
 
         QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
-            Q_RETURN_ARG(QVariant, ret),
-            Q_ARG(QVariant, this->getDBName() + "_delay"),
-            Q_ARG(QVariant, " - мин. уровень срабатывания"),
-            Q_ARG(QVariant, -1));
+                                  Q_RETURN_ARG(QVariant, ret),
+                                  Q_ARG(QVariant, this->getDBName() + "_delay"),
+                                  Q_ARG(QVariant, " - мин. уровень срабатывания"),
+                                  Q_ARG(QVariant, -1));
         //tmpSgSt = guiItem->findChild<QObject*>(est->getDBName() + "_delay");
         tmpSgSt = qvariant_cast< QObject* >(ret);//получаю указатель на уровень срабатывания
         //подключаю сигналы к уровням срабатывания

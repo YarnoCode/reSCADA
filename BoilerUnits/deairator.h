@@ -11,9 +11,9 @@
 class OutETag;
 class MxMnInETag;
 class OutDiscretETag;
-class FCUnitOkSrtFq0Fq0;
+class FCUnitSFREFF;
 class SimpElecEngine;
-class RegValveDO;
+class RegValveDOMMS;
 //class PIDstep;
 class InDiscretETag;
 
@@ -35,12 +35,12 @@ public:
     InDiscretETag * alarm;
     OutDiscretETag * reset;
 
-    PIDstep *lvlPID;
-    PIDstep *steamPID;
-    FCUnitOkSrtFq0Fq0 *waterFC;
+    PID *lvlPID;
+    PID *steamPID;
+    FCUnitSFREFF *waterFC;
     SimpElecEngine *waterPump1;
     SimpElecEngine *waterPump2;
-    RegValveDO *vrSteam;
+    RegValveDOMMS *vrSteam;
 public slots:
     bool resetAlarm() override;
 

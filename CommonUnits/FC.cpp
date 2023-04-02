@@ -72,7 +72,7 @@ void FCUnitRstFwdFqFq::_customConnectToGUI(QObject *guiItem,  QObject */*propWin
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-FCUnitOkSrtFq0Fq0::FCUnitOkSrtFq0Fq0(
+FCUnitSFREFF::FCUnitSFREFF(
     int *Id,
     QString Name,
     QString TagPrefix,
@@ -84,58 +84,87 @@ FCUnitOkSrtFq0Fq0::FCUnitOkSrtFq0Fq0(
         SelfResetAlarm,
         Prom::UnMdStop)
 {
-    ok = new InDiscretETag(this, "ошибка", ".ok.alarm",true,false,true,false,false,false);
-    ok->setAlarmSelfReset(SelfResetAlarm);
-    ok->needBeUndetectedAlarm();
-    reset = new OutDiscretETag( this, Prom::PreSet, "сброс ошибок", ".ok.resetAlarm",
+    start = new OutDiscretETag( this, Prom::PreSet, "старт", ".start");
+    fwd = new InDiscretETag(this, "вращение", ".fwd",true,false,true,false,false,false);
+    fwdAlarm = new InDiscretETag(this, "авария задержки начала вращения", ".alarmFwd",true,false,true,false,false,false);
+    fwdAlarm->setAlarmSelfReset(SelfResetAlarm);
+    fwdAlarm->needBeUndetectedAlarm();
+    reset= new OutDiscretETag( this, Prom::PreSet, "сброс ошибок", ".resetAlarm",
         true, false, false, false, false, true, false, false,
         false, true,Prom::VCNo, true );
     reset->setImpulseDuration(1);
-    start = new InDiscretETag(this, "старт", ".start",true,false,true,false,false,false);
-    connect(start, &InDiscretETag::s_qualityChd, this, &FCUnitRstFwdFqFq::updateState);
-    connect(start, &InDiscretETag::s_detected, this, &FCUnitRstFwdFqFq::updateState);
-    connect(start, &InDiscretETag::s_undetected, this, &FCUnitRstFwdFqFq::updateState);
+    error = new InDiscretETag(this, "сигнал ошибки ЧП", ".error",true,false,true,false,false,false);
+    errorAlarm = new InDiscretETag(this, "авария по сигналу ошибки ЧП", ".error.alarm",true,false,true,false,false,false);
+    errorAlarm->needBeUndetectedAlarm();
+    //InDiscretETag  *alarm =
+    //freqPID = new InETag(this, /*Prom::TpIn,*/"частота от ПИД-регулятора", "!!!!", true, 0, 0, false, false,false,false);
+    //freqMan = new InETag(this, /*Prom::TpIn,*/"частота %", ".freq", true, 0, 0, false, false,false,false);
+    freq = new InETag(this, /*Prom::TpIn,*/"частота %", ".freq", true, 0, 0, false, false,false,false);
+
+    connect(start, &OutDiscretETag::s_valueChd, this, &FCUnitSFREFF::updateState);
+    connect(fwd, &OutDiscretETag::s_valueChd,   this, &FCUnitSFREFF::updateState);
 }
 
 //------------------------------------------------------------------------------
-void FCUnitOkSrtFq0Fq0::setFreqMan(OutETag *newFreqMan)
+void FCUnitSFREFF::setFreqMan(OutETag *newFreqMan)
 {
     freqMan = newFreqMan;
     addETag(freqMan);
 }
 //------------------------------------------------------------------------------
-bool FCUnitOkSrtFq0Fq0::resetAlarm()
+bool FCUnitSFREFF::resetAlarm()
 {
     reset->on();
     return Unit::resetAlarm();
 }
 //------------------------------------------------------------------------------
-void FCUnitOkSrtFq0Fq0::setFreqPID(InETag *newFreqPID)
+void FCUnitSFREFF::setFreqPID(InETag *newFreqPID)
 {
     freqPID = newFreqPID;
     addETag(freqPID);
 }
 //------------------------------------------------------------------------------
-void FCUnitOkSrtFq0Fq0::_updateStateAndMode()
+void FCUnitSFREFF::_updateStateAndMode()
 {
-        if(start->connected()){
-
-        if(start->isDetected()){
+    if( fwd->isDetected() ){
+        if(start->isOn()){
             _setCurrentState(Prom::UnStStarted);
             _setCurrentMode(Prom::UnMdStart);
             emit s_started();
         }
-        else {
+        else{
+            _setCurrentState(Prom::UnStStopCommand);
+            _setCurrentMode(Prom::UnMdStart);
+            emit s_stopComand();
+        }
+    }
+    else{
+        if(start->isOn()){
+            _setCurrentState(Prom::UnStStartCommand);
+            _setCurrentMode(Prom::UnMdStart);
+            emit s_startComand();
+        }
+        else{
             _setCurrentState(Prom::UnStStoped);
-            _setCurrentMode(Prom::UnMdNoDef);
+            _setCurrentMode(Prom::UnMdStop);
             emit s_stoped();
         }
-        }
+    }
 }
 //------------------------------------------------------------------------------
-void FCUnitOkSrtFq0Fq0::_customConnectToGUI(QObject *guiItem, QObject *)
+void FCUnitSFREFF::_customConnectToGUI(QObject *guiItem, QObject *)
 {
     connect( freqMan, SIGNAL( s_valueChd(QVariant) ),    guiItem, SLOT( setFreq(QVariant) ), Qt::QueuedConnection );
     connect( guiItem, SIGNAL( s_freqChanged(QVariant) ), freqMan, SLOT( setValue(QVariant) ), Qt::QueuedConnection );
+    connect( freq, SIGNAL( s_valueChd(QVariant) ),       guiItem, SLOT( setFreqLive(QVariant) ), Qt::QueuedConnection );
+
+    connect(this,    SIGNAL(s_startComand()),           guiItem, SLOT(startComand()),             Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_stopComand()),            guiItem, SLOT(stopComand()),              Qt::QueuedConnection);
+    //    connect(guiItem, SIGNAL(s_start()),                 this,    SLOT(start()),                   Qt::QueuedConnection);
+    //    connect(guiItem, SIGNAL(s_stop()),                  this,    SLOT(stop()),                    Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_stoped()),                guiItem, SLOT(stoped()) ,                 Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_manualStarted()),         guiItem, SLOT(manualWork()) ,             Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_started()),               guiItem, SLOT(started()),                 Qt::QueuedConnection);
+
 }
 //------------------------------------------------------------------------------

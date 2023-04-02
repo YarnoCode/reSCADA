@@ -32,7 +32,12 @@ Selector0_2pos::Selector0_2pos(
 //------------------------------------------------------------------------------
 void Selector0_2pos::_updateStateAndMode()
 {
-
+    switch (pos->value().toInt()) {
+    case 0: emit toNoOne(); break;
+    case 1: emit toFirst(); break;
+    case 2: emit toSecond();break;
+    default:emit toNoOne();
+    }
 }
 //------------------------------------------------------------------------------
 void Selector0_2pos::_customConnectToGUI(QObject *guiItem, QObject *)

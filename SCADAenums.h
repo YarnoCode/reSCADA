@@ -292,21 +292,33 @@ static const std::vector <QString> EF_GT_OW_0KMQi   = { "Упр. вых. отк�
 namespace PIDopt {
     static const  uint allOff = 0;
     static const  uint allOn = 0xFFFFFFFF;
-    static const  uint kP =        0b00000001000; // шестнадцатеричный литерал для 0000 0001
-    static const  uint kI =        0b00000010000;
-    static const  uint kD =        0b00000100000;
-    static const  uint allImp =    0b11111000000;
-    static const  uint kPimp  =    0b00001000000;
-    static const  uint kIimp  =    0b00010000000;
-    static const  uint kDimp  =    0b00100000000;
-    static const  uint impIn  =    0b01000000000;
-    static const  uint manImp =    0b10000000000;
-    static const  uint impLimMax = 0b00000000100;
-    static const  uint impLimMin = 0b00000000010;
-    static const  uint feedback  = 0b00000000001;
+    static const  uint allImp =    0b00011111000000;
+  static const   uint SimensCONT_S=0b11000000001000;
+
+    static const  uint kP =        0b10000000000000; // шестнадцатеричный литерал для 0000 0001
+    static const  uint kI =        0b01000000000000;
+    static const  uint kD =        0b00100000000000;
+    static const  uint kPimp  =    0b00010000000000;
+    static const  uint kIimp  =    0b00001000000000;
+    static const  uint kDimp  =    0b00000100000000;
+    static const  uint imp    =    0b00000010000000;
+    static const  uint manImp =    0b00000001000000;
+    static const  uint impLimMax = 0b00000000100000;
+    static const  uint impLimMin = 0b00000000010000;
+    static const  uint feedback  = 0b00000000001000;
+    static const  uint spMax     = 0b00000000000100;
+    static const  uint spMin     = 0b00000000000010;
+static const  uint manImpulseOn  = 0b00000000000001;
     //  option8 = 0b10000000
     //};
 }
+
+enum MinMaxTagContdStay{
+    noMax_noMin = 0,
+    Max_noMin = 1,
+    Min_noMax = 2,
+    Max_Min = 3
+};
 
 #define TSP_ENUMS
 //TSP ENUMS BEGIN

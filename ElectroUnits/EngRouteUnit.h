@@ -31,7 +31,6 @@ signals:
     void s_started();         //для визуализации
     void s_stopComand();     //для визуализации
     void s_stoped();        //для визуализации
-    void s_cleaning();
     void s_manualStarted();//для визуализации
     void s_noDef();       //для визуализации
 

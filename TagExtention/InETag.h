@@ -5,6 +5,7 @@
 #include "ETag.h"
 //#include "../../SCADAenums.h"
 //#include <QVariant>
+class OutETag;
 
 class InETag: public ETag
 {
@@ -26,7 +27,7 @@ public:
                     Prom::ETagValConv Convertion = Prom::VCNo,
                     int TimeMax = 0);
 
-    const bool tunabDetectLevel;
+
     bool isDetected (bool * Ok = nullptr) const { if(Ok)*Ok = _ok; return _detect; }
     bool isOk() const { return _ok; }
     //bool isImit() const { return _imit; }
@@ -42,8 +43,8 @@ protected:
     bool _onlyChange = true;
     bool _detect = false;
     bool _highOrLow;
-    QVariant _detectLevel = 0;
-    double _correction = 0;
+    QVariant _detectLevel{0};
+    double _correction{0};
     bool _alarmOn = false;
     bool _DnotU = false;
     bool _detectPulse = false;
@@ -54,6 +55,7 @@ protected:
     QVariant _timeMaxValue{0};
     QVariant _timeLastValue{0};
     QTimerExt * _timeMax{ nullptr };
+    bool _tunabDetectLevel{false};
 
     void needBe(bool DtctOrNot, bool AlarmOn, bool SetTimer = true);
     virtual bool _checkDetect();
@@ -88,6 +90,8 @@ public slots:
     void _setTimerEnd()  override;
     void saveParam() override;
     void loadParam() override;
+    bool connectTagToLimit(OutETag *Tag);
+    bool findLimTag();
 
 protected slots:
     void _qualityChangedSlot() override;

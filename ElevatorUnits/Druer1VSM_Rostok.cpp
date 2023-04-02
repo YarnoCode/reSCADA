@@ -19,7 +19,7 @@ Druer1VSM_Rostok::Druer1VSM_Rostok(int ID,
 {
 
     _sound      = new OutDiscretETag(this, Prom::PreSet, "Сирена", ".sound");
-    _alarmLamp  = new OutDiscretETag(this, Prom::PreSet, "Аварийная лампа", ".alarmLamp");
+    _alarmLamp  = new OutDiscretETag(this, Prom::PreSet, "Аварийная лакПа", ".alarmLamp");
     _start      = new OutDiscretETag(this, Prom::PreSet, "Пуск", ".autoStart");
     _cooling    = new OutDiscretETag(this, Prom::PreSet, "Продувка", ".cooling");
     _coolingStop= new OutDiscretETag(this, Prom::PreSet, "Стоп с продувкой",".coolingStop");

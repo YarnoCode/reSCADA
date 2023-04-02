@@ -10,9 +10,9 @@ class OutETag;
 class InETag;
 class MxMnInETag;
 class OutDiscretETag;
-class FCUnitOkSrtFq0Fq0;
+class FCUnitSFREFF;
 class SimpElecEngine;
-class RegValveDO;
+class RegValveDOMMS;
 class ActWorkSt;
 class InDiscretETag;
 class Burner;
@@ -24,11 +24,11 @@ public:
     explicit Boiler(int *Id,
         QString Name,
         QString TagPrefix,
-        QString lvlPIDPefix,
+        QString lvlPIDPefix, QString smokePIDPefix,
         QString steamPIDPefix,
-        QString smokePIDPefix,
         QString airPIDPefix,
-        bool SelfAlarmReset,
+        bool pAirDouble = false,
+        bool SelfAlarmReset = true,
         const pid::tagsMap *PIDTagsNames = &pid::StdPIDTagsNames);
 
     enum states{
@@ -69,13 +69,15 @@ public:
     InETag *lastGermTest;
     OutETag *pAirIgnition;
     OutETag *pSmokeIgnition;
-    OutETag *pGasStart;
-    OutETag *pGasHeating;
+    OutETag *pGasIgnition;
+    //OutETag *pGasHeating;
 
 
     MxMnInETag *lvlWater;//.value;
     MxMnInETag *pGas;//.value;
-    MxMnInETag *pAir;//.value;
+    MxMnInETag *pAir{nullptr};//.value;
+    MxMnInETag *pAir1{nullptr};//.value;
+    MxMnInETag *pAir2{nullptr};//.value;
     MxMnInETag *pSmoke;//.value;
     MxMnInETag *pSteam;//.value;
     MxMnInETag *tSmoke;//.value;
@@ -98,17 +100,17 @@ public:
     OutETag *startHeatingDelay;
     OutETag *coolingDelay;
 
-    PIDstep *lvlPID;
+    PID *lvlPID;
     PID *steamPID;
-    PID *smokePID;
     PID *airPID;
+    PID *smokePID;
 
-    FCUnitOkSrtFq0Fq0 *waterFC;
-    FCUnitOkSrtFq0Fq0 *smokeFC;
-    FCUnitOkSrtFq0Fq0 *airFC;
+    FCUnitSFREFF *waterFC;
+    FCUnitSFREFF *smokeFC;
+    FCUnitSFREFF *airFC;
 
     SimpElecEngine *waterPump;
-    SimpElecEngine *waterPumpReserv;
+    //SimpElecEngine *waterPumpReserv;
     SimpElecEngine *ventSmoke;
     SimpElecEngine *ventAir;
 
@@ -120,19 +122,19 @@ public:
     Burner *burner2;
 
 signals:
-//    void s_state(QVariant);
-//    void s_startStage(QVariant);
-//    void s_startHeating(QVariant);
-//    void s_heating(QVariant);
-//    void s_ventilating(QVariant);
+    //    void s_state(QVariant);
+    //    void s_startStage(QVariant);
+    //    void s_startHeating(QVariant);
+    //    void s_heating(QVariant);
+    //    void s_ventilating(QVariant);
 
 public slots:
     bool resetAlarm() override;
-//    void start()     { setMode(Prom::UnMdAutoStart, true); };
-//    void stop()      { setMode(Prom::UnMdStop,      true); };
-//    void alarmStop() { setMode(Prom::UnMdFreeze,    true); };
-//    void blowdown()  { setMode(Prom::UnMdBlowdown,  true); };
-//    void germTest()  { setMode(Prom::UnMdGermTest, true); };
+    //    void start()     { setMode(Prom::UnMdAutoStart, true); };
+    //    void stop()      { setMode(Prom::UnMdStop,      true); };
+    //    void alarmStop() { setMode(Prom::UnMdFreeze,    true); };
+    //    void blowdown()  { setMode(Prom::UnMdBlowdown,  true); };
+    //    void germTest()  { setMode(Prom::UnMdGermTest, true); };
 
 protected slots:
     Prom::SetModeResp _customSetMode( Prom::UnitModes */*mode*/, bool /*UserOrSys*/ ) override{return Prom::RejAnnown;};
@@ -140,6 +142,5 @@ protected slots:
     void _updateStateAndMode() override;
     void _doOnModeChange()override{};
 };
-
 
 #endif // BOILER_H

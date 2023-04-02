@@ -12,14 +12,14 @@
 #include "burner.h"
 
 //------------------------------------------------------------------------------
-Boiler::Boiler(
-    int *Id,
+Boiler::Boiler(int *Id,
     QString Name,
     QString TagPrefix,
     QString lvlPIDPefix,
-    QString steamPIDPefix,
     QString smokePIDPefix,
+    QString steamPIDPefix,
     QString airPIDPefix,
+    bool pAirDouble,
     bool SelfAlarmReset,
     const pid::tagsMap *PIDTagsNames)
     : Unit(
@@ -44,80 +44,54 @@ Boiler::Boiler(
     pGasBV_alarm->setAlarmSelfReset(SelfAlarmReset);
     pGasBV_alarm->needBeUndetectedAlarm();
 
-    reset= new OutDiscretETag( this, Prom::PreSet, "сброс аварий", ".resetAlarm",
+    reset = new OutDiscretETag( this, Prom::PreSet, "сброс аварий", ".resetAlarm",
         true, false, false, false, false, true, false, false,
         false, true,Prom::VCNo, true );
     reset->setImpulseDuration(1);
-
-    autoMod      = new OutDiscretETag( this, Prom::PreSet, "автоматический режим", ".autoMod");
-    startCmd     = new OutDiscretETag( this, Prom::PreSet, "запуск", ".startCmd");
-    stopCmd      = new OutDiscretETag( this, Prom::PreSet, "стоп", ".stopCmd");
-    alarmStopCmd = new OutDiscretETag( this, Prom::PreSet, "аварийный стоп", ".alarmStopCmd");
-    startStage = new InETag(this, /*Prom::TpIn,*/"№ этапа запуска", ".startStage", true, 0, 0, false, false,false,false);
-
-    state = new InETag(this, /*Prom::TpIn,*/"№ состояния", ".state", true, 0, 0, false, false,false,false);
-
-    blowdownCmd = new OutDiscretETag( this, Prom::PreSet, "продувка", ".blowdownCmd");
-    blowdownET    = new InETag(this, /*Prom::TpIn,*/"продувка ост-ся время", ".blowdownET", true, 0, 0, false, false,false,false,true,Prom::VCdiv1000);
-    blowdownDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время продувки в с.", ".blowdownDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-    blowdownFCArFreq = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"частота ЧП при продувке Гц", ".blowdownFCArFreq",false,false,false,true,Prom::VCNo,false,false,0,true);
-    blowdownPSmoke   = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"разряжение в котле при продувке кПа", ".blowdownPSmoke",false,false,false,true,Prom::VCNo,false,false,0,true);
-
-    pAirIgnition  = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"давление воздуха при позжиге кПа", ".pAirIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);
-    pSmokeIgnition= new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"разряжение в топке при позжиге кПа", ".pSmokeIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);  ;
-    pGasStart = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"давление газа при позжиге кПа", ".pGasStart",false,false,false,true,Prom::VCNo,false,false,0,true);
-    pGasHeating = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"давление газа при прогреве кПа", ".pGasHeating",false,false,false,true,Prom::VCNo,false,false,0,true);
-
-    germTestStart = new OutDiscretETag( this, Prom::PreSet, "запуск теста герметичности", ".germTestStart");
-    germTestStage = new InETag(this, /*Prom::TpIn,*/"№ этапа теста", ".germTestStage", true, 0, 0, false, false,false,false);
-
-    //pumpWater_selectReserv = new InDiscretETag(this, "выбран резервный водяной насос", ".pumpWater.selectReserv",true,false,true,false,false,false);
-
-    startHeatingET = new InETag(this, /*Prom::TpIn,*/"оставшееся время прогрева холодной кладки с.", ".startHeatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
-    startHeatingDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время прогрева кладки в с.", ".startHeatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-
-    heatingET = new InETag(this, /*Prom::TpIn,*/"оставщееся время нагрева котла с.", ".heatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
-    coolingET = new InETag(this, /*Prom::TpIn,*/"оставщееся время охлаждения котла с.", ".coolingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
-
-    heatingDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время полного прогрева котла в с.", ".heatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-
-    coolingDelay = new OutETag(this, /*Prom::TpOut,*/Prom::PreSet,"время остывания котла с продувкой в с.", ".coolingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
-
-
-
-    reqAlarmBtnPress = new InDiscretETag(this, "нужно нажать СТОП-КНОПКУ", ".reqAlarmBtnPress",true,false,true,false,false,false);
-    reqUserConf = new InDiscretETag(this, "нужно подтверждение от оператора", ".reqUserConf",true,false,true,false,false,false);
-    userConfd = new OutDiscretETag( this, Prom::PreSet, "подтверждение от оператора", ".userConfd");
-
-    lvlWater = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "уровень воды %", ".lvlWater", 100, 50, 2,false,false,false,false,false);
+    lvlWater = new MxMnInETag( this,  "уровень воды %", ".lvlWater", 100, 50, 2,false,false,false,false,false);
     lvlWater->setAlarmSelfReset(SelfAlarmReset);
     lvlWater->needBeUndetectedAlarm();
     lvlWater->findMaxMinTags();
 
-    pGasBV = new InETag(this, /*Prom::TpIn,*/"давление газа между клапанами кПа", ".pGasBV", true, 0, 0.1, false, false,false,false);
+    pGasBV = new InETag(this, "давление газа между клапанами кПа", ".pGasBV", true, 0, 0.1, false, false,false,false);
     pGasBV->setAlarmSelfReset(SelfAlarmReset);
+    pGasBV->needBeUndetectedAlarm();
+    pGasBV->findLimTag();
 
-    pGas = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление газа кПа", ".pGas", 5, 1, 0.1,false,false,false,false,false );
+    pGas = new MxMnInETag( this,  "давление газа кПа", ".pGas", 5, 1, 0.1,false,false,false,false,false );
     pGas->setAlarmSelfReset(SelfAlarmReset);
     pGas->needBeUndetectedAlarm();
     pGas->findMaxMinTags();
 
-    pAir = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление воздуха кПа", ".pAir", 5, 0.1, 0.1,false,false,false,false,false );
-    pAir->setAlarmSelfReset(SelfAlarmReset);
-    pAir->needBeUndetectedAlarm();
-    pAir->findMaxMinTags();
+    if(pAirDouble){
+        pAir1 = new MxMnInETag( this,  "давление воздуха 1 кПа", ".pAir1", 5, 0.1, 0.1,false,false,false,false,false );
+        pAir1->setAlarmSelfReset(SelfAlarmReset);
+        pAir1->needBeUndetectedAlarm();
+        pAir1->findMaxMinTags();
 
-    pSmoke = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "разряжение в топке кПа", ".pSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
+        pAir2 = new MxMnInETag( this,  "давление воздуха 2 кПа", ".pAir2", 5, 0.1, 0.1,false,false,false,false,false );
+        pAir2->setAlarmSelfReset(SelfAlarmReset);
+        pAir2->needBeUndetectedAlarm();
+        pAir2->findMaxMinTags();
+    }
+    else{
+        pAir = new MxMnInETag( this,  "давление воздуха кПа", ".pAir", 5, 0.1, 0.1,false,false,false,false,false );
+        pAir->setAlarmSelfReset(SelfAlarmReset);
+        pAir->needBeUndetectedAlarm();
+        pAir->findMaxMinTags();
+    }
+
+    pSmoke = new MxMnInETag( this,  "разряжение в топке Па", ".pSmoke", 100, -100, 1,false,false,false,false,false );
     pSmoke->setAlarmSelfReset(SelfAlarmReset);
     pSmoke->needBeUndetectedAlarm();
     pSmoke->findMaxMinTags();
 
-    pSteam = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "давление пара кПа", ".pSteam", -0.1, -0.5, 0.1,false,false,false,false,false );
+    pSteam = new MxMnInETag( this,  "давление пара кПа", ".pSteam", -0.1, -0.5, 0.1,false,false,false,false,false );
     pSteam->setAlarmSelfReset(SelfAlarmReset);
     pSteam->needBeUndetectedAlarm();
     pSteam->findMaxMinTags();
 
-    tSmoke = new MxMnInETag( this, /*Prom::TpMxMnIn,*/ "t°C дыма", ".tSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
+    tSmoke = new MxMnInETag( this,  "t°C дыма", ".tSmoke", -0.1, -0.5, 0.1,false,false,false,false,false );
     tSmoke->setAlarmSelfReset(SelfAlarmReset);
     tSmoke->needBeUndetectedAlarm();
     tSmoke->findMaxMinTags();
@@ -131,30 +105,70 @@ Boiler::Boiler(
     lvlHiWork   = new InDiscretETag(this, "верхний рабочий уровень воды",   ".lvlHiWork",        true,false,true,false,false,false);
     lvlLowWork  = new InDiscretETag(this, "нижний рабочий уровень воды",    ".lvlLowWork",       true,false,true,false,false,false);
 
-    lvlPID   = new PIDstep(this, "ПИД уровня воды", "частота насоса",lvlPIDPefix,PIDTagsNames, PIDopt::allOn );
-    steamPID = new PID(this, "ПИД давления пара", "давление газа в горелках", steamPIDPefix, PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback );
+    autoMod      = new OutDiscretETag( this, Prom::PreSet, "автоматический режим", ".autoMod");
+    startCmd     = new OutDiscretETag( this, Prom::PreSet, "запуск", ".startCmd");
+    stopCmd      = new OutDiscretETag( this, Prom::PreSet, "стоп", ".stopCmd");
+    alarmStopCmd = new OutDiscretETag( this, Prom::PreSet, "аварийный стоп", ".alarmStopCmd");
+    startStage = new InETag(this, "№ этапа запуска", ".startStage", true, 0, 0, false, false,false,false);
+
+    state = new InETag(this, "№ состояния", ".state", true, 0, 0, false, false,false,false);
+
+    blowdownCmd = new OutDiscretETag( this, Prom::PreSet, "продувка", ".blowdownCmd");
+    blowdownET    = new InETag(this, "продувка ост-ся время", ".blowdownET", true, 0, 0, false, false,false,false,true,Prom::VCdiv1000);
+    blowdownDelay = new OutETag(this, Prom::PreSet,"время продувки в с.", ".blowdownDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+    blowdownFCArFreq = new OutETag(this, Prom::PreSet,"частота ЧП при продувке Гц", ".blowdownFCArFreq",false,false,false,true,Prom::VCNo,false,false,0,true);
+    blowdownPSmoke   = new OutETag(this, Prom::PreSet,"разряжение в котле при продувке кПа", ".blowdownPSmoke",false,false,false,true,Prom::VCNo,false,false,0,true);
+
+    pAirIgnition  = new OutETag(this, Prom::PreSet,"давление воздуха при позжиге кПа", ".pAirIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);
+    pSmokeIgnition= new OutETag(this, Prom::PreSet,"разряжение в топке при позжиге кПа", ".pSmokeIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);  ;
+    pGasIgnition = new OutETag(this, Prom::PreSet,"давление газа при позжиге кПа", ".pGasIgnition",false,false,false,true,Prom::VCNo,false,false,0,true);
+    //pGasHeating = new OutETag(this, Prom::PreSet,"давление газа при прогреве кПа", ".pGasHeating",false,false,false,true,Prom::VCNo,false,false,0,true);
+
+    germTestStart = new OutDiscretETag( this, Prom::PreSet, "запуск теста герметичности", ".germTestStart");
+    germTestStage = new InETag(this, "№ этапа теста", ".germTestStage", true, 0, 0, false, false,false,false);
+
+    //pumpWater_selectReserv = new InDiscretETag(this, "выбран резервный водяной насос", ".pumpWater.selectReserv",true,false,true,false,false,false);
+
+    startHeatingET = new InETag(this, "оставшееся время прогрева холодной кладки с.", ".startHeatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
+    startHeatingDelay = new OutETag(this, Prom::PreSet,"время прогрева кладки в с.", ".startHeatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+
+    heatingET = new InETag(this, "оставщееся время нагрева котла с.", ".heatingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
+    coolingET = new InETag(this, "оставщееся время охлаждения котла с.", ".coolingET", true, 0, 0,false,false,false,false,true,Prom::VCdiv1000);
+
+    heatingDelay = new OutETag(this, Prom::PreSet,"время полного прогрева котла в с.", ".heatingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+
+    coolingDelay = new OutETag(this, Prom::PreSet,"время остывания котла с продувкой в с.", ".coolingDelay",false,false,false,true,Prom::VCdiv1000,false,false,0,true);
+
+
+
+    reqAlarmBtnPress = new InDiscretETag(this, "нужно нажать СТОП-КНОПКУ", ".reqAlarmBtnPress",true,false,true,false,false,false);
+    reqUserConf = new InDiscretETag(this, "нужно подтверждение от оператора", ".reqUserConf",true,false,true,false,false,false);
+    userConfd = new OutDiscretETag( this, Prom::PreSet, "подтверждение от оператора", ".userConfd");
+
+    lvlPID   = new PID(this, "ПИД уровня воды", "частота насоса",lvlPIDPefix,PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback );
     smokePID = new PID(this, "ПИД разряжение в топке", "частота дымососа", smokePIDPefix, PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback);
+    steamPID = new PID(this, "ПИД давления пара", "давление газа в горелках", steamPIDPefix, PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback );
     airPID   = new PID(this, "ПИД давления воздуха", "частота вентилятора", airPIDPefix,   PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback);
 
-    waterFC = new FCUnitOkSrtFq0Fq0(Id, "ЧП насосов воды", tagPrefix + ".FCWater", SelfAlarmReset);
+    waterFC = new FCUnitSFREFF(Id, "ЧП насосов воды", tagPrefix + ".FCwater", SelfAlarmReset);
     waterFC->setFreqMan( lvlPID->manImp);
     waterFC->setFreqPID( lvlPID->impIn);
     addSubUnit(waterFC);
 
-    smokeFC = new FCUnitOkSrtFq0Fq0(Id, "ЧП дымососа", tagPrefix + ".FCSmoke", SelfAlarmReset);
+    smokeFC = new FCUnitSFREFF(Id, "ЧП дымососа", tagPrefix + ".FCsmoke", SelfAlarmReset);
     smokeFC->setFreqMan( smokePID->manImp);
     smokeFC->setFreqPID( smokePID->impIn);
     addSubUnit(smokeFC);
 
-    airFC = new FCUnitOkSrtFq0Fq0(Id, "ЧП вентилятора", tagPrefix + ".FCAir", SelfAlarmReset);
+    airFC = new FCUnitSFREFF(Id, "ЧП вентилятора", tagPrefix + ".FCair", SelfAlarmReset);
     airFC->setFreqMan( airPID->manImp);
     airFC->setFreqPID( airPID->impIn);
     addSubUnit(airFC);
 
     waterPump = new SimpElecEngine( Prom::TypePump, Id, "Насос охл. воды", tagPrefix + ".pumpWater", SelfAlarmReset);
     addSubUnit(waterPump);
-    waterPumpReserv = new SimpElecEngine( Prom::TypePump, Id, "Резервный насос охл. воды", tagPrefix + ".pumpWaterReserv", SelfAlarmReset);
-    addSubUnit(waterPumpReserv);
+//    waterPumpReserv = new SimpElecEngine( Prom::TypePump, Id, "Резервный насос охл. воды", tagPrefix + ".pumpWaterReserv", SelfAlarmReset);
+//    addSubUnit(waterPumpReserv);
     ventSmoke = new SimpElecEngine( Prom::TypeFan, Id, "Дымосос", tagPrefix + ".ventSmoke", SelfAlarmReset );
     addSubUnit( ventSmoke );
     ventAir = new SimpElecEngine( Prom::TypeFan, Id, "Воздушный вентилятор", tagPrefix + ".ventAir", SelfAlarmReset );
@@ -189,11 +203,11 @@ Boiler::Boiler(
     vCandle->addETag(alarmGermVBurnersOrCandle);
 
 
-    burner1 = new Burner(Id, "Горелка 1", tagPrefix + ".burner1", ".pGas_vrGasPosPID_ES", true, &pid::SiemensPIDTagsNames);
+    burner1 = new Burner(Id, "Горелка 1", tagPrefix + ".burner1", ".pGas_vrGasPosPID", true, &pid::SiemensPIDTagsNames);
     addSubUnit( burner1 );
     burner1->vGas->addETag(alarmGermVBurnersOrCandle);
 
-    burner2 = new Burner(Id, "Горелка 2", tagPrefix + ".burner2", ".pGas_vrGasPosPID_ES", true, &pid::SiemensPIDTagsNames);
+    burner2 = new Burner(Id, "Горелка 2", tagPrefix + ".burner2", ".pGas_vrGasPosPID", true, &pid::SiemensPIDTagsNames);
     addSubUnit( burner2 );
     burner2->vGas->addETag(alarmGermVBurnersOrCandle);
 
@@ -267,19 +281,31 @@ void Boiler::_customConnectToGUI(QObject *guiItem, QObject *)
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pSteam->getDBName() + " в GUI " + guiItem->objectName());
         if(! AnalogSignalVar2Connect(guiItem, pSmoke->getDBName(), pSmoke) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pSmoke->getDBName() + " в GUI " + guiItem->objectName());
-        if(! AnalogSignalVar2Connect(guiItem, pAir->getDBName(),   pAir) )
-            logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pAir->getDBName() + " в GUI " + guiItem->objectName());
+
+        if(pAir != nullptr){
+            if(! AnalogSignalVar2Connect(guiItem, pAir->getDBName(),   pAir) )
+                logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pAir->getDBName() + " в GUI " + guiItem->objectName());
+        }
+        if(pAir1 != nullptr){
+            if(! AnalogSignalVar2Connect(guiItem, pAir1->getDBName(),   pAir1) )
+                logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pAir1->getDBName() + " в GUI " + guiItem->objectName());
+        }
+        if(pAir2 != nullptr) {
+            if(! AnalogSignalVar2Connect(guiItem, pAir2->getDBName(),   pAir2) )
+                logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pAir2->getDBName() + " в GUI " + guiItem->objectName());
+        }
+
         if(! AnalogSignalVar2Connect(guiItem, pGas->getDBName(),   pGas) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pGas->getDBName() + " в GUI " + guiItem->objectName());
-        if(! AnalogSignalVar1Connect(guiItem, pGasBV->getDBName(), pGasBV) )
+        if(! AnalogSignalVar2Connect(guiItem, pGasBV->getDBName(), pGasBV) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + pGasBV->getDBName() + " в GUI " + guiItem->objectName());
 
         if( !PIDwinConnect(guiItem, lvlPID->tagPrefix,   lvlPID) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + lvlPID->tagPrefix + " в GUI " + guiItem->objectName());
-        if( !PIDwinConnect(guiItem, steamPID->tagPrefix, steamPID) )
-            logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + steamPID->tagPrefix + " в GUI " + guiItem->objectName());
         if( !PIDwinConnect(guiItem, smokePID->tagPrefix, smokePID) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + smokePID->tagPrefix + " в GUI " + guiItem->objectName());
+        if( !PIDwinConnect(guiItem, steamPID->tagPrefix, steamPID) )
+            logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + steamPID->tagPrefix + " в GUI " + guiItem->objectName());
         if( !PIDwinConnect(guiItem, airPID->tagPrefix,   airPID) )
             logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "не найден " + airPID->tagPrefix + " в GUI " + guiItem->objectName());
 
@@ -299,6 +325,5 @@ void Boiler::_customConnectToGUI(QObject *guiItem, QObject *)
         }
     }
 }
+
 //------------------------------------------------------------------------------
-
-

@@ -14,7 +14,6 @@
 //#include "QTimerExt.h"
 
 //------------------------------------------------------------------------------
-
 bool AnalogSignalVar1Connect(QObject *rootItem, QString ElementName, ETag *Tag)
 {
     QObject * tmpElem;
@@ -34,7 +33,7 @@ bool AnalogSignalVar1Connect(QObject *rootItem, QString ElementName, ETag *Tag)
 }
 
 //------------------------------------------------------------------------------
-bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, ETag *Tag)
+bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, InETag *Tag)
 {
     using namespace std;
 
@@ -43,30 +42,40 @@ bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, ETag *Tag)
         tmpElem = rootItem->findChild<QObject*>(ElementName);
     }
     else tmpElem = rootItem;
+
     if( tmpElem != nullptr ){
         AnalogSignalVar1Connect(rootItem, ElementName, Tag);
-        if (typeid(Tag) == typeid(InETag*)){//if( Tag->ttype() == Prom::TpIn ){
-            try {
-                if(static_cast<InETag*>(Tag)->highOrLow()){
-                    QObject::connect( Tag, SIGNAL(s_delectLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
-                    QObject::connect( tmpElem, SIGNAL(s_maxLimitChanged(QVariant)), Tag, SLOT( setDetectLevel(QVariant) ), Qt::QueuedConnection );
-                }
-                else{
-                    QObject::connect( Tag, SIGNAL(s_delectLevelChanged(QVariant)), tmpElem, SLOT( setMinLimit(QVariant) ), Qt::QueuedConnection );
-                    QObject::connect( tmpElem, SIGNAL(s_minLimitChanged(QVariant)), Tag, SLOT( setDetectLevel(QVariant) ), Qt::QueuedConnection );
-                }
-            }  catch (...) {//Если тег не InETag и метода highOrLow() у него нет, то будет ошибка и тут она отлавливается
-                QObject::connect( Tag, SIGNAL(s_delectLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
-                QObject::connect( tmpElem, SIGNAL(s_maxLimitChanged(QVariant)), Tag, SLOT( setDetectLevel(QVariant) ), Qt::QueuedConnection );
-            }
+        if(Tag->highOrLow()){
+            QObject::connect( Tag, SIGNAL(s_delectLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
+            QObject::connect( tmpElem, SIGNAL(s_maxLimitChanged(QVariant)), Tag, SLOT( setDetectLevel(QVariant) ), Qt::QueuedConnection );
+        }
+        else{
+            QObject::connect( Tag, SIGNAL(s_delectLevelChanged(QVariant)), tmpElem, SLOT( setMinLimit(QVariant) ), Qt::QueuedConnection );
+            QObject::connect( tmpElem, SIGNAL(s_minLimitChanged(QVariant)), Tag, SLOT( setDetectLevel(QVariant) ), Qt::QueuedConnection );
+        }
+        return true;
+    }
+    return false;
+}
 
-        }
-        else if (typeid(Tag) == typeid(MxMnInETag*)){//if(Tag->ttype() == Prom::TpMxMnIn ){
-            QObject::connect( Tag, SIGNAL(s_maxLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
-            QObject::connect( tmpElem, SIGNAL(s_maxLimitChanged(QVariant)), Tag, SLOT( setMaxLevel(QVariant) ), Qt::QueuedConnection );
-            QObject::connect( Tag, SIGNAL(s_minLevelChanged(QVariant)), tmpElem, SLOT( setMinLimit(QVariant) ), Qt::QueuedConnection );
-            QObject::connect( tmpElem, SIGNAL(s_minLimitChanged(QVariant)), Tag, SLOT( setMinLevel(QVariant) ), Qt::QueuedConnection );
-        }
+//------------------------------------------------------------------------------
+bool AnalogSignalVar2Connect(QObject *rootItem, QString ElementName, MxMnInETag *Tag)
+{
+    using namespace std;
+
+    QObject * tmpElem;
+    if( ElementName != ""){
+        tmpElem = rootItem->findChild<QObject*>(ElementName);
+    }
+    else tmpElem = rootItem;
+
+    if( tmpElem != nullptr ){
+        AnalogSignalVar1Connect(rootItem, ElementName, Tag);
+        QObject::connect( Tag, SIGNAL(s_maxLevelChanged(QVariant)), tmpElem, SLOT( setMaxLimit(QVariant) ), Qt::QueuedConnection );
+        QObject::connect( tmpElem, SIGNAL(s_maxLimitChanged(QVariant)), Tag, SLOT( setMaxLevel(QVariant) ), Qt::QueuedConnection );
+        QObject::connect( Tag, SIGNAL(s_minLevelChanged(QVariant)), tmpElem, SLOT( setMinLimit(QVariant) ), Qt::QueuedConnection );
+        QObject::connect( tmpElem, SIGNAL(s_minLimitChanged(QVariant)), Tag, SLOT( setMinLevel(QVariant) ), Qt::QueuedConnection );
+
         return true;
     }
     return false;

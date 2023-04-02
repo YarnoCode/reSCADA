@@ -5,10 +5,10 @@ UnitPropItem {
     id: contItem
     width: 20
     height: width
+    property color colorStopReady: "#4488CC"
+    property color colorRun: "darkgreen"
+    property color colorManual: "#ffffff"
     property alias mouseArea: mouseArea
-    property color colorRun: Fap.run
-    property color colorStopReady: Fap.ready
-    property color colorManual: Fap.manual
     property color colorStartCommand: "Lime"
     property color colorStopCommand: "Lime"
     property bool st: false

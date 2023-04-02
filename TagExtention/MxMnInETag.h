@@ -41,7 +41,7 @@ public:
     bool connectTagToMaxLevel( OutETag * Tag);
     bool connectTagToMinLevel( OutETag * Tag);
     bool findMaxMinTags();
-
+    MinMaxTagContdStay minMaxTagConnected() const;
 
 protected:
     bool _onlyChange = true;
@@ -79,6 +79,8 @@ protected:
         overMax,
         overMin
     };
+private:
+    MinMaxTagContdStay _minMaxTagConnected{ noMax_noMin };
 
 signals:
     void s_detected();

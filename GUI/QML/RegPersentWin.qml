@@ -25,6 +25,7 @@ Window {
     property alias upLimit: maxValue.upLimit
     property alias downLimit: minValue.downLimit
     property string unitOfmeg: "%"
+    property alias levelText: textLvl.text
 
     function setValueMinRange( MinRg ) { minValue.setValue( MinRg ) }
     function setValueMaxRange( MaxRg ) { maxValue.setValue( MaxRg ) }

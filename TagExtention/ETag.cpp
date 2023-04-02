@@ -41,7 +41,7 @@ bool ETag::init(Unit *Owner,
     QVariant ChageStep,
     bool AlarmSelfReset)
 {
-    QObject::setParent(Owner),
+    //QObject::setParent(Owner),
         //_ttype = Type;
         _tunableSetTime = TunableSetTime;
     _tunablePulseTime  = TunablePulseTime;
@@ -338,6 +338,13 @@ void ETag::connectToGUI(QObject *guiItem, QObject *propWin)
     QObject * tmpSgSt, * engRow;
     QMetaObject::invokeMethod(propWin, "addEngRow", Qt::DirectConnection, Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, this->fullTagName())); //создал строку меню для тэга
     engRow = qvariant_cast< QObject* >(ret);
+    //-----подключил сигналы к авирии и игнора
+    connect(this,    SIGNAL(s_alarmReseted()),          engRow, SLOT(alarmReseted()),         Qt::QueuedConnection);
+    connect(this,    SIGNAL(s_alarm(QVariant)),         engRow, SLOT(setAlarm()),             Qt::QueuedConnection);
+    //connect(this,    SIGNAL(s_ignorAlarmChd(QVariant)), engRow, SLOT(changeIgnore(QVariant)), Qt::QueuedConnection);
+    //connect(this,    SIGNAL(s_qualityChd(QVariant)),    engRow, SLOT(setConnected(QVariant)), Qt::QueuedConnection);
+    //connect(engRow, SIGNAL(changedIgnore(bool)),       this,    SLOT(writeIgnorAlarm(bool)),  Qt::QueuedConnection);
+    //-----подключил сигналы к авирии и игнора
 
     if(engRow && guiItem) _customConnectToGUI(guiItem, engRow);
 
@@ -347,23 +354,6 @@ void ETag::connectToGUI(QObject *guiItem, QObject *propWin)
             Q_ARG(QVariant, this->getName() + " - в TSP нет " + _owner->tagPrefix + _DBName ),
             Q_ARG(QVariant, false));
     }
-    else{
-        //!создаю строку аварии для тэга
-        QMetaObject::invokeMethod(propWin, "addAlarm", Qt::DirectConnection, Q_RETURN_ARG(QVariant, ret),
-            Q_ARG(QVariant, this->fullTagName() + "_alarm"),
-            Q_ARG(QVariant, this->getName()),
-            Q_ARG(QVariant, this->_ignorableAlarm));
-    }
-    tmpSgSt = qvariant_cast< QObject* >(ret);
-    //QObject * tmpSgSt = propWin->findChild<QObject*>(est->fullTagName() + "_alarm");                                                //получил указатеть на созданную строку
-    //-----подключил сигналы к авирии и игнору
-    connect(this,SIGNAL(s_alarmReseted()), tmpSgSt, SLOT(alarmReseted()), Qt::QueuedConnection);
-    connect(this,SIGNAL(s_alarm(QVariant)), tmpSgSt, SLOT(setAlarm()), Qt::QueuedConnection);
-    connect(tmpSgSt,SIGNAL(changedIgnore(bool)), this, SLOT(writeIgnorAlarm(bool)), Qt::QueuedConnection);
-    connect(this,SIGNAL(s_ignorAlarmChd(QVariant)), tmpSgSt, SLOT(changeIgnore(QVariant)), Qt::QueuedConnection);
-    connect(this,SIGNAL(s_qualityChd(QVariant)), tmpSgSt, SLOT(setConnected(QVariant)), Qt::QueuedConnection);
-    //-----подключил сигналы к авирии и игнору
-    //}
 
     if(_tunablePulseTime) { //Для пульсирующих
         //!добавляю пульс

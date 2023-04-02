@@ -3,7 +3,7 @@ import "fap.js" as Fap
 
 StartStopUnit {
     id: contItem
-    width: 20
+    width: 40
     height: width
     property alias perstWin: regPersWin
     property alias freq: regPersWin.value
@@ -21,6 +21,9 @@ StartStopUnit {
     function setFreq(value) {
         regPersWin.setValue(value)
     }
+    function setFreqLive(value) {
+        freq.text = value.toFixed(0)+ "%"
+    }
     signal s_moreLtl( variant MoreLtl )
     signal s_lessLtl( variant LessLtl )
     signal s_freqChanged( variant ValvePos )
@@ -34,13 +37,33 @@ StartStopUnit {
         Text{
             id: title
             text: "ЧП"
-            anchors.fill: parent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            height: parent.height/2 - 1
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             minimumPointSize: 3
             anchors.rightMargin: 1
             anchors.leftMargin: 1
+            anchors.topMargin: 1
+            font.pointSize: 300
+            fontSizeMode: Text.Fit
+        }
+        Text{
+            id: freq
+            width: 40
+            text: "99%"
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: title.bottom
+            anchors.bottom: parent.bottom
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             anchors.bottomMargin: 1
+            minimumPointSize: 3
+            anchors.rightMargin: 1
+            anchors.leftMargin: 1
             anchors.topMargin: 1
             font.pointSize: 300
             fontSizeMode: Text.Fit
@@ -71,7 +94,7 @@ StartStopUnit {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.1}
+    D{i:0;formeditorZoom:4}D{i:3}
 }
 ##^##*/
 

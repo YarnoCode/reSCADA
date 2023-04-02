@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>alarm.wav</file>
-        <file>Trefoil Green.png</file>
+        <file>Trefoil Green.ico</file>
     </qresource>
 </RCC>

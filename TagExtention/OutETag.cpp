@@ -12,25 +12,25 @@ OutETag::OutETag()
 }
 //------------------------------------------------------------------------------
 OutETag::OutETag(Unit * Owner,
-    //Prom::ESTagType Type,
-    Prom::OutESTagSetType SetType,
-    QString Name,
-    QString DBName,
-    bool TunableSetTime,
-    bool TunablePulseTime,
-    bool EgnorableAlarm,
-    bool InGUI,
-    Prom::ETagValConv Convertion,
-    bool Save,
-    bool LoadDefault,
-    QVariant DefaultValue,
-    bool MenuChanged,
-    quint8   LimitFlag,
-    QVariant HiLimit,
-    QVariant LowLimit,
-    bool TunableImpulseTime,
-    QVariant ChageStep,
-    bool AlarmSelfReset )
+                 //Prom::ESTagType Type,
+                 Prom::OutESTagSetType SetType,
+                 QString Name,
+                 QString DBName,
+                 bool TunableSetTime,
+                 bool TunablePulseTime,
+                 bool EgnorableAlarm,
+                 bool InGUI,
+                 Prom::ETagValConv Convertion,
+                 bool Save,
+                 bool LoadDefault,
+                 QVariant DefaultValue,
+                 bool MenuChanged,
+                 quint8   LimitFlag,
+                 QVariant HiLimit,
+                 QVariant LowLimit,
+                 bool TunableImpulseTime,
+                 QVariant ChageStep,
+                 bool AlarmSelfReset )
 {
     init(Owner,/*Type,*/SetType,Name,DBName, true,TunableSetTime,TunablePulseTime,EgnorableAlarm,InGUI,Convertion,ChageStep,AlarmSelfReset,Save,LoadDefault,DefaultValue,MenuChanged,LimitFlag,HiLimit,LowLimit,TunableImpulseTime);
     if(_impTimer == nullptr)_impTimer = new QTimerExt(this);
@@ -39,25 +39,25 @@ OutETag::OutETag(Unit * Owner,
 
 //------------------------------------------------------------------------------
 OutETag::OutETag(Unit *Owner,
-    OutESTagSetType SetType,
-    QString Name,
-    bool useOwnerDBPref,
-    QString DBName,
-    bool TunableSetTime,
-    bool TunablePulseTime,
-    bool EgnorableAlarm,
-    bool InGUI,
-    ETagValConv Convertion,
-    bool Save,
-    bool LoadDefault,
-    QVariant DefaultValue,
-    bool MenuChanged,
-    quint8 LimitFlag,
-    QVariant HiLimit,
-    QVariant LowLimit,
-    bool TunableImpulseTime,
-    QVariant ChageStep,
-    bool AlarmSelfReset)
+                 OutESTagSetType SetType,
+                 QString Name,
+                 bool useOwnerDBPref,
+                 QString DBName,
+                 bool TunableSetTime,
+                 bool TunablePulseTime,
+                 bool EgnorableAlarm,
+                 bool InGUI,
+                 ETagValConv Convertion,
+                 bool Save,
+                 bool LoadDefault,
+                 QVariant DefaultValue,
+                 bool MenuChanged,
+                 quint8 LimitFlag,
+                 QVariant HiLimit,
+                 QVariant LowLimit,
+                 bool TunableImpulseTime,
+                 QVariant ChageStep,
+                 bool AlarmSelfReset)
 {
     init(Owner,/*Type,*/SetType,Name,DBName, useOwnerDBPref,TunableSetTime,TunablePulseTime,EgnorableAlarm,InGUI,Convertion,ChageStep,AlarmSelfReset,Save,LoadDefault,DefaultValue,MenuChanged,LimitFlag,HiLimit,LowLimit,TunableImpulseTime);
     if(_impTimer == nullptr)_impTimer = new QTimerExt(this);
@@ -66,39 +66,39 @@ OutETag::OutETag(Unit *Owner,
 
 //------------------------------------------------------------------------------
 bool OutETag::init(Unit *Owner,
-    //ESTagType Type,
-    Prom::OutESTagSetType SetType,
-    QString Name,
-    QString DBName,
-    bool useOwnerDBPref,
-    bool TunableSetTime,
-    bool TunablePulseTime,
-    bool EgnorableAlarm,
-    bool InGUI,
-    ETagValConv Convertion,
-    QVariant ChageStep,
-    bool AlarmSelfReset,
-    bool Save,
-    bool LoadDefault,
-    QVariant DefaultValue,
-    bool MenuChanged,
-    quint8 LimitFlag,
-    QVariant HiLimit,
-    QVariant LowLimit,
-    bool TunableImpulseTime)
+                   //ESTagType Type,
+                   Prom::OutESTagSetType SetType,
+                   QString Name,
+                   QString DBName,
+                   bool useOwnerDBPref,
+                   bool TunableSetTime,
+                   bool TunablePulseTime,
+                   bool EgnorableAlarm,
+                   bool InGUI,
+                   ETagValConv Convertion,
+                   QVariant ChageStep,
+                   bool AlarmSelfReset,
+                   bool Save,
+                   bool LoadDefault,
+                   QVariant DefaultValue,
+                   bool MenuChanged,
+                   quint8 LimitFlag,
+                   QVariant HiLimit,
+                   QVariant LowLimit,
+                   bool TunableImpulseTime)
 {
     ETag::init(Owner,
-        //Type,
-        Name,
-        DBName,
-        useOwnerDBPref,
-        TunableSetTime,
-        TunablePulseTime,
-        EgnorableAlarm,
-        InGUI,
-        Convertion,
-        ChageStep,
-        AlarmSelfReset);
+               //Type,
+               Name,
+               DBName,
+               useOwnerDBPref,
+               TunableSetTime,
+               TunablePulseTime,
+               EgnorableAlarm,
+               InGUI,
+               Convertion,
+               ChageStep,
+               AlarmSelfReset);
 
     saveValue = Save;
     loadDefalt = LoadDefault;
@@ -113,9 +113,21 @@ bool OutETag::init(Unit *Owner,
     return _ok;
 }
 //------------------------------------------------------------------------------
+//+++Debug
+#include <QMetaObject>
+#include <QMetaMethod>
+//---Debug
 
 bool OutETag::setValue(QVariant Value, bool notImit)
 {
+    //+++Debug
+    if(sender()){
+        QMetaMethod metaMethod = sender()->metaObject()->method(senderSignalIndex());
+
+        qDebug() << metaMethod.methodSignature();
+    }
+    //---Debug
+
     double chkVal = _correctByLimits(Value).toDouble();
     if( chkVal != Value.toDouble() ){
         emit s_valueChd(value());
@@ -268,21 +280,21 @@ void OutETag::_qualityChangedSlot()
             _ferstLoad = false;
             if( saveValue ){
                 _logging(Prom::MessVerbose,
-                    "загрузка сохранённого значения -"
+                         "загрузка сохранённого значения -"
                         + QString::number(_iniValue.toDouble()), false);
                 _preValue = double(0.0);
                 setValue(_iniValue, true);
             }
             else if( loadDefalt ){
                 _logging(Prom::MessVerbose,
-                    "загрузка значения по умолчанию -"
+                         "загрузка значения по умолчанию -"
                         + QString::number(_defaultValue.toDouble()), false);
                 _preValue = double(0.0);
                 setValue(_defaultValue, true);
             }
             else {
                 _logging(Prom::MessVerbose,
-                    "подхват выхода при запуске SCADA", false);
+                         "подхват выхода при запуске SCADA", false);
                 _setedValue = _value;
                 _checkVal();
             }
@@ -296,9 +308,9 @@ void OutETag::_setTimerEnd()
 {
     if(_value != _setedValue ){
         _logging(Prom::MessAlarm,
-            "превышение времени установки выходного тэга "
+                 "превышение времени установки выходного тэга "
             "(получили - " + QString::number(_value.toDouble()) +
-                ", нужно - " + QString::number(_setedValue.toDouble()) + ")", _imit);
+                 ", нужно - " + QString::number(_setedValue.toDouble()) + ")", _imit);
         if(! _pulse) {
             setValue(_setedValue);
         }
@@ -310,7 +322,7 @@ void OutETag::_checkPulse()
 {
     if(_value == _setedValue) {
         _pulseAsyncDelay = _setTimer->interval()
-            - _setTimer->remainingTime();
+                - _setTimer->remainingTime();
     }
 }
 
@@ -318,8 +330,8 @@ void OutETag::_checkPulse()
 void OutETag::loadParam()
 {
     if(_owner->ini && saveValue
-        && _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "hardInitValue") ){
-        _iniValue = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "hardInitValue", (_owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/.value", 0).toDouble())).toDouble();
+            && _owner->ini->contains(_owner->tagPrefix+ "/" + _DBName + "/" + "hardInitValue") ){
+        _iniValue = _owner->ini->value(_owner->tagPrefix+ "/" + _DBName + "/" + "hardInitValue", (_owner->ini->value(_owner->tagPrefix+ "/" + _DBName /*+ "/.value"*/, 0).toDouble())).toDouble();
         _setedValue = _iniValue;
         _value = _iniValue;
     }
@@ -344,7 +356,7 @@ void OutETag::setLowLimit(const QVariant &lowLimit)
     _lowLimit = lowLimit;
     _limitFlag |= OUT_LIM_MIN;
     _logging( Prom::MessInfo,
-        "установлено ограничение минимума "
+              "установлено ограничение минимума "
             + _lowLimit.toString(), false );
     if( value().toDouble() < _lowLimit.toDouble() ){
         setValue( _lowLimit.toDouble() );
@@ -357,7 +369,7 @@ void OutETag::setHiLimit(const QVariant &hiLimit)
     _hiLimit = hiLimit;
     _limitFlag |= OUT_LIM_MAX;
     _logging( Prom::MessInfo,
-        "установлено ограничение максимума "
+              "установлено ограничение максимума "
             + _hiLimit.toString(), false );
     if( value().toDouble() > _hiLimit.toDouble() ){
         setValue( _hiLimit.toDouble() );
@@ -369,20 +381,20 @@ void OutETag::setLimitFlag(const quint8 &limitFlag)
 {
     if( limitFlag == OUT_LIM_NO ){
         _logging( Prom::MessInfo,
-            "отключены ораничения максимума и минимума ", false );
+                  "отключены ораничения максимума и минимума ", false );
         _limitFlag = OUT_LIM_NO;
     }
     else{
         if( _limitFlag & OUT_LIM_MAX ){
             if( !(limitFlag & OUT_LIM_MAX) ){
                 _logging( Prom::MessInfo,
-                    "отключено ораничение максимума ", false );
+                          "отключено ораничение максимума ", false );
             }
         }
         else{
             if( limitFlag & OUT_LIM_MAX ){
                 _logging( Prom::MessInfo,
-                    "включено ораничение максимума ", false );
+                          "включено ораничение максимума ", false );
                 if( value().toDouble() > _hiLimit.toDouble() ){
                     setValue( value() );
                 }
@@ -391,13 +403,13 @@ void OutETag::setLimitFlag(const quint8 &limitFlag)
         if( _limitFlag & OUT_LIM_MIN ){
             if( !(limitFlag & OUT_LIM_MIN) ){
                 _logging( Prom::MessInfo,
-                    "отключено ораничение минимума ", false );
+                          "отключено ораничение минимума ", false );
             }
         }
         else{
             if( limitFlag & OUT_LIM_MIN ){
                 _logging( Prom::MessInfo,
-                    "включено ораничение минимума ", false );
+                          "включено ораничение минимума ", false );
                 if( value().toDouble() < _lowLimit.toDouble() ){
                     setValue( value() );
                 }
@@ -411,12 +423,12 @@ QVariant OutETag::_correctByLimits(QVariant Value)
 {
     if( _limitFlag ){
         if( _limitFlag & OUT_LIM_MAX
-            && ( Value.toDouble() > _hiLimit.toDouble() )) {
+                && ( Value.toDouble() > _hiLimit.toDouble() )) {
             Value = _hiLimit.toDouble();
             _logging( Prom::MessInfo, "устанавливаемое значение первысило максимум ", _imit );
         }
         if( _limitFlag & OUT_LIM_MIN
-            && ( Value.toDouble() > _hiLimit.toDouble() )) {
+                && ( Value.toDouble() > _hiLimit.toDouble() )) {
             Value = _lowLimit.toDouble();
             _logging( Prom::MessInfo, "устанавливаемое значение меньше минимума ", _imit );
         }
@@ -463,9 +475,9 @@ void OutETag::_customConnectToGUI(QObject *, QObject *engRow)
         //if(_ttype == Prom::TpOut) { //Для аналоговых ВЫходных сигналов
         //!создал в строке главный раздел
         QMetaObject::invokeMethod(engRow, "addPropertyValue", Qt::DirectConnection,
-            Q_RETURN_ARG(QVariant, ret),
-            Q_ARG(QVariant, this->fullTagName() + "_PrVal"),
-            Q_ARG(QVariant, this->getName()));
+                                  Q_RETURN_ARG(QVariant, ret),
+                                  Q_ARG(QVariant, this->fullTagName() + "_PrVal"),
+                                  Q_ARG(QVariant, this->getName()));
 
         //tmpSgSt = propWin->findChild<QObject*>(est->fullTagName() + "_PrSig");
         tmpSgSt = qvariant_cast< QObject* >(ret);
@@ -477,27 +489,18 @@ void OutETag::_customConnectToGUI(QObject *, QObject *engRow)
         connect(this,    SIGNAL(s_imitationValueChd(QVariant)), tmpSgSt, SLOT(setImVal(QVariant)), Qt::QueuedConnection);
         connect(this,    SIGNAL(s_liveValueChd(QVariant)), tmpSgSt, SLOT(setVal(QVariant)), Qt::QueuedConnection);
         connect(this,    SIGNAL(s_qualityChd(QVariant)), tmpSgSt, SLOT(setConnected(QVariant)), Qt::QueuedConnection);
-        //-----подключил сигналы к значению и имитации
+        //Подключение изменения значения из меню
         if(_menuChanged){
-            QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
-                Q_RETURN_ARG(QVariant, ret),
-                Q_ARG(QVariant, this->getDBName() + "_value" ),
-                Q_ARG(QVariant, " - задать значение"),
-                Q_ARG(QVariant, -1));
-            //tmpSgSt = guiItem->findChild<QObject*>(est->getDBName() + "_delay");
-            tmpSgSt = qvariant_cast< QObject* >(ret);//получаю указатель на уровень срабатывания
-            //подключаю сигналы к уровням срабатывания
             connect(tmpSgSt, SIGNAL(s_valChanged(QVariant)), this,  SLOT(setValue(QVariant)),    Qt::QueuedConnection);
             connect(this,    SIGNAL(s_valueChd(QVariant)),    tmpSgSt, SLOT(setVal(QVariant)), Qt::QueuedConnection);
-            //подключаю сигналы к уровням срабатывания
         }
     }        //!добавляю время импульса
     if(_tunableImpulseTime){
         QMetaObject::invokeMethod(engRow, "addPropertySetting", Qt::DirectConnection,
-            Q_RETURN_ARG(QVariant, ret),
-            Q_ARG(QVariant, this->getDBName() + "_impulseTime" ),
-            Q_ARG(QVariant, "сек. - время импульса"),
-            Q_ARG(QVariant, 1));
+                                  Q_RETURN_ARG(QVariant, ret),
+                                  Q_ARG(QVariant, this->getDBName() + "_impulseTime" ),
+                                  Q_ARG(QVariant, "сек. - время импульса"),
+                                  Q_ARG(QVariant, 1));
         //tmpSgSt = guiItem->findChild<QObject*>(est->getDBName() + "_delay");
         tmpSgSt = qvariant_cast< QObject* >(ret);//получаю указатель на задержку
         //подключаю сигналы к задержке

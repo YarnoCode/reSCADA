@@ -46,27 +46,35 @@ protected slots:
 };
 
 //------------------------------------------------------------------------------
-class FCUnitOkSrtFq0Fq0 : public Unit
+class FCUnitSFREFF : public Unit
 {
     Q_OBJECT
 public:
-    explicit FCUnitOkSrtFq0Fq0(int *Id,
+    explicit FCUnitSFREFF(int *Id,
         QString Name,
         QString TagPrefix,
         bool SelfResetAlarm = false);
 
-    InDiscretETag  *ok      {nullptr};
+    OutDiscretETag *start   {nullptr};
+    InDiscretETag  *fwd     {nullptr};
+    InDiscretETag  *fwdAlarm   {nullptr};
     OutDiscretETag *reset   {nullptr};
-    InDiscretETag  *start   {nullptr};
+    InDiscretETag  *error   {nullptr};
+    InDiscretETag  *errorAlarm   {nullptr};
+    InDiscretETag  *alarm   {nullptr};
     InETag         *freqPID {nullptr};
     OutETag        *freqMan {nullptr};
+    InETag         *freq {nullptr};
 
     void setFreqPID(InETag *newFreqPID);
     void setFreqMan(OutETag *newFreqMan);
 
 signals:
-    void s_started();
-    void s_stoped();
+    void s_startComand();      //для визуализации
+    void s_started();         //для визуализации
+    void s_stopComand();     //для визуализации
+    void s_stoped();        //для визуализации
+    void s_manualStarted();//для визуализации
     void s_noDef();
 
 public slots:

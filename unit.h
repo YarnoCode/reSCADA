@@ -46,11 +46,12 @@ public:
     bool isSensorsConnected() { return  _sensorsConnected; }
     bool isFirstLoad() const { return _firstLoad; }
     void setAlarmTag(QString tagName);
-    QThread * ownThread = nullptr;
+    QThread * ownThread {nullptr};
     QVector<ETag *> tags() const { return _tags; }
     QString exName() const { return _exName; };
     bool isMultyUnit() { return _subUnits.count() > 0; }
     virtual bool addSubUnit(Unit * unit);
+    virtual bool removeSubUnit(Unit * unit);
     QVector<Unit *> subUnits() const;
     void moveToThread(QThread * thread);
     virtual Prom::SetModeResp setMode(Prom::UnitModes mode, bool UserOrSys = true);

@@ -7,7 +7,7 @@ UnitPropItem {
     height: width
     property alias mFUnit: mFUnit
     property alias regValve: regVal
-    property alias valvePosition: mangWin.value
+    property alias valvePosition: regVal.position
     property alias valveMaxRange: mangWin.valueMax
     property alias valveMinRange: mangWin.valueMin
     property bool confmOnEnter: false
@@ -19,16 +19,24 @@ UnitPropItem {
     function setMaxRange(value) {
         mangWin.setValueMaxRange( value )
     }
-    function setValvePosition(value) {
-        mangWin.setValue(value)
+    function setTargetPos(value) {
+        mangWin.setValue( value )
+    }
+    function setPos(value) {
+        regVal.position = value
+    }
+    function setOpenLtl( value ){
+        openLtl.visible = value
+    }
+    function setCloseLtl( value ){
+        closeLtl.visible = value
     }
     signal s_openLtl( variant OpenLtl )
     signal s_closeLtl( variant CloseLtl )
-    signal s_valvePosChanged( variant ValvePos )
+    signal s_setMaxRange( variant Range )
+    signal s_setMinRange( variant Range )
+    signal s_setTargetPos( variant ValvePos )
 
-    Component.onCompleted: {
-        regVal.position = valvePosition
-    }
     RegulValve {
         id: regVal
         anchors.fill: parent
@@ -40,15 +48,11 @@ UnitPropItem {
     }
     RegPersentWin {
         id: mangWin
+        levelText: "УСТАВКА ПОЛОЖЕНИЯ %"
         onValueChanged: {
-            regVal.position = value
             mFUnit.valueReal = value
         }
-        sepCorBtn: true
-        readOnly: true
-        onS_moreVal: s_openLtl( More )
-        onS_lessVal: s_closeLtl( Less )
-        onS_valueChenged: s_valvePosChanged(Value)
+        onS_valueChenged: s_setTargetPos(Value)
         mfuCurValue.mantissa: 2
     }
     MFUnit{
@@ -68,7 +72,7 @@ UnitPropItem {
         downLimit: mangWin.valueMin
         mantissa: 2
         limited: true
-        readOnly: true
+        onValueChanged: /*if(! separCorrButtons)*/s_setTargetPos(Value)
         onS_more: s_openLtl( More )
         onS_less: s_closeLtl( Less )
         separCorrButtons: true
@@ -100,7 +104,43 @@ UnitPropItem {
         onEntered: tooltip.visible = tooltipText != ""
         onExited: tooltip.visible = false
     }
+
+    Rectangle {
+        id: openLtl
+        radius: width * 0.5
+        border.color: "#000000"
+        width: parent.width / 5
+        height: width
+        visible: false
+        color: "#ffffff"
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset:  parent.height / 4
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: - parent.width / 4
+    }
+    Rectangle {
+        id: closeLtl
+        radius: width * 0.5
+        border.color: "#ffffff"
+        width: parent.width / 5
+        height: width
+        visible: false
+        color: "#000000"
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset:  parent.height / 4
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: parent.width / 4
+    }
 }
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:6}
+}
+##^##*/

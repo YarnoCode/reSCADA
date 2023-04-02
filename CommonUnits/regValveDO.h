@@ -5,7 +5,7 @@
 #include "unit.h"
 #endif
 
-    class OutETag;
+class OutETag;
 class InETag;
 class InDiscretETag;
 class OutDiscretETag;
@@ -15,31 +15,31 @@ enum tagsNom
 {
     posSetDBN,
     posDBN,
-    rangeTopDBN,
-    rangeBottomDBN,
-    openOutDBN,
-    closeOutDBN,
+    rangeMaxDBN,
+    rangeMinDBN,
+    openDBN,
+    closeDBN,
     };
 typedef std::map< tagsNom, QString> tagsMap;
 static const tagsMap StdTagsNames{
         {posSetDBN,      ".posSet"},
         {posDBN,         ".pos"},
-        {rangeTopDBN,    ".rangeTop"},
-        {rangeBottomDBN, ".rangeBottom"},
-        {openOutDBN,     ".openOut"},
-        {closeOutDBN,    ".closeOut"}
+        {rangeMaxDBN,    ".rangeMax"},
+        {rangeMinDBN,    ".rangeMin"},
+        {openDBN,     ".open"},
+        {closeDBN,    ".close"}
         };
 static const tagsMap SiemensPIDTagsNames{
         {posSetDBN,      ".MAN"},
         {posDBN,         ".pos"},//".LMN"
-        {rangeTopDBN,    ".LMN_HLM"},
-        {rangeBottomDBN, ".LMN_LLM"},
-        {openOutDBN,     ".LMNUP"},
-        {closeOutDBN,    ".LMNDN"},
+        {rangeMaxDBN,    ".LMN_HLM"},
+        {rangeMinDBN,    ".LMN_LLM"},
+        {openDBN,     ".LMNUP"},
+        {closeDBN,    ".LMNDN"},
     };
 }
 
-class RegValveDO : public Unit
+class RegValveDO: public Unit
 {
     Q_OBJECT
 public:
@@ -49,14 +49,9 @@ public:
         bool SefResetAlarm,
         const regValve::tagsMap *TagsMap);
 
-    OutETag        *posSet      { nullptr };
-    InETag         *pos         { nullptr };
-    OutETag        *rangeTop    { nullptr };
-    OutETag        *rangeBottom { nullptr };
-    OutDiscretETag *openOut     { nullptr };
-    OutDiscretETag *closeOut    { nullptr };
-
-
+    InETag         *pos      { nullptr };
+    InDiscretETag  *open     { nullptr };
+    InDiscretETag  *close    { nullptr };
 
 protected:
     void _alarmDo() override{}
@@ -69,6 +64,25 @@ protected:
     void _updateStateAndMode() override{}
     void _doOnModeChange()override{}
 };
+
+//------------------------------------------------------------------------------
+class RegValveDOMMS : public RegValveDO
+{
+    Q_OBJECT
+public:
+    explicit RegValveDOMMS(int *Id,
+        QString Name,
+        QString TagPrefix,
+        bool SefResetAlarm,
+        const regValve::tagsMap *TagsMap);
+
+    OutETag        *posSet      { nullptr };
+    OutETag        *rangeMax    { nullptr };
+    OutETag        *rangeMin    { nullptr };
+protected:
+        void _customConnectToGUI( QObject * /*guiItem*/,  QObject * /*propWin*/ ) override;
+};
+
 //------------------------------------------------------------------------------
 
 #endif // REGVALVEDO_H

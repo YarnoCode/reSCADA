@@ -46,10 +46,10 @@ Deairator::Deairator(int *Id,
     pSteam->needBeUndetectedAlarm();
     pSteam->findMaxMinTags();
 
-    lvlPID   = new PIDstep(this, "ПИД уровня воды",   "частота насоса",    lvlPIDPefix,   PIDTagsNames, PIDopt::allOn );
-    steamPID = new PIDstep(this, "ПИД давления пара", "положение клапана", steamPIDPefix, PIDTagsNames, PIDopt::allOn );
+    lvlPID   = new PID(this, "ПИД уровня воды",   "частота насоса",    lvlPIDPefix,   PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback  );
+    steamPID = new PID(this, "ПИД давления пара", "положение клапана", steamPIDPefix, PIDTagsNames, PIDopt::allOn & ~PIDopt::feedback  );
 
-    waterFC = new FCUnitOkSrtFq0Fq0(Id, "ЧП насосов воды", TagPrefix + ".FCWater", true);
+    waterFC = new FCUnitSFREFF(Id, "ЧП насосов воды", TagPrefix + ".FCwater", true);
     waterFC->setFreqMan( lvlPID->manImp);
     waterFC->setFreqPID( lvlPID->impIn);
     addSubUnit(waterFC);
@@ -59,7 +59,7 @@ Deairator::Deairator(int *Id,
     waterPump2 = new SimpElecEngine( Prom::TypePump, Id, "Насос охл. воды 2", TagPrefix + ".pumpWater2", true);
     addSubUnit(waterPump2);
 
-    vrSteam = new RegValveDO( Id, "Клапан подачи пара", tagPrefix + ".vrSteam", true, &regValve::SiemensPIDTagsNames);
+    vrSteam = new RegValveDOMMS( Id, "Клапан подачи пара", tagPrefix + ".vrSteam", true, &regValve::StdTagsNames);
     addSubUnit(vrSteam);
 }
 

@@ -10,10 +10,11 @@
 class OutETag;
 class MxMnInETag;
 class OutDiscretETag;
-class FCUnitOkSrtFq0Fq0;
+class FCUnitSFREFF;
 class SimpElecEgine;
 class ActWorkSt;
 class RegValveDO;
+class RegValveDOMMS;
 class InDiscretETag;
 class ActWorkStWk;
 
@@ -49,6 +50,7 @@ public:
     ActWorkSt *vIgnition;
     ActWorkSt *vGas;
     RegValveDO *vrGas;
+    //RegValveDOMMS *vrAir;
 
 public slots:
     bool resetAlarm() override;

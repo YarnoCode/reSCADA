@@ -86,6 +86,20 @@ static const tagsMap SiemensPIDTagsNames
         {manImplLess,".LMNDN"},
         {feedback,   ".MP10"},
         };
+static const tagsMap SiemensCONT_CPIDTagsNames
+    {
+        {manOn,      ".LMNS_ON"},
+        {setPt,      ".SP_INT"},
+        {prossVal,   ".PV"},
+        {kP,         ".GAIN"},
+        {kI,         ".TI"},
+        {impUp,      ".QLMNUP"},
+        {impDown,    ".QLMNDN"},
+        {imp,        ".LMNRSVAL"},
+        {manImplMore,".LMNUP"},
+        {manImplLess,".LMNDN"},
+        {feedback,   ".feedback"},
+        };
 }
 //------------------------------------------------------------------------------
 struct PID{
@@ -115,7 +129,12 @@ public:
 };
 //------------------------------------------------------------------------------
 struct PIDstep: public PID{
-    PIDstep(Unit *Owner, QString Name, QString ImpName, QString TagPrefix, const pid::tagsMap *TagsNames, uint Option = Prom::PIDopt::allOn );
+    PIDstep(Unit *Owner,
+        QString Name,
+        QString ImpName,
+        QString TagPrefix,
+        const pid::tagsMap *TagsNames,
+        uint Option = Prom::PIDopt::allOn );
     OutDiscretETag * manImpulseOn { nullptr };
     OutDiscretETag * manImplUp { nullptr };
     OutDiscretETag * manImplDown { nullptr };

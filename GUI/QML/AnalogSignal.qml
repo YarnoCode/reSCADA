@@ -9,7 +9,9 @@ UnitItem {
     property alias rectValue: rectValue
     property alias mouseArea: mAr
     property alias valueText: valueLable.text
+    //property alias valueTextFont: valFont
     property alias tooltipText: tTip.text
+
     property int mantissa: 1
     property string postfix: ""
     backgroundColor: "white"
@@ -40,12 +42,13 @@ UnitItem {
         border.width: parent.borderCurrentWidth
         Text {
             id: valueLable
-            color: "white"
+            color: textColor
             text: "999.9"
             anchors.fill: parent
             font.pixelSize: 400
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            font.bold: true
             anchors.rightMargin: 1
             anchors.leftMargin: 1
             minimumPointSize: 3

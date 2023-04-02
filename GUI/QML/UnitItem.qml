@@ -11,16 +11,16 @@ Item {
     property string alarmDescr: "Unknown"
 
     property bool alarm: false
-    property bool alarmNotify: true
-    property bool notify: true
+    property bool alarmNotify: false
+    property bool notify: false
     property bool alarmReact: true
     property bool allovAlarmTextBlinck: true
     property bool allovAlarmBodyBlinck: true
     property bool allovAlarmBorderBlinck: true
 
     property bool blocked: false
-    property bool linked: false
-    property bool connected: false
+    property bool linked: true
+    property bool connected: true
 
     property color backgroundCurrentColor: Fap.defaultColor
     property color backgroundColor: Fap.ready

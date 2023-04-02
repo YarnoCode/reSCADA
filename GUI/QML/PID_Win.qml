@@ -50,7 +50,7 @@ Window {
     //    property alias kdOut: mfuKdOut.valueReal
 
     property bool impIsAnlgOut: true
-    property bool impIs2DisctOuts: true
+    property bool impIs2DisctOuts: false
     property bool confmOnEnter: false
 
     signal s_manOn( variant ManOn )

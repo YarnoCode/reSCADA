@@ -13,18 +13,18 @@
 extern QSettings * g_unitINI;
 //------------------------------------------------------------------------------
 Unit::Unit( Prom::UnitType Type,
-    int * Id,
-    QString Name,
-    QString TagPrefix,
-    bool SelfAlarmReset,
-    Prom::UnitModes SaveMode,
-    QSettings * Ini)
+            int * Id,
+            QString Name,
+            QString TagPrefix,
+            bool SelfAlarmReset,
+            Prom::UnitModes SaveMode,
+            QSettings * Ini)
     : unitType(Type),
-    saveMode(SaveMode),
-    tagPrefix(TagPrefix),
-    ini(Ini),
-    _id(*Id),
-    _alarmSelfReset(SelfAlarmReset)
+      saveMode(SaveMode),
+      tagPrefix(TagPrefix),
+      ini(Ini),
+      _id(*Id),
+      _alarmSelfReset(SelfAlarmReset)
 {
     *Id = *Id + 1;
     setObjectName(Name);
@@ -106,10 +106,10 @@ bool Unit::isCurrOrSetedModeIn(QVector<UnitModes> Modes)
 void Unit::addTimer(QTimerExt *Timer)
 {
     if(Timer->thread() != this->thread()){
-        Timer->setParent(nullptr);
+        //Timer->setParent(nullptr);
         Timer->moveToThread(ownThread);
     }
-    Timer->setParent(this);
+    //Timer->setParent(this);
     _allTimers.append(Timer);
 }
 //------------------------------------------------------------------------------
@@ -179,11 +179,11 @@ void Unit::_setCurrentMode(UnitModes currentMode, bool resultMode)
         if(_setedMode != Prom::UnMdNoDef && resultMode){
 
             logging(Prom::MessChangeState, QDateTime::currentDateTime(), false,
-                "", QString((icvalModes(_setedMode, _currentMode) ? "" : "не"))
+                    "", QString((icvalModes(_setedMode, _currentMode) ? "" : "не"))
                     + "выполнена команда - '" +  Prom::modeToString(_currentMode) + "'");
             _setedMode = Prom::UnMdNoDef;
             QString S = QString((icvalModes(_setedMode, _currentMode) ? "   " : "no "))
-                + "done - '" + _currentMode + "'";
+                    + "done - '" + _currentMode + "'";
             qDebug()<<S;
         }
         _prevMode = _currentMode;
@@ -292,19 +292,19 @@ void Unit::moveToThread(QThread *thread)
         this->QObject::moveToThread(thread);
         foreach (QTimerExt * timer, _allTimers) {
             if(timer->thread() != this->thread()){
-                timer->setParent(nullptr);
+                //timer->setParent(nullptr);
                 timer->moveToThread(ownThread);
             }
-            timer->setParent(this);
+            //timer->setParent(this);
             timer->moveToThread(ownThread);
         }
         foreach (ETag * tag, _tags) {
             tag->moveToThread(ownThread);
-            tag->setParent(this);
+            //tag->setParent(this);
         }
         foreach (Unit * unit, _subUnits) {
             unit->moveToThread(ownThread);
-            unit->setParent(this);
+            //unit->setParent(this);
         }
     }
 }
@@ -319,8 +319,8 @@ void Unit::addETag(ETag * tag)
     if(ownThread)
         tag->moveToThread(ownThread);
     if(!tag->parent())
-        tag->setParent(this);
-    connect(tag, &ETag::s_qualityChd, this, &Unit::_sensorConnect);
+        //tag->setParent(this);
+        connect(tag, &ETag::s_qualityChd, this, &Unit::_sensorConnect);
     connect(tag, &ETag::s_alarm, this, &Unit::detectAlarm);
     if(_alarmSelfReset)
         connect(tag, &ETag::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
@@ -337,8 +337,8 @@ void Unit::removeETag(ETag *tag)
     _tags.removeOne(tag);
 
     if(tag->parent() == (QObject*)this)
-        tag->setParent(nullptr);
-    disconnect(tag, &ETag::s_qualityChd, this, &Unit::_sensorConnect);
+        //tag->setParent(nullptr);
+        disconnect(tag, &ETag::s_qualityChd, this, &Unit::_sensorConnect);
     disconnect(tag, &ETag::s_alarm, this, &Unit::detectAlarm);
     if(_alarmSelfReset)
         disconnect(tag, &ETag::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
@@ -353,7 +353,7 @@ bool Unit::addSubUnit(Unit * unit)
         _subUnits.append(unit);
         if(ownThread)
             unit->moveToThread(ownThread);
-        //unit->setParent(dynamic_cast< QObject* >(this));
+        //unit->setParent(this);
         unit->ini = ini;
         connect(unit, &Unit::s_loggingSig, this, &Unit::logging, Qt::QueuedConnection);
         connect(unit, &Unit::s_alarmForAnderUnit, this, &Unit::detectSubUnitAlarm, Qt::QueuedConnection);
@@ -364,6 +364,27 @@ bool Unit::addSubUnit(Unit * unit)
         //    if( _owner != nullptr ){
         //      _owner->addSubUnit( unit );
         //    }
+        return true;
+    }
+    return false;
+}
+//------------------------------------------------------------------------------
+bool Unit::removeSubUnit(Unit *unit)
+{
+    if( unit != nullptr && _subUnits.indexOf( unit ) != 0 ){
+        _subUnits.removeAll(unit);
+        if(ownThread)
+            unit->moveToThread( this->parent()->thread() );
+        //unit->setParent(this->parent());
+        unit->ini = ini;
+        disconnect(unit, &Unit::s_loggingSig, this, &Unit::logging);
+        disconnect(unit, &Unit::s_alarmForAnderUnit, this, &Unit::detectSubUnitAlarm);
+        disconnect(unit, &Unit::s_modeChange, this, &Unit::_updateSubUnitMode);
+        disconnect(unit, &Unit::s_stateChange, this, &Unit::_updateSubUnitState);
+        if(_alarmSelfReset){
+            disconnect(unit, &Unit::s_alarmReseted, this, &Unit::subUnTagAlarmReseted);
+            resetAlarm();
+        }
         return true;
     }
     return false;
@@ -475,19 +496,23 @@ QVector<Unit *> Unit::subUnits() const
 void Unit::logging(Prom::MessType MessTypeID, QDateTime DateTime, bool UserOrSys, QString Source, QString Message)
 {
     emit s_loggingSig(MessTypeID, DateTime, UserOrSys, objectName(),
-        ((Source == "" && Source != objectName())? "" : Source + "->") + Message);
+                      ((Source == "" && Source != objectName())? "" : Source + "->") + Message);
 }
 
 //------------------------------------------------------------------------------
 bool Unit::connectToGUI(const QObject * GUI)
 {
     QObject * guiItem = GUI->findChild<QObject*>(this->tagPrefix);
-    QObject * guiItemUnit = guiItem->findChild<QObject*>("unit");
-
+    if(!guiItem){
+        if( GUI->parent() ){
+            guiItem = GUI->parent()->findChild<QObject*>(this->tagPrefix);
+        }
+    }
     if(!guiItem){
         logging(Prom::MessAlarm, QDateTime::currentDateTime(), false, tagPrefix, "в " + GUI->objectName() + " GUI не обнаружен");
         return false;
     }
+    QObject * guiItemUnit = guiItem->findChild<QObject*>("unit");
     if(!guiItemUnit) guiItemUnit = guiItem; //Если нет дочернего с .unit, то подключаем GUI как обычно к корневому.
     //Logging(Prom::MessChangeInfo, QDateTime::currentDateTime(), unit->objectName(), "GUI обнаружен");
     connect(this, SIGNAL(s_connected()), guiItemUnit, SLOT(setConnected()), Qt::QueuedConnection);

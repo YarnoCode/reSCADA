@@ -83,7 +83,7 @@ void PromObject::addUnit(Unit * Un)
         Un->ini = iniUnit;
         Un->setOwner( this );
         Un->moveToThread(_unitsThread);
-
+        //Un->setParent( this );
         //        if(_QMLcontext != nullptr){
         //            _QMLcontext->setContextProperty(Un->tagPrefix, Un);
         //        }
